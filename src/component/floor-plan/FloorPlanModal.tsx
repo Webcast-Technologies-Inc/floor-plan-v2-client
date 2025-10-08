@@ -2,8 +2,8 @@ import { DeleteOutlined, DownOutlined, EditOutlined, PlusOutlined } from "@ant-d
 import { Button, Col, Dropdown, message, Modal, Row, Select, type MenuProps } from "antd";
 import { useContext } from "react";
 import DrawerVisibilityContext from "../../store/context/DrawerVisibilityContext";
-import AreaDetails from "./card/AreaDetails";
-import FloorPlandEditor from "./card/FloorPlanEditor";
+import AreaDetails from "./AreaDetails";
+import FloorPlandEditor from "./FloorPlanEditor";
 
 const FloorPlanModal = () => {
     const { modal, drawer } = useContext(DrawerVisibilityContext);

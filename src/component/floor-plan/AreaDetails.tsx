@@ -1,6 +1,6 @@
 import { Card, Form, Input } from "antd";
 import TextArea from "antd/es/input/TextArea";
-import CustomActionButtons from "../../CustomActionButtons";
+import CustomActionButtons from "../CustomActionButtons";
 
 const AreaDetails = () => {
     const [form] = Form.useForm();
