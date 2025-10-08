@@ -1,11 +1,12 @@
 import { Button, Card, Pagination, Radio } from "antd";
 import type { CheckboxGroupProps } from "antd/es/checkbox";
 import { useEffect, useRef, useState } from "react";
-import { Document, Page } from "react-pdf";
+import { Document, Page, pdfjs } from "react-pdf";
 import CustomActionButtons from "../CustomActionButtons";
 import FloorPlanUploader from "./FloorPlanUploader";
 import { MarkerPoint } from "./MarkerPoint";
 
+pdfjs.GlobalWorkerOptions.workerSrc = `//unpkg.com/pdfjs-dist@${pdfjs.version}/build/pdf.worker.min.mjs`;
 interface Marker {
     id: string;
     x: number;
@@ -21,7 +22,6 @@ const options: CheckboxGroupProps<string>["options"] = [
 
 const FloorPlandEditor = () => {
     const containerRef = useRef<HTMLDivElement>(null);
-    const [current, setCurrent] = useState(1);
 
     const [markers, setMarkers] = useState<Marker[]>([]);
     const [mode, setMode] = useState<"select" | "mark">("mark");
@@ -31,14 +31,15 @@ const FloorPlandEditor = () => {
     const [canvasOffset, setCanvasOffset] = useState({ x: 0, y: 0 });
     const [highlightMarkers, setHighlightMarkers] = useState(false);
     const [selectedMarkerId, setSelectedMarkerId] = useState<string | null>(null);
+    const [files, setFiles] = useState<File[]>([]);
 
-    // useEffect(() => {
-    //     if (file.type.startsWith("image/")) {
-    //         const url = URL.createObjectURL(file);
-    //         setImageUrl(url);
-    //         return () => URL.revokeObjectURL(url);
-    //     }
-    // }, [file]);
+    useEffect(() => {
+        if (files[0]?.type.startsWith("image/")) {
+            const url = URL.createObjectURL(files[0]);
+            setImageUrl(url);
+            return () => URL.revokeObjectURL(url);
+        }
+    }, [files.length]);
 
     useEffect(() => {
         const updateOffset = () => {
@@ -94,8 +95,8 @@ const FloorPlandEditor = () => {
         }
     };
 
-    // const isPdf = file.type === "application/pdf";
-    const isPdf = true;
+    const isPdf = files[0]?.type === "application/pdf";
+
     return (
         <Card
             title="Amy's Store"
@@ -114,67 +115,82 @@ const FloorPlandEditor = () => {
                 </div>
             }
         >
-            <FloorPlanUploader />
-            <div className="flex justify-between items-center !p-6 rounded-lg bg-gray-100">
-                <Radio.Group
-                    block
-                    options={options}
-                    defaultValue="select"
-                    optionType="button"
-                    buttonStyle="solid"
-                />
-                <Pagination
-                    simple
-                    current={current}
-                    total={5} // total items
-                    pageSize={1} // 1 item per page
-                    onChange={(page) => setCurrent(page)}
-                />
-            </div>
-            <div
-                ref={containerRef}
-                className="relative !bg-gray-100 rounded-lg overflow-hidden border-2 border-border shadow-lg min-h-[600px] flex items-center justify-center"
-                onClick={handleCanvasClick}
-                style={{ cursor: mode === "mark" ? "crosshair" : "default" }}
-            >
-                {isPdf ? (
-                    <Document
-                        // file={file}
-                        onLoadSuccess={({ numPages }) => setNumPages(numPages)}
-                        onLoadError={(error) => {
-                            console.error("PDF load error:", error);
-                            // toast.error("Failed to load PDF");
-                        }}
-                        className="flex items-center justify-center"
-                    >
-                        <Page
-                            pageNumber={currentPage}
-                            renderTextLayer={false}
-                            renderAnnotationLayer={false}
-                            className="max-w-full"
+            {files.length === 0 ? (
+                <FloorPlanUploader onFileUpload={(file) => setFiles((prev) => [...prev, file])} />
+            ) : (
+                <>
+                    <div className="flex justify-between items-center !p-6 rounded-lg bg-gray-100">
+                        <Radio.Group
+                            block
+                            options={options}
+                            defaultValue="select"
+                            optionType="button"
+                            buttonStyle="solid"
                         />
-                    </Document>
-                ) : imageUrl ? (
-                    <img
-                        src={imageUrl}
-                        alt="Floor plan"
-                        className="max-w-full max-h-full object-contain"
-                        draggable={false}
-                    />
-                ) : null}
+                        <Pagination
+                            simple
+                            current={currentPage}
+                            total={numPages} // total items
+                            pageSize={1} // 1 item per page
+                            onChange={(page) => setCurrentPage(page)}
+                        />
+                    </div>
+                    <div
+                        ref={containerRef}
+                        className="relative !bg-gray-100 rounded-lg border-2 border-border shadow-lg min-h-[600px] overflow-auto"
+                        onClick={handleCanvasClick}
+                        style={{
+                            cursor: mode === "mark" ? "crosshair" : "default",
+                            overflow: "auto",
+                        }}
+                    >
+                        {isPdf ? (
+                            <Document
+                                file={files[0]}
+                                onLoadSuccess={({ numPages }) => setNumPages(numPages)}
+                                onLoadError={(error) => {
+                                    console.error("PDF load error:", error);
+                                    // toast.error("Failed to load PDF");
+                                }}
+                                className="flex items-center justify-center"
+                            >
+                                <Page
+                                    pageNumber={currentPage}
+                                    renderTextLayer={false}
+                                    renderAnnotationLayer={false}
+                                    className="max-w-full"
+                                />
+                            </Document>
+                        ) : imageUrl ? (
+                            <img
+                                src={imageUrl}
+                                alt="Floor plan"
+                                style={{
+                                    width: "auto",
+                                    height: "auto",
+                                    display: "block",
+                                    maxWidth: "none",
+                                    maxHeight: "none",
+                                    flexShrink: 0,
+                                }}
+                                draggable={false}
+                            />
+                        ) : null}
 
-                {markers.map((marker) => (
-                    <MarkerPoint
-                        key={marker.id}
-                        marker={marker}
-                        isSelected={selectedMarkerId === marker.id}
-                        mode={mode}
-                        isHighlighted={highlightMarkers}
-                        onClick={() => setSelectedMarkerId(marker.id)}
-                        onDragEnd={(x, y) => handleMarkerDragEnd(marker.id, x, y)}
-                    />
-                ))}
-            </div>
+                        {markers.map((marker) => (
+                            <MarkerPoint
+                                key={marker.id}
+                                marker={marker}
+                                isSelected={selectedMarkerId === marker.id}
+                                mode={mode}
+                                isHighlighted={highlightMarkers}
+                                onClick={() => setSelectedMarkerId(marker.id)}
+                                onDragEnd={(x, y) => handleMarkerDragEnd(marker.id, x, y)}
+                            />
+                        ))}
+                    </div>
+                </>
+            )}
         </Card>
     );
 };
