@@ -10,11 +10,7 @@ export const GET_FLOOR_BY_LEVEL_ID_QUERY = gql`
                 id
                 pathname
                 floorId
-                createdAt
-                updatedAt
             }
-            createdAt
-            updatedAt
         }
     }
 `;

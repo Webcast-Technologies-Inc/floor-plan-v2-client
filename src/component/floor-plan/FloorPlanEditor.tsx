@@ -2,8 +2,11 @@ import { Button, Card, Pagination, Radio } from "antd";
 import type { CheckboxGroupProps } from "antd/es/checkbox";
 import { useContext, useEffect, useRef, useState } from "react";
 import { Document, Page, pdfjs } from "react-pdf";
+import { BUCKET_NAME } from "../../constant";
 import DrawerVisibilityContext from "../../store/context/DrawerVisibilityContext";
 import type { Marker } from "../../types/marker";
+import customFileName from "../../utils/customFileName";
+import { supabase } from "../../utils/supabaseClient";
 import CustomActionButtons from "../CustomActionButtons";
 import FloorPlanUploader from "./FloorPlanUploader";
 import { MarkerPoint } from "./MarkerPoint";
@@ -107,7 +110,29 @@ const FloorPlandEditor = () => {
             extra={
                 <div className="flex items-center gap-x-4">
                     <Button onClick={() => {}}>Cancel</Button>
-                    <Button type="primary" onClick={() => {}} loading={false}>
+                    <Button
+                        type="primary"
+                        onClick={async () => {
+                            const { data, error } = await supabase.storage
+                                .from(BUCKET_NAME.documents)
+                                .upload(
+                                    customFileName((files as any)[0]),
+                                    (files[0] as any).originFileObj,
+                                    {
+                                        cacheControl: "3600",
+                                        upsert: true,
+                                    }
+                                );
+
+                            console.log("data >> ", data);
+
+                            console.log("files >> ", files[0]);
+                            console.log("markers >> ", markers);
+                            console.log("currentPage >> ", currentPage);
+                            console.log("modal.dataSet.value? >> ", modal.dataSet?.value);
+                        }}
+                        loading={false}
+                    >
                         Save
                     </Button>
                     <CustomActionButtons

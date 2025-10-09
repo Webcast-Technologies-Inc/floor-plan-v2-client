@@ -8,8 +8,6 @@ export const GET_ALL_LANDMARK_QUERY = gql`
             category
             latitude
             longitude
-            createdAt
-            updatedAt
         }
     }
 `;
