@@ -37,7 +37,8 @@ export const MarkerPoint = ({
     }, [marker.x, marker.y]);
 
     const handleMouseDown = (e: React.MouseEvent) => {
-        if (mode !== "select") return;
+        // only start dragging with left mouse button
+        if (mode !== "select" || (e as React.MouseEvent).button !== 0) return;
         e.stopPropagation();
         e.preventDefault();
 
@@ -67,12 +68,17 @@ export const MarkerPoint = ({
             }
         };
 
+        // set grabbing cursor for the whole document so it stays while dragging
+        const previousCursor = document.body.style.cursor;
+        document.body.style.cursor = "grabbing";
+
         document.addEventListener("mousemove", handleMouseMove);
         document.addEventListener("mouseup", handleMouseUp);
 
         return () => {
             document.removeEventListener("mousemove", handleMouseMove);
             document.removeEventListener("mouseup", handleMouseUp);
+            document.body.style.cursor = previousCursor;
         };
     }, [isDragging, position.x, position.y, marker.x, marker.y, onDragEnd]);
 
@@ -87,17 +93,14 @@ export const MarkerPoint = ({
         <div
             ref={markerRef}
             className={`absolute transition-transform duration-200 ${
-                isDragging
-                    ? "scale-110 z-50 cursor-grabbing"
-                    : isSelected
-                    ? "scale-105 z-40"
-                    : "z-30"
-            } ${mode === "select" ? "cursor-grab hover:scale-110" : "cursor-pointer"}`}
+                isDragging ? "scale-110 z-50" : isSelected ? "scale-105 z-40" : "z-30"
+            } ${mode === "select" ? "hover:scale-110" : ""}`}
             style={{
                 left: `${position.x}px`,
                 top: `${position.y}px`,
                 transform: "translate(-50%, -100%)",
                 userSelect: "none",
+                cursor: isDragging ? "grabbing" : "pointer",
             }}
             onMouseDown={handleMouseDown}
             onClick={handleClick}
