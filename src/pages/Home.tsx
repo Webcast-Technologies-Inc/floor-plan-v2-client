@@ -10,13 +10,13 @@ import { MANILA_POSITION } from "../constant";
 import useDrawerVisibility from "../hook/useDrawerVisibility";
 import { DrawerVisibilityProvider } from "../store/context/DrawerVisibilityContext";
 
-export type ISelect = "select" | "floor";
+export type ITool = "select" | "mark";
 
 const Home = () => {
     const modal = useDrawerVisibility();
     const drawer = useDrawerVisibility();
     const { data, loading, error } = useGetAllLandmark();
-    const [selectedTool, setSelectedTool] = useState<ISelect>("select");
+    const [selectedTool, setSelectedTool] = useState<ITool>("select");
     const [selectedArea, setSelectedArea] = useState(undefined);
     const [selectedFloorLevelId, setSelectedFloorLevelId] = useState<string | undefined>(undefined);
     const [refetch, setRefetch] = useState(false);

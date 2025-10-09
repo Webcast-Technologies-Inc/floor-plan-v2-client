@@ -1,11 +1,12 @@
 import { PushpinFilled, PushpinTwoTone } from "@ant-design/icons";
 import { useEffect, useRef, useState } from "react";
+import type { ITool } from "../../pages/Home";
 import type { Marker } from "../../types/marker";
 
 interface MarkerPointProps {
     marker: Marker;
     isSelected: boolean;
-    mode: "select" | "mark";
+    selectedTool: ITool;
     isHighlighted: boolean;
     onClick: () => void;
     onDragEnd: (x: number, y: number) => void;
@@ -14,7 +15,7 @@ interface MarkerPointProps {
 export const MarkerPoint = ({
     marker,
     isSelected,
-    mode,
+    selectedTool,
     isHighlighted,
     onClick,
     onDragEnd,
@@ -31,7 +32,7 @@ export const MarkerPoint = ({
 
     const handleMouseDown = (e: React.MouseEvent) => {
         // only start dragging with left mouse button
-        if (mode !== "select" || (e as React.MouseEvent).button !== 0) return;
+        if (selectedTool !== "select" || (e as React.MouseEvent).button !== 0) return;
         e.stopPropagation();
         e.preventDefault();
 
@@ -87,7 +88,7 @@ export const MarkerPoint = ({
             ref={markerRef}
             className={`absolute transition-transform duration-200 ${
                 isDragging ? "scale-110 z-50" : isSelected ? "scale-105 z-40" : "z-30"
-            } ${mode === "select" ? "hover:scale-110" : ""}`}
+            } ${selectedTool === "select" ? "hover:scale-110" : ""}`}
             style={{
                 left: `${position.x}px`,
                 top: `${position.y}px`,

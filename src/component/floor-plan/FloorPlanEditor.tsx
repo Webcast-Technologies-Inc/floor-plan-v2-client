@@ -20,7 +20,6 @@ const FloorPlandEditor = () => {
     const containerRef = useRef<HTMLDivElement>(null);
 
     const [markers, setMarkers] = useState<Marker[]>([]);
-    const [mode, setMode] = useState<"select" | "mark">("select");
     const [imageUrl, setImageUrl] = useState<string | null>(null);
     const [numPages, setNumPages] = useState<number>(1);
     const [currentPage, setCurrentPage] = useState<number>(1);
@@ -29,7 +28,6 @@ const FloorPlandEditor = () => {
     const [selectedMarkerId, setSelectedMarkerId] = useState<string | null>(null);
     const [files, setFiles] = useState<File[]>([]);
 
-    console.log("markers >> ", markers);
     useEffect(() => {
         if (files[0]?.type.startsWith("image/")) {
             const url = URL.createObjectURL(files[0]);
@@ -74,7 +72,7 @@ const FloorPlandEditor = () => {
         const rect = containerRef.current?.getBoundingClientRect();
         if (!rect) return;
 
-        if (mode === "mark") {
+        if (modal.selectedTool.value === "mark") {
             const x = e.clientX - rect.left;
             const y = e.clientY - rect.top;
 
@@ -90,7 +88,7 @@ const FloorPlandEditor = () => {
 
             handleAddMarker(newMarker);
             setSelectedMarkerId(newMarker.id);
-            setMode("select");
+            modal.selectedTool.setValue("select");
             // toast.success("Marker added! Click to edit details.");
         } else {
             // Highlight all markers when clicking on open area
@@ -130,8 +128,8 @@ const FloorPlandEditor = () => {
                             defaultValue="select"
                             optionType="button"
                             buttonStyle="solid"
-                            onChange={(e) => setMode(e.target.value)}
-                            value={mode}
+                            onChange={(e) => modal.selectedTool.setValue(e.target.value)}
+                            value={modal.selectedTool.value}
                         />
                         <Pagination
                             simple
@@ -146,7 +144,7 @@ const FloorPlandEditor = () => {
                         className="relative !bg-gray-100 rounded-lg border-2 border-border shadow-lg min-h-[600px] overflow-auto"
                         onClick={handleCanvasClick}
                         style={{
-                            cursor: mode === "mark" ? "crosshair" : "default",
+                            cursor: modal.selectedTool.value === "mark" ? "crosshair" : "default",
                             overflow: "auto",
                         }}
                     >
@@ -188,7 +186,7 @@ const FloorPlandEditor = () => {
                                 key={marker.id}
                                 marker={marker}
                                 isSelected={selectedMarkerId === marker.id}
-                                mode={mode}
+                                selectedTool={modal.selectedTool.value}
                                 isHighlighted={highlightMarkers}
                                 onClick={() => setSelectedMarkerId(marker.id)}
                                 onDragEnd={(x, y) => handleMarkerDragEnd(marker.id, x, y)}
