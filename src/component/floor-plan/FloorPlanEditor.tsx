@@ -1,7 +1,8 @@
 import { Button, Card, Pagination, Radio } from "antd";
 import type { CheckboxGroupProps } from "antd/es/checkbox";
-import { useEffect, useRef, useState } from "react";
+import { useContext, useEffect, useRef, useState } from "react";
 import { Document, Page, pdfjs } from "react-pdf";
+import DrawerVisibilityContext from "../../store/context/DrawerVisibilityContext";
 import type { Marker } from "../../types/marker";
 import CustomActionButtons from "../CustomActionButtons";
 import FloorPlanUploader from "./FloorPlanUploader";
@@ -15,6 +16,7 @@ const options: CheckboxGroupProps<string>["options"] = [
 ];
 
 const FloorPlandEditor = () => {
+    const { modal } = useContext(DrawerVisibilityContext);
     const containerRef = useRef<HTMLDivElement>(null);
 
     const [markers, setMarkers] = useState<Marker[]>([]);
@@ -101,7 +103,7 @@ const FloorPlandEditor = () => {
 
     return (
         <Card
-            title="Amy's Store"
+            title={modal.dataSet.value?.name ?? ""}
             variant="outlined"
             style={{ width: "100%" }}
             extra={

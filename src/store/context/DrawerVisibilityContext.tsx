@@ -1,3 +1,4 @@
+import type { FormInstance } from "antd";
 import { createContext } from "react";
 
 interface DrawerState {
@@ -25,8 +26,19 @@ interface DrawerGroup {
 }
 
 interface DrawerContextType {
-    modal: DrawerGroup;
-    drawer: DrawerGroup;
+    modal: DrawerGroup & {
+        originalDataSet: DataState;
+        selectedTool: DataState;
+        selectedArea: DataState;
+        selectedFloorLevelId: {
+            value: string | undefined;
+            setValue: React.Dispatch<React.SetStateAction<string | undefined>>;
+        };
+        form: FormInstance;
+    };
+    drawer: DrawerGroup & {
+        refetch: { value: boolean; setValue: React.Dispatch<React.SetStateAction<boolean>> };
+    };
 }
 
 const emptyDrawerGroup: DrawerGroup = {
@@ -57,8 +69,33 @@ const emptyDrawerGroup: DrawerGroup = {
 };
 
 const initialState: DrawerContextType = {
-    modal: emptyDrawerGroup,
-    drawer: emptyDrawerGroup,
+    modal: {
+        ...emptyDrawerGroup,
+        originalDataSet: {
+            value: undefined,
+            setValue: (() => {}) as React.Dispatch<React.SetStateAction<any>>,
+        },
+        selectedTool: {
+            value: undefined,
+            setValue: (() => {}) as React.Dispatch<React.SetStateAction<any>>,
+        },
+        selectedArea: {
+            value: undefined,
+            setValue: (() => {}) as React.Dispatch<React.SetStateAction<any>>,
+        },
+        selectedFloorLevelId: {
+            value: undefined,
+            setValue: (() => {}) as React.Dispatch<React.SetStateAction<string | undefined>>,
+        },
+        form: {} as FormInstance,
+    },
+    drawer: {
+        ...emptyDrawerGroup,
+        refetch: {
+            value: false,
+            setValue: (() => {}) as React.Dispatch<React.SetStateAction<boolean>>,
+        },
+    },
 };
 
 const DrawerVisibilityContext = createContext<DrawerContextType>(initialState);
