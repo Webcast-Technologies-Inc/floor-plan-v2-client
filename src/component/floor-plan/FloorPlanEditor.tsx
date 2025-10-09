@@ -17,14 +17,14 @@ interface Marker {
 
 const options: CheckboxGroupProps<string>["options"] = [
     { label: "Select", value: "select" },
-    { label: "Marker", value: "marker" },
+    { label: "Marker", value: "mark" },
 ];
 
 const FloorPlandEditor = () => {
     const containerRef = useRef<HTMLDivElement>(null);
 
     const [markers, setMarkers] = useState<Marker[]>([]);
-    const [mode, setMode] = useState<"select" | "mark">("mark");
+    const [mode, setMode] = useState<"select" | "mark">("select");
     const [imageUrl, setImageUrl] = useState<string | null>(null);
     const [numPages, setNumPages] = useState<number>(1);
     const [currentPage, setCurrentPage] = useState<number>(1);
@@ -57,6 +57,10 @@ const FloorPlandEditor = () => {
         };
     }, []);
 
+    const handleAddMarker = (marker: Marker) => {
+        setMarkers([...markers, marker]);
+    };
+
     const handleUpdateMarker = (updatedMarker: Marker) => {
         setMarkers(markers.map((m) => (m.id === updatedMarker.id ? updatedMarker : m)));
     };
@@ -85,8 +89,8 @@ const FloorPlandEditor = () => {
                 description: "",
             };
 
-            // onAddMarker(newMarker);
-            // onSelectMarker(newMarker.id);
+            handleAddMarker(newMarker);
+            setSelectedMarkerId(newMarker.id);
             // toast.success("Marker added! Click to edit details.");
         } else {
             // Highlight all markers when clicking on open area
@@ -118,7 +122,7 @@ const FloorPlandEditor = () => {
             {files.length === 0 ? (
                 <FloorPlanUploader onFileUpload={(file) => setFiles((prev) => [...prev, file])} />
             ) : (
-                <>
+                <div className="!space-y-4">
                     <div className="flex justify-between items-center !p-6 rounded-lg bg-gray-100">
                         <Radio.Group
                             block
@@ -126,6 +130,7 @@ const FloorPlandEditor = () => {
                             defaultValue="select"
                             optionType="button"
                             buttonStyle="solid"
+                            onChange={(e) => setMode(e.target.value)}
                         />
                         <Pagination
                             simple
@@ -152,13 +157,13 @@ const FloorPlandEditor = () => {
                                     console.error("PDF load error:", error);
                                     // toast.error("Failed to load PDF");
                                 }}
-                                className="flex items-center justify-center"
+                                className="block"
                             >
                                 <Page
                                     pageNumber={currentPage}
                                     renderTextLayer={false}
                                     renderAnnotationLayer={false}
-                                    className="max-w-full"
+                                    className="max-w-full !bg-gray-100"
                                 />
                             </Document>
                         ) : imageUrl ? (
@@ -189,7 +194,7 @@ const FloorPlandEditor = () => {
                             />
                         ))}
                     </div>
-                </>
+                </div>
             )}
         </Card>
     );

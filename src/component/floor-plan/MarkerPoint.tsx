@@ -1,4 +1,4 @@
-import { PushpinOutlined } from "@ant-design/icons";
+import { PushpinTwoTone } from "@ant-design/icons";
 import { useEffect, useRef, useState } from "react";
 
 export interface Marker {
@@ -103,7 +103,23 @@ export const MarkerPoint = ({
             onClick={handleClick}
         >
             <div className="relative">
-                <PushpinOutlined />
+                <PushpinTwoTone
+                    twoToneColor={
+                        isHighlighted
+                            ? "#3b82f6" // blue-500
+                            : isSelected
+                            ? "hsl(200 95% 55%)"
+                            : "transparent"
+                    }
+                    className={`text-lg transition-all duration-500 ${
+                        isHighlighted
+                            ? "drop-shadow-[0_0_12px_rgba(59,130,246,0.8)]"
+                            : "drop-shadow-none opacity-0"
+                        // : isSelected
+                        // ? "drop-shadow-[0_0_8px_hsl(200 95% 55%/0.6)]"
+                        // : "drop-shadow-none opacity-0"
+                    }`}
+                />
                 {/* <MapPin
                     className={`w-8 h-8 transition-all duration-500 ${
                         isHighlighted
