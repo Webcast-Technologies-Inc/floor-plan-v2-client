@@ -2,18 +2,12 @@ import { Button, Card, Pagination, Radio } from "antd";
 import type { CheckboxGroupProps } from "antd/es/checkbox";
 import { useEffect, useRef, useState } from "react";
 import { Document, Page, pdfjs } from "react-pdf";
+import type { Marker } from "../../types/marker";
 import CustomActionButtons from "../CustomActionButtons";
 import FloorPlanUploader from "./FloorPlanUploader";
 import { MarkerPoint } from "./MarkerPoint";
 
 pdfjs.GlobalWorkerOptions.workerSrc = `//unpkg.com/pdfjs-dist@${pdfjs.version}/build/pdf.worker.min.mjs`;
-interface Marker {
-    id: string;
-    x: number;
-    y: number;
-    name: string;
-    description: string;
-}
 
 const options: CheckboxGroupProps<string>["options"] = [
     { label: "Select", value: "select" },
@@ -28,11 +22,12 @@ const FloorPlandEditor = () => {
     const [imageUrl, setImageUrl] = useState<string | null>(null);
     const [numPages, setNumPages] = useState<number>(1);
     const [currentPage, setCurrentPage] = useState<number>(1);
-    const [canvasOffset, setCanvasOffset] = useState({ x: 0, y: 0 });
+    // const [canvasOffset, setCanvasOffset] = useState({ x: 0, y: 0 });
     const [highlightMarkers, setHighlightMarkers] = useState(false);
     const [selectedMarkerId, setSelectedMarkerId] = useState<string | null>(null);
     const [files, setFiles] = useState<File[]>([]);
 
+    console.log("markers >> ", markers);
     useEffect(() => {
         if (files[0]?.type.startsWith("image/")) {
             const url = URL.createObjectURL(files[0]);
@@ -41,21 +36,21 @@ const FloorPlandEditor = () => {
         }
     }, [files.length]);
 
-    useEffect(() => {
-        const updateOffset = () => {
-            if (containerRef.current) {
-                const rect = containerRef.current.getBoundingClientRect();
-                setCanvasOffset({ x: rect.left, y: rect.top });
-            }
-        };
-        updateOffset();
-        window.addEventListener("resize", updateOffset);
-        window.addEventListener("scroll", updateOffset);
-        return () => {
-            window.removeEventListener("resize", updateOffset);
-            window.removeEventListener("scroll", updateOffset);
-        };
-    }, []);
+    // useEffect(() => {
+    //     const updateOffset = () => {
+    //         if (containerRef.current) {
+    //             const rect = containerRef.current.getBoundingClientRect();
+    //             setCanvasOffset({ x: rect.left, y: rect.top });
+    //         }
+    //     };
+    //     updateOffset();
+    //     window.addEventListener("resize", updateOffset);
+    //     window.addEventListener("scroll", updateOffset);
+    //     return () => {
+    //         window.removeEventListener("resize", updateOffset);
+    //         window.removeEventListener("scroll", updateOffset);
+    //     };
+    // }, []);
 
     const handleAddMarker = (marker: Marker) => {
         setMarkers([...markers, marker]);
@@ -85,12 +80,15 @@ const FloorPlandEditor = () => {
                 id: Date.now().toString(),
                 x,
                 y,
-                name: "",
-                description: "",
+                details: {
+                    name: "",
+                    description: "",
+                },
             };
 
             handleAddMarker(newMarker);
             setSelectedMarkerId(newMarker.id);
+            setMode("select");
             // toast.success("Marker added! Click to edit details.");
         } else {
             // Highlight all markers when clicking on open area
@@ -131,6 +129,7 @@ const FloorPlandEditor = () => {
                             optionType="button"
                             buttonStyle="solid"
                             onChange={(e) => setMode(e.target.value)}
+                            value={mode}
                         />
                         <Pagination
                             simple

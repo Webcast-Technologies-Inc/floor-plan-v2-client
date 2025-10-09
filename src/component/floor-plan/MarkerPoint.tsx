@@ -1,13 +1,6 @@
-import { PushpinTwoTone } from "@ant-design/icons";
+import { PushpinFilled, PushpinTwoTone } from "@ant-design/icons";
 import { useEffect, useRef, useState } from "react";
-
-export interface Marker {
-    id: string;
-    x: number;
-    y: number;
-    name: string;
-    description: string;
-}
+import type { Marker } from "../../types/marker";
 
 interface MarkerPointProps {
     marker: Marker;
@@ -106,7 +99,22 @@ export const MarkerPoint = ({
             onClick={handleClick}
         >
             <div className="relative">
-                <PushpinTwoTone
+                {isSelected ? (
+                    <PushpinFilled
+                        style={{ color: "#3b82f6" }} // filled pin color
+                        className="text-lg drop-shadow-[0_0_8px_hsl(200_95%_55%/0.6)] transition-all duration-500"
+                    />
+                ) : (
+                    <PushpinTwoTone
+                        twoToneColor={"#3b82f6"}
+                        className={`text-lg transition-all duration-500 ${
+                            isHighlighted
+                                ? "drop-shadow-[0_0_12px_rgba(59,130,246,0.8)]"
+                                : "drop-shadow-none opacity-0"
+                        }`}
+                    />
+                )}
+                {/* <PushpinTwoTone
                     twoToneColor={
                         isHighlighted
                             ? "#3b82f6" // blue-500
@@ -117,12 +125,11 @@ export const MarkerPoint = ({
                     className={`text-lg transition-all duration-500 ${
                         isHighlighted
                             ? "drop-shadow-[0_0_12px_rgba(59,130,246,0.8)]"
+                            : isSelected
+                            ? "drop-shadow-[0_0_8px_hsl(200 95% 55%/0.6)]"
                             : "drop-shadow-none opacity-0"
-                        // : isSelected
-                        // ? "drop-shadow-[0_0_8px_hsl(200 95% 55%/0.6)]"
-                        // : "drop-shadow-none opacity-0"
                     }`}
-                />
+                /> */}
                 {/* <MapPin
                     className={`w-8 h-8 transition-all duration-500 ${
                         isHighlighted
@@ -135,13 +142,13 @@ export const MarkerPoint = ({
                     stroke={isHighlighted || isSelected ? "currentColor" : "transparent"}
                     strokeWidth={2}
                 /> */}
-                {isSelected && (
+                {/* {isSelected && (
                     <div className="absolute -bottom-1 left-1/2 -translate-x-1/2 w-3 h-3 bg-accent rounded-full animate-pulse" />
-                )}
+                )} */}
             </div>
-            <div className="absolute top-full left-1/2 -translate-x-1/2 mt-1 bg-card border border-border rounded px-2 py-1 text-xs font-medium whitespace-nowrap shadow-md">
+            {/* <div className="absolute top-full left-1/2 -translate-x-1/2 mt-1 bg-card border border-border rounded px-2 py-1 text-xs font-medium whitespace-nowrap shadow-md">
                 {marker.name || `Marker ${marker.id}`}
-            </div>
+            </div> */}
         </div>
     );
 };
