@@ -6,7 +6,7 @@ export const GET_FLOOR_BY_LEVEL_ID_QUERY = gql`
             id
             level
             name
-            floorPlan {
+            floorPlans {
                 id
                 pathname
                 floorId

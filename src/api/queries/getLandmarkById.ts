@@ -8,7 +8,7 @@ export const GET_LANDMARK_BY_ID_QUERY = gql`
             category
             latitude
             longitude
-            floor {
+            floors {
                 id
                 level
                 name

@@ -9,9 +9,8 @@ interface FloorPlanUploaderProps {
 const FloorPlanUploader = ({ onFileUpload }: FloorPlanUploaderProps) => {
     const props: UploadProps = {
         name: "file",
-        multiple: true,
+        multiple: false,
         beforeUpload: (file) => {
-            // setFileList([...fileList, file]);
             onFileUpload(file);
 
             return false;

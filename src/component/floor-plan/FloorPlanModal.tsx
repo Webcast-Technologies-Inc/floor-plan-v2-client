@@ -110,7 +110,7 @@ const FloorPlanModal = () => {
                         throw new Error("Failed to get Landmark!");
                     }
 
-                    const options = resp.data.getLandmarkById.floor.map(({ id, level }: any) => ({
+                    const options = resp.data.getLandmarkById.floors.map(({ id, level }: any) => ({
                         value: id,
                         label: level,
                     }));
