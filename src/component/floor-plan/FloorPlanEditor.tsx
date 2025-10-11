@@ -4,6 +4,7 @@ import { useContext, useEffect, useRef, useState } from "react";
 import { Document, Page, pdfjs } from "react-pdf";
 import { BUCKET_NAME } from "../../constant";
 import DrawerVisibilityContext from "../../store/context/DrawerVisibilityContext";
+import type { IFloor } from "../../types/FloorPlan";
 import type { Marker } from "../../types/marker";
 import customFileName from "../../utils/customFileName";
 import { supabase } from "../../utils/supabaseClient";
@@ -30,6 +31,8 @@ const FloorPlandEditor = () => {
     const [highlightMarkers, setHighlightMarkers] = useState(false);
     const [selectedMarkerId, setSelectedMarkerId] = useState<string | null>(null);
     const [files, setFiles] = useState<File[]>([]);
+
+    console.log("modal >> ", modal.dataSet.value);
 
     useEffect(() => {
         if (files[0]?.type.startsWith("image/")) {
@@ -100,7 +103,7 @@ const FloorPlandEditor = () => {
         }
     };
 
-    const isPdf = files[0]?.type === "application/pdf";
+    const isPdf = modal.dataSet.value?.floorPlans[0]?.type === "application/pdf";
 
     return (
         <Card
@@ -113,6 +116,8 @@ const FloorPlandEditor = () => {
                     <Button
                         type="primary"
                         onClick={async () => {
+                            if (!files) return;
+
                             const { data, error } = await supabase.storage
                                 .from(BUCKET_NAME.documents)
                                 .upload(
@@ -124,12 +129,32 @@ const FloorPlandEditor = () => {
                                     }
                                 );
 
-                            console.log("data >> ", data);
+                            // console.log("modal.dataSet >> ", modal.dataSet.value);
+                            modal.dataSet.setValue((prev: IFloor) => ({
+                                ...prev,
+                                floorPlans: [
+                                    {
+                                        pathname: data?.fullPath,
+                                        // floorPlanArea: [
+                                        //     {
+                                        //         x: "0",
+                                        //         y: "0",
+                                        //         pageNumber: "1",
+                                        //         details: {
+                                        //             name: "Raphael",
+                                        //             description: "Salayog",
+                                        //         },
+                                        //     },
+                                        // ],
+                                    },
+                                ],
+                            }));
+                            // console.log("data >> ", data);
 
-                            console.log("files >> ", files[0]);
-                            console.log("markers >> ", markers);
-                            console.log("currentPage >> ", currentPage);
-                            console.log("modal.dataSet.value? >> ", modal.dataSet?.value);
+                            // console.log("files >> ", files[0]);
+                            // console.log("markers >> ", markers);
+                            // console.log("currentPage >> ", currentPage);
+                            // console.log("modal.dataSet.value? >> ", modal.dataSet?.value);
                         }}
                         loading={false}
                     >
@@ -142,8 +167,15 @@ const FloorPlandEditor = () => {
                 </div>
             }
         >
-            {files.length === 0 ? (
-                <FloorPlanUploader onFileUpload={(file) => setFiles((prev) => [...prev, file])} />
+            {modal.dataSet.value?.floorPlans.length === 0 ? (
+                <FloorPlanUploader
+                    onFileUpload={(file) =>
+                        modal.dataSet.setValue((prev: IFloor) => ({
+                            ...prev,
+                            floorPlans: [file],
+                        }))
+                    }
+                />
             ) : (
                 <div className="!space-y-4">
                     <div className="flex justify-between items-center !p-6 rounded-lg bg-gray-100">
@@ -175,7 +207,7 @@ const FloorPlandEditor = () => {
                     >
                         {isPdf ? (
                             <Document
-                                file={files[0]}
+                                file={modal.dataSet.value?.floorPlans[0]}
                                 onLoadSuccess={({ numPages }) => setNumPages(numPages)}
                                 onLoadError={(error) => {
                                     console.error("PDF load error:", error);

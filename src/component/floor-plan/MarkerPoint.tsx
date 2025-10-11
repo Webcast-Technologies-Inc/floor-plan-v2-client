@@ -148,7 +148,7 @@ export const MarkerPoint = ({
                 )} */}
             </div>
             {/* <div className="absolute top-full left-1/2 -translate-x-1/2 mt-1 bg-card border border-border rounded px-2 py-1 text-xs font-medium whitespace-nowrap shadow-md">
-                {marker.name || `Marker ${marker.id}`}
+                {marker.details.name || `Marker ${marker.id}`}
             </div> */}
         </div>
     );

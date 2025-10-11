@@ -9,7 +9,6 @@ export const GET_FLOOR_BY_LEVEL_ID_QUERY = gql`
             floorPlans {
                 id
                 pathname
-                floorId
             }
         }
     }
