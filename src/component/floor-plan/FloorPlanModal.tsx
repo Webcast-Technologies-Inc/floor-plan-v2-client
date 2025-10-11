@@ -61,7 +61,7 @@ const FloorPlanModal = () => {
                     ),
                     onOk: async () => {
                         try {
-                            if (!modal.id.value) {
+                            if (!modal.id.value || !modal.dataSet.value?.id) {
                                 return;
                             }
 
@@ -154,7 +154,7 @@ const FloorPlanModal = () => {
         modal.dataSet.setValue((prev: any) => ({
             ...prev,
             areas: prev.areas.map((area: any) =>
-                area.id === modal.selectedMarker.value.id
+                area.id === modal.selectedArea.value.id
                     ? {
                           ...area,
                           details: {
@@ -174,7 +174,7 @@ const FloorPlanModal = () => {
             }
 
             modal.edit.setVisible(false);
-            modal.selectedMarker.setValue(null);
+            modal.selectedArea.setValue(null);
             modal.form.resetFields();
 
             modal.selectedFloorLevelId.setValue(val);
@@ -198,7 +198,7 @@ const FloorPlanModal = () => {
         modal.view.setVisible(false);
         modal.edit.setVisible(false);
         modal.id.setValue(null);
-        modal.selectedMarker.setValue(null);
+        modal.selectedArea.setValue(null);
         modal.selectedTool.setValue("select");
         modal.dataSet.setValue(null);
         modal.originalDataSet.setValue(null);
@@ -229,12 +229,12 @@ const FloorPlanModal = () => {
     // const handleDelete = () => {
     //     if (modal.edit.visible) {
     //         modal.form.resetFields();
-    //         modal.selectedMarker.setValue(null);
+    //         modal.selectedArea.setValue(null);
 
     //         modal.dataSet.setValue((prev: IFloor) => ({
     //             ...prev,
     //             areas: prev.areas?.filter(
-    //                 (el: IFloorPlanArea) => el.id !== modal.selectedMarker.value.id
+    //                 (el: IFloorPlanArea) => el.id !== modal.selectedArea.value.id
     //             ),
     //         }));
     //     }

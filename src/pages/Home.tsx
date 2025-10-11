@@ -9,6 +9,7 @@ import ClusteredLocationMarkers from "../component/google-maps/ClusteredLocation
 import { MANILA_POSITION } from "../constant";
 import useDrawerVisibility from "../hook/useDrawerVisibility";
 import { DrawerVisibilityProvider } from "../store/context/DrawerVisibilityContext";
+import type { IFloor } from "../types/floorPlan";
 
 export type ITool = "select" | "mark";
 
@@ -17,11 +18,13 @@ const Home = () => {
     const drawer = useDrawerVisibility();
     const { data, loading, error } = useGetAllLandmark();
     const [selectedTool, setSelectedTool] = useState<ITool>("select");
-    const [selectedMarker, setSelectedMarker] = useState(undefined);
+    const [selectedArea, setSelectedArea] = useState(undefined);
     const [selectedFloorLevelId, setSelectedFloorLevelId] = useState<string | undefined>(undefined);
     const [refetch, setRefetch] = useState(false);
     const [form] = Form.useForm();
     const [originalDataSet, setOriginalDataSet] = useState<any>(null);
+    const [modalDataSet, setModalDataSet] = useState<IFloor | undefined | null>(undefined);
+    const [drawerDataSet, setDrawerDataSet] = useState<any>(undefined);
 
     return (
         <>
@@ -29,11 +32,12 @@ const Home = () => {
                 value={{
                     modal: {
                         ...modal,
+                        dataSet: { value: modalDataSet, setValue: setModalDataSet },
                         originalDataSet: { value: originalDataSet, setValue: setOriginalDataSet },
                         selectedTool: { value: selectedTool, setValue: setSelectedTool },
-                        selectedMarker: {
-                            value: selectedMarker,
-                            setValue: setSelectedMarker,
+                        selectedArea: {
+                            value: selectedArea,
+                            setValue: setSelectedArea,
                         },
                         selectedFloorLevelId: {
                             value: selectedFloorLevelId,
@@ -41,7 +45,11 @@ const Home = () => {
                         },
                         form,
                     },
-                    drawer: { ...drawer, refetch: { value: refetch, setValue: setRefetch } },
+                    drawer: {
+                        ...drawer,
+                        dataSet: { value: drawerDataSet, setValue: setDrawerDataSet },
+                        refetch: { value: refetch, setValue: setRefetch },
+                    },
                 }}
             >
                 <div className="min-h-screen">

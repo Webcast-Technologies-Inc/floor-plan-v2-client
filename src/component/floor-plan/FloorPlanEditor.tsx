@@ -2,12 +2,8 @@ import { Button, Card, Pagination, Radio } from "antd";
 import type { CheckboxGroupProps } from "antd/es/checkbox";
 import { useContext, useEffect, useRef, useState } from "react";
 import { Document, Page, pdfjs } from "react-pdf";
-import { BUCKET_NAME } from "../../constant";
 import DrawerVisibilityContext from "../../store/context/DrawerVisibilityContext";
-import type { IFloor } from "../../types/floorPlan";
-import type { Marker } from "../../types/marker";
-import customFileName from "../../utils/customFileName";
-import { supabase } from "../../utils/supabaseClient";
+import type { IFloorPlanArea } from "../../types/floorPlan";
 import CustomActionButtons from "../CustomActionButtons";
 import FloorPlanUploader from "./FloorPlanUploader";
 import { MarkerPoint } from "./MarkerPoint";
@@ -23,22 +19,25 @@ const FloorPlandEditor = () => {
     const { modal } = useContext(DrawerVisibilityContext);
     const containerRef = useRef<HTMLDivElement>(null);
 
-    const [markers, setMarkers] = useState<Marker[]>([]);
     const [imageUrl, setImageUrl] = useState<string | null>(null);
     const [numPages, setNumPages] = useState<number>(1);
     const [currentPage, setCurrentPage] = useState<number>(1);
     // const [canvasOffset, setCanvasOffset] = useState({ x: 0, y: 0 });
     const [highlightMarkers, setHighlightMarkers] = useState(false);
     const [selectedMarkerId, setSelectedMarkerId] = useState<string | null>(null);
-    const files = modal.dataSet.value?.floorPlans;
+    const [newFile, setNewFile] = useState<File | null>(null);
+    const existingFile = modal.dataSet.value?.floorPlans;
+
+    console.log("data >> ", modal.dataSet.value);
+    console.log("newFile >> ", newFile);
 
     useEffect(() => {
-        if (files && files[0]?.type.startsWith("image/")) {
-            const url = URL.createObjectURL(files[0]);
+        if (newFile && newFile?.type.startsWith("image/")) {
+            const url = URL.createObjectURL(newFile);
             setImageUrl(url);
             return () => URL.revokeObjectURL(url);
         }
-    }, [files?.length]);
+    }, [newFile]);
 
     // useEffect(() => {
     //     const updateOffset = () => {
@@ -56,16 +55,40 @@ const FloorPlandEditor = () => {
     //     };
     // }, []);
 
-    const handleAddMarker = (marker: Marker) => {
-        setMarkers([...markers, marker]);
+    const handleAddMarker = (marker: IFloorPlanArea) => {
+        modal.dataSet.setValue((prev) => {
+            if (!prev) return prev;
+
+            return {
+                ...prev,
+                floorPlans: {
+                    ...prev.floorPlans,
+                    floorPlanAreas: [...(prev.floorPlans?.floorPlanAreas ?? []), marker],
+                },
+            };
+        });
     };
 
-    const handleUpdateMarker = (updatedMarker: Marker) => {
-        setMarkers(markers.map((m) => (m.id === updatedMarker.id ? updatedMarker : m)));
+    const handleUpdateMarker = (updatedMarker: IFloorPlanArea) => {
+        modal.dataSet.setValue((prev) => {
+            if (!prev) return prev;
+
+            return {
+                ...prev,
+                floorPlans: {
+                    ...prev.floorPlans,
+                    floorPlanAreas: prev.floorPlans?.floorPlanAreas?.map((m) =>
+                        m.id === updatedMarker.id ? updatedMarker : m
+                    ),
+                },
+            };
+        });
     };
 
     const handleMarkerDragEnd = (markerId: string, x: number, y: number) => {
-        const marker = markers.find((m) => m.id === markerId);
+        const marker = modal.dataSet.value?.floorPlans?.floorPlanAreas?.find(
+            (m) => m.id === markerId
+        );
         if (marker) {
             handleUpdateMarker({ ...marker, x, y });
             // toast.success("Marker position updated");
@@ -80,7 +103,7 @@ const FloorPlandEditor = () => {
             const x = e.clientX - rect.left;
             const y = e.clientY - rect.top;
 
-            const newMarker: Marker = {
+            const newMarker = {
                 id: Date.now().toString(),
                 x,
                 y,
@@ -102,7 +125,7 @@ const FloorPlandEditor = () => {
         }
     };
 
-    const isPdf = files && files[0]?.type === "application/pdf";
+    const isPdf = newFile?.type === "application/pdf";
 
     return (
         <Card
@@ -115,42 +138,23 @@ const FloorPlandEditor = () => {
                     <Button
                         type="primary"
                         onClick={async () => {
-                            if (!files) return;
+                            if (!existingFile) return;
 
-                            const { data, error } = await supabase.storage
-                                .from(BUCKET_NAME.documents)
-                                .upload(
-                                    customFileName((files as any)[0]),
-                                    (files[0] as any).originFileObj,
-                                    {
-                                        cacheControl: "3600",
-                                        upsert: true,
-                                    }
-                                );
+                            // const { data, error } = await supabase.storage
+                            //     .from(BUCKET_NAME.documents)
+                            //     .upload(
+                            //         customFileName(existingFile as any),
+                            //         (existingFile as any).originFileObj,
+                            //         {
+                            //             cacheControl: "3600",
+                            //             upsert: true,
+                            //         }
+                            //     );
 
                             // console.log("modal.dataSet >> ", modal.dataSet.value);
-                            modal.dataSet.setValue((prev: IFloor) => ({
-                                ...prev,
-                                floorPlans: [
-                                    {
-                                        pathname: data?.fullPath,
-                                        // floorPlanArea: [
-                                        //     {
-                                        //         x: "0",
-                                        //         y: "0",
-                                        //         pageNumber: "1",
-                                        //         details: {
-                                        //             name: "Raphael",
-                                        //             description: "Salayog",
-                                        //         },
-                                        //     },
-                                        // ],
-                                    },
-                                ],
-                            }));
                             // console.log("data >> ", data);
 
-                            // console.log("files >> ", files[0]);
+                            // console.log("existingFile >> ", existingFile);
                             // console.log("markers >> ", markers);
                             // console.log("currentPage >> ", currentPage);
                             // console.log("modal.dataSet.value? >> ", modal.dataSet?.value);
@@ -166,15 +170,8 @@ const FloorPlandEditor = () => {
                 </div>
             }
         >
-            {files?.length === 0 ? (
-                <FloorPlanUploader
-                    onFileUpload={(file) =>
-                        modal.dataSet.setValue((prev: IFloor) => ({
-                            ...prev,
-                            floorPlans: [file],
-                        }))
-                    }
-                />
+            {!existingFile && !newFile ? (
+                <FloorPlanUploader onFileUpload={(file) => setNewFile(file)} />
             ) : (
                 <div className="!space-y-4">
                     <div className="flex justify-between items-center !p-6 rounded-lg bg-gray-100">
@@ -206,7 +203,8 @@ const FloorPlandEditor = () => {
                     >
                         {isPdf ? (
                             <Document
-                                file={files[0]}
+                                file={newFile}
+                                // file={newFile ? newFile : existingFile}
                                 onLoadSuccess={({ numPages }) => setNumPages(numPages)}
                                 onLoadError={(error) => {
                                     console.error("PDF load error:", error);
@@ -237,7 +235,7 @@ const FloorPlandEditor = () => {
                             />
                         ) : null}
 
-                        {markers.map((marker) => (
+                        {modal.dataSet.value?.floorPlans?.floorPlanAreas?.map((marker) => (
                             <MarkerPoint
                                 key={marker.id}
                                 marker={marker}

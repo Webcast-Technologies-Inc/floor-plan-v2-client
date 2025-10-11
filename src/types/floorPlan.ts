@@ -7,18 +7,18 @@ export interface IFloorPlanArea {
     id: string;
     x: number;
     y: number;
-    pageNumber: number;
-    details: IFloorPlanAreaDetails;
+    details?: IFloorPlanAreaDetails;
 }
 
 export interface IFloorPlan {
-    id: string;
-    pathname: string;
+    id?: string;
+    pathname?: string;
+    floorPlanAreas?: IFloorPlanArea[];
 }
 
 export interface IFloor {
     id: string;
     level: string;
     name: string;
-    floorPlans: IFloorPlan[];
+    floorPlans?: IFloorPlan;
 }
