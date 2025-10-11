@@ -25,6 +25,7 @@ export const MarkerPoint = ({
     const markerRef = useRef<HTMLDivElement>(null);
     const initialMousePos = useRef({ x: 0, y: 0 });
     const initialMarkerPos = useRef({ x: 0, y: 0 });
+    const [hasMoved, setHasMoved] = useState(false);
 
     useEffect(() => {
         setPosition({ x: marker.x, y: marker.y });
@@ -42,13 +43,17 @@ export const MarkerPoint = ({
     };
 
     useEffect(() => {
-        if (!isDragging) return;
+        if (!isDragging) {
+            return;
+        }
 
         const handleMouseMove = (e: MouseEvent) => {
             e.preventDefault();
+            setHasMoved(true);
+            onClick();
+
             const deltaX = e.clientX - initialMousePos.current.x;
             const deltaY = e.clientY - initialMousePos.current.y;
-
             setPosition({
                 x: initialMarkerPos.current.x + deltaX,
                 y: initialMarkerPos.current.y + deltaY,
@@ -57,6 +62,8 @@ export const MarkerPoint = ({
 
         const handleMouseUp = () => {
             setIsDragging(false);
+            setHasMoved(false);
+
             if (position.x !== marker.x || position.y !== marker.y) {
                 onDragEnd(position.x, position.y);
             }
@@ -94,7 +101,7 @@ export const MarkerPoint = ({
                 top: `${position.y}px`,
                 transform: "translate(-50%, -100%)",
                 userSelect: "none",
-                cursor: isDragging ? "grabbing" : "pointer",
+                cursor: hasMoved ? "grabbing" : "pointer",
             }}
             onMouseDown={handleMouseDown}
             onClick={handleClick}

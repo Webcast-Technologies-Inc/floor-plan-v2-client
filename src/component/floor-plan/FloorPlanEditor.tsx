@@ -4,7 +4,7 @@ import { useContext, useEffect, useRef, useState } from "react";
 import { Document, Page, pdfjs } from "react-pdf";
 import { BUCKET_NAME } from "../../constant";
 import DrawerVisibilityContext from "../../store/context/DrawerVisibilityContext";
-import type { IFloor } from "../../types/FloorPlan";
+import type { IFloor } from "../../types/floorPlan";
 import type { Marker } from "../../types/marker";
 import customFileName from "../../utils/customFileName";
 import { supabase } from "../../utils/supabaseClient";
@@ -99,6 +99,7 @@ const FloorPlandEditor = () => {
         } else {
             // Highlight all markers when clicking on open area
             setHighlightMarkers(true);
+            setSelectedMarkerId(null);
             setTimeout(() => setHighlightMarkers(false), 2000);
         }
     };
