@@ -234,15 +234,21 @@ const FloorPlandEditor = () => {
                             />
                         ) : null}
 
-                        {modal.dataSet.value?.floorPlans?.floorPlanAreas?.map((marker) => (
+                        {modal.dataSet.value?.floorPlans?.floorPlanAreas?.map((area) => (
                             <MarkerPoint
-                                key={marker.id}
-                                marker={marker}
-                                isSelected={modal.selectedArea.value?.id === marker.id}
+                                key={area.id}
+                                marker={area}
+                                isSelected={modal.selectedArea.value?.id === area.id}
                                 selectedTool={modal.selectedTool.value}
                                 isHighlighted={highlightMarkers}
-                                onClick={() => modal.selectedArea.setValue(marker)}
-                                onDragEnd={(x, y) => handleMarkerDragEnd(marker.id, x, y)}
+                                onClick={() => {
+                                    modal.selectedArea.setValue(area);
+                                    modal.form.setFieldsValue({
+                                        name: area.details?.name,
+                                        description: area.details?.description,
+                                    });
+                                }}
+                                onDragEnd={(x, y) => handleMarkerDragEnd(area.id, x, y)}
                             />
                         ))}
                     </div>
