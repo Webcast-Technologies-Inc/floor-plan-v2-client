@@ -22,7 +22,7 @@ const AreaDetails = () => {
                             // onChange(e, "name", modal);
                         }}
                         // readOnly={
-                        //     !modal.edit.visible || !modal.selectedArea.value
+                        //     !modal.edit.visible || !modal.selectedMarker.value
                         // }
                         allowClear
                     />
@@ -35,7 +35,7 @@ const AreaDetails = () => {
                         //     onChange(e, "description", modal);
                         // }}
                         // readOnly={
-                        //     !modal.edit.visible || !modal.selectedArea.value
+                        //     !modal.edit.visible || !modal.selectedMarker.value
                         // }
                         allowClear
                     />

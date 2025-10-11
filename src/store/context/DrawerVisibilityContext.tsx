@@ -29,7 +29,7 @@ interface DrawerContextType {
     modal: DrawerGroup & {
         originalDataSet: DataState;
         selectedTool: DataState;
-        selectedArea: DataState;
+        selectedMarker: DataState;
         selectedFloorLevelId: {
             value: string | undefined;
             setValue: React.Dispatch<React.SetStateAction<string | undefined>>;
@@ -79,7 +79,7 @@ const initialState: DrawerContextType = {
             value: undefined,
             setValue: (() => {}) as React.Dispatch<React.SetStateAction<any>>,
         },
-        selectedArea: {
+        selectedMarker: {
             value: undefined,
             setValue: (() => {}) as React.Dispatch<React.SetStateAction<any>>,
         },

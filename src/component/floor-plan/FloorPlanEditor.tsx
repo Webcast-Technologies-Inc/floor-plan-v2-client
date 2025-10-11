@@ -30,17 +30,15 @@ const FloorPlandEditor = () => {
     // const [canvasOffset, setCanvasOffset] = useState({ x: 0, y: 0 });
     const [highlightMarkers, setHighlightMarkers] = useState(false);
     const [selectedMarkerId, setSelectedMarkerId] = useState<string | null>(null);
-    const [files, setFiles] = useState<File[]>([]);
-
-    console.log("modal >> ", modal.dataSet.value);
+    const files = modal.dataSet.value?.floorPlans;
 
     useEffect(() => {
-        if (files[0]?.type.startsWith("image/")) {
+        if (files && files[0]?.type.startsWith("image/")) {
             const url = URL.createObjectURL(files[0]);
             setImageUrl(url);
             return () => URL.revokeObjectURL(url);
         }
-    }, [files.length]);
+    }, [files?.length]);
 
     // useEffect(() => {
     //     const updateOffset = () => {
@@ -104,7 +102,7 @@ const FloorPlandEditor = () => {
         }
     };
 
-    const isPdf = modal.dataSet.value?.floorPlans[0]?.type === "application/pdf";
+    const isPdf = files && files[0]?.type === "application/pdf";
 
     return (
         <Card
@@ -168,7 +166,7 @@ const FloorPlandEditor = () => {
                 </div>
             }
         >
-            {modal.dataSet.value?.floorPlans.length === 0 ? (
+            {files?.length === 0 ? (
                 <FloorPlanUploader
                     onFileUpload={(file) =>
                         modal.dataSet.setValue((prev: IFloor) => ({
@@ -208,7 +206,7 @@ const FloorPlandEditor = () => {
                     >
                         {isPdf ? (
                             <Document
-                                file={modal.dataSet.value?.floorPlans[0]}
+                                file={files[0]}
                                 onLoadSuccess={({ numPages }) => setNumPages(numPages)}
                                 onLoadError={(error) => {
                                     console.error("PDF load error:", error);

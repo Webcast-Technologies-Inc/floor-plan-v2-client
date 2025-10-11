@@ -17,7 +17,7 @@ const Home = () => {
     const drawer = useDrawerVisibility();
     const { data, loading, error } = useGetAllLandmark();
     const [selectedTool, setSelectedTool] = useState<ITool>("select");
-    const [selectedArea, setSelectedArea] = useState(undefined);
+    const [selectedMarker, setSelectedMarker] = useState(undefined);
     const [selectedFloorLevelId, setSelectedFloorLevelId] = useState<string | undefined>(undefined);
     const [refetch, setRefetch] = useState(false);
     const [form] = Form.useForm();
@@ -31,9 +31,9 @@ const Home = () => {
                         ...modal,
                         originalDataSet: { value: originalDataSet, setValue: setOriginalDataSet },
                         selectedTool: { value: selectedTool, setValue: setSelectedTool },
-                        selectedArea: {
-                            value: selectedArea,
-                            setValue: setSelectedArea,
+                        selectedMarker: {
+                            value: selectedMarker,
+                            setValue: setSelectedMarker,
                         },
                         selectedFloorLevelId: {
                             value: selectedFloorLevelId,
