@@ -9,16 +9,14 @@ import ClusteredLocationMarkers from "../component/google-maps/ClusteredLocation
 import { MANILA_POSITION } from "../constant";
 import useDrawerVisibility from "../hook/useDrawerVisibility";
 import { DrawerVisibilityProvider } from "../store/context/DrawerVisibilityContext";
-import type { IFloor } from "../types/floorPlan";
-
-export type ITool = "select" | "mark";
+import type { IFloor, IFloorPlanArea, ITool } from "../types/floorPlan";
 
 const Home = () => {
     const modal = useDrawerVisibility();
     const drawer = useDrawerVisibility();
     const { data, loading, error } = useGetAllLandmark();
     const [selectedTool, setSelectedTool] = useState<ITool>("select");
-    const [selectedArea, setSelectedArea] = useState(undefined);
+    const [selectedArea, setSelectedArea] = useState<IFloorPlanArea | undefined | null>(undefined);
     const [selectedFloorLevelId, setSelectedFloorLevelId] = useState<string | undefined>(undefined);
     const [refetch, setRefetch] = useState(false);
     const [form] = Form.useForm();

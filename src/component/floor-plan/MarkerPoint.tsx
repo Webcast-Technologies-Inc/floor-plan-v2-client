@@ -1,10 +1,9 @@
 import { PushpinFilled, PushpinTwoTone } from "@ant-design/icons";
 import { useEffect, useRef, useState } from "react";
-import type { ITool } from "../../pages/Home";
-import type { Marker } from "../../types/marker";
+import type { IFloorPlanArea, ITool } from "../../types/floorPlan";
 
 interface MarkerPointProps {
-    marker: Marker;
+    marker: IFloorPlanArea;
     isSelected: boolean;
     selectedTool: ITool;
     isHighlighted: boolean;

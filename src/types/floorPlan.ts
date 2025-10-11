@@ -22,3 +22,5 @@ export interface IFloor {
     name: string;
     floorPlans?: IFloorPlan;
 }
+
+export type ITool = "select" | "mark";

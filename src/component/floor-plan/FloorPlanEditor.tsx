@@ -18,18 +18,13 @@ const options: CheckboxGroupProps<string>["options"] = [
 const FloorPlandEditor = () => {
     const { modal } = useContext(DrawerVisibilityContext);
     const containerRef = useRef<HTMLDivElement>(null);
-
-    const [imageUrl, setImageUrl] = useState<string | null>(null);
     const [numPages, setNumPages] = useState<number>(1);
     const [currentPage, setCurrentPage] = useState<number>(1);
     // const [canvasOffset, setCanvasOffset] = useState({ x: 0, y: 0 });
-    const [highlightMarkers, setHighlightMarkers] = useState(false);
-    const [selectedMarkerId, setSelectedMarkerId] = useState<string | null>(null);
+    const [imageUrl, setImageUrl] = useState<string | null>(null);
     const [newFile, setNewFile] = useState<File | null>(null);
+    const [highlightMarkers, setHighlightMarkers] = useState(false);
     const existingFile = modal.dataSet.value?.floorPlans;
-
-    console.log("data >> ", modal.dataSet.value);
-    console.log("newFile >> ", newFile);
 
     useEffect(() => {
         if (newFile && newFile?.type.startsWith("image/")) {
@@ -89,6 +84,7 @@ const FloorPlandEditor = () => {
         const marker = modal.dataSet.value?.floorPlans?.floorPlanAreas?.find(
             (m) => m.id === markerId
         );
+
         if (marker) {
             handleUpdateMarker({ ...marker, x, y });
             // toast.success("Marker position updated");
@@ -114,13 +110,13 @@ const FloorPlandEditor = () => {
             };
 
             handleAddMarker(newMarker);
-            setSelectedMarkerId(newMarker.id);
+            modal.selectedArea.setValue(newMarker);
             modal.selectedTool.setValue("select");
             // toast.success("Marker added! Click to edit details.");
         } else {
             // Highlight all markers when clicking on open area
             setHighlightMarkers(true);
-            setSelectedMarkerId(null);
+            modal.selectedArea.setValue(null);
             setTimeout(() => setHighlightMarkers(false), 2000);
         }
     };
@@ -138,6 +134,9 @@ const FloorPlandEditor = () => {
                     <Button
                         type="primary"
                         onClick={async () => {
+                            console.log("data >> ", modal.dataSet.value);
+                            console.log("newFile >> ", newFile);
+
                             if (!existingFile) return;
 
                             // const { data, error } = await supabase.storage
@@ -239,10 +238,10 @@ const FloorPlandEditor = () => {
                             <MarkerPoint
                                 key={marker.id}
                                 marker={marker}
-                                isSelected={selectedMarkerId === marker.id}
+                                isSelected={modal.selectedArea.value?.id === marker.id}
                                 selectedTool={modal.selectedTool.value}
                                 isHighlighted={highlightMarkers}
-                                onClick={() => setSelectedMarkerId(marker.id)}
+                                onClick={() => modal.selectedArea.setValue(marker)}
                                 onDragEnd={(x, y) => handleMarkerDragEnd(marker.id, x, y)}
                             />
                         ))}

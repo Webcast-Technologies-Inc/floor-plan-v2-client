@@ -1,6 +1,6 @@
 import type { FormInstance } from "antd";
 import { createContext } from "react";
-import type { IFloor } from "../../types/floorPlan";
+import type { IFloor, IFloorPlanArea } from "../../types/floorPlan";
 
 interface DrawerState {
     visible: boolean;
@@ -33,7 +33,10 @@ interface DrawerContextType {
         };
         originalDataSet: DataState;
         selectedTool: DataState;
-        selectedArea: DataState;
+        selectedArea: {
+            value: IFloorPlanArea | undefined | null;
+            setValue: React.Dispatch<React.SetStateAction<IFloorPlanArea | undefined | null>>;
+        };
         selectedFloorLevelId: {
             value: string | undefined;
             setValue: React.Dispatch<React.SetStateAction<string | undefined>>;
