@@ -1,8 +1,9 @@
 export interface IAttachment {
-    id?: string;
+    id?: string | null;
     fileName: string;
     fileType: string;
     filePath: string;
+    presignedUrl?: string | undefined | null;
 }
 export interface IFloorPlanAreaDetails {
     name: string;
@@ -10,7 +11,7 @@ export interface IFloorPlanAreaDetails {
 }
 
 export interface IFloorPlanArea {
-    id: string;
+    id: string | null | undefined;
     x: number;
     y: number;
     details?: IFloorPlanAreaDetails;
@@ -18,7 +19,7 @@ export interface IFloorPlanArea {
 
 export interface IFloorPlan {
     id?: string;
-    floorPlanAreas?: IFloorPlanArea[];
+    areas?: IFloorPlanArea[];
     attachments?: IAttachment;
 }
 

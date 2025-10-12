@@ -19,7 +19,7 @@ const AreaDetails = () => {
                 ...prev,
                 floorPlans: {
                     ...prev.floorPlans,
-                    floorPlanAreas: prev.floorPlans?.floorPlanAreas?.map((area) =>
+                    areas: prev.floorPlans?.areas?.map((area) =>
                         area.id === modal.selectedArea.value?.id
                             ? {
                                   ...area,
@@ -47,7 +47,7 @@ const AreaDetails = () => {
                     ...prev,
                     floorPlans: {
                         ...prev.floorPlans,
-                        floorPlanAreas: prev.floorPlans?.floorPlanAreas?.filter(
+                        areas: prev.floorPlans?.areas?.filter(
                             (area) => area.id !== modal.selectedArea.value?.id
                         ) as IFloorPlanArea[],
                     },

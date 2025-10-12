@@ -3,8 +3,8 @@ import { gql } from "@apollo/client";
 export const CREATE_FLOOR_PLAN_AREA_MUTATION = gql`
     mutation CreateFloorPlanArea(
         $floorPlanId: ID!
-        $x: String!
-        $y: String!
+        $x: Float!
+        $y: Float!
         $pageNumber: Int!
         $details: JSON!
     ) {

@@ -4,8 +4,8 @@ import type { IAttachment, IFloorPlanArea } from "../../types/floorPlan";
 import { UPDATE_FLOOR_PLAN_WITH_AREAS_MUTATION } from "../mutations/updateFloorPlanWithAreas";
 
 interface IUpdateFloorPlanWithAreasInput {
-    floorId: string | undefined;
-    id?: string | undefined;
+    floorId: string | undefined | null;
+    id?: string | undefined | null;
     attachments: IAttachment;
     areas: IFloorPlanArea[];
 }

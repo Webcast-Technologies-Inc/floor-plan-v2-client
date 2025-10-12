@@ -63,7 +63,7 @@ const FloorPlandEditor = () => {
                 ...prev,
                 floorPlans: {
                     ...prev.floorPlans,
-                    floorPlanAreas: [...(prev.floorPlans?.floorPlanAreas ?? []), marker],
+                    areas: [...(prev.floorPlans?.areas ?? []), marker],
                 },
             };
         });
@@ -77,7 +77,7 @@ const FloorPlandEditor = () => {
                 ...prev,
                 floorPlans: {
                     ...prev.floorPlans,
-                    floorPlanAreas: prev.floorPlans?.floorPlanAreas?.map((m) =>
+                    areas: prev.floorPlans?.areas?.map((m) =>
                         m.id === updatedMarker.id ? updatedMarker : m
                     ),
                 },
@@ -86,13 +86,10 @@ const FloorPlandEditor = () => {
     };
 
     const handleMarkerDragEnd = (markerId: string, x: number, y: number) => {
-        const marker = modal.dataSet.value?.floorPlans?.floorPlanAreas?.find(
-            (m) => m.id === markerId
-        );
+        const marker = modal.dataSet.value?.floorPlans?.areas?.find((m) => m.id === markerId);
 
         if (marker) {
             handleUpdateMarker({ ...marker, x, y });
-            // toast.success("Marker position updated");
         }
     };
 
@@ -117,7 +114,6 @@ const FloorPlandEditor = () => {
             handleAddMarker(newMarker);
             modal.selectedArea.setValue(newMarker);
             modal.selectedTool.setValue("select");
-            // toast.success("Marker added! Click to edit details.");
         } else {
             // Highlight all markers when clicking on open area
             setHighlightMarkers(true);
@@ -126,8 +122,10 @@ const FloorPlandEditor = () => {
         }
     };
 
-    const isPdf = newFile?.type === "application/pdf";
+    // const isPdf = newFile?.type === "application/pdf";
+    const isPdf = (newFile?.type ?? existingFile?.attachments?.fileType) === "application/pdf";
 
+    console.log("qwe >> ", modal.dataSet.value?.floorPlans);
     return (
         <Card
             title={modal.dataSet.value?.name ?? ""}
@@ -139,45 +137,59 @@ const FloorPlandEditor = () => {
                     <Button
                         type="primary"
                         onClick={async () => {
-                            if (!newFile) {
-                                return;
+                            let uploadedFile: any;
+                            if (newFile) {
+                                const { data, error } = await supabase.storage
+                                    .from(BUCKET_NAME.documents)
+                                    .upload(customFileName(newFile as any), newFile as any, {
+                                        cacheControl: "3600",
+                                        upsert: true,
+                                    });
+
+                                if (error) {
+                                    return;
+                                }
+
+                                uploadedFile = data;
                             }
 
-                            const { data, error } = await supabase.storage
-                                .from(BUCKET_NAME.documents)
-                                .upload(customFileName(newFile as any), newFile as any, {
-                                    cacheControl: "3600",
-                                    upsert: true,
-                                });
+                            // if (!modal.dataSet.value?.floorPlans?.attachments) {
+                            //     return;
+                            // }
 
-                            if (error) {
-                                return;
-                            }
+                            const removeTempIdAreas = modal.dataSet.value?.floorPlans?.areas?.map(
+                                (area) => {
+                                    const isTempId =
+                                        typeof area.id === "string" &&
+                                        area.id.startsWith(TEMP_ID_FORMAT);
 
-                            const dataq = await handleUpdateFloorPlanWithAreas({
+                                    return {
+                                        ...area,
+                                        id: isTempId ? undefined : area.id,
+                                    };
+                                }
+                            );
+                            await handleUpdateFloorPlanWithAreas({
                                 floorId: modal.dataSet.value?.id,
+                                id: "1",
                                 attachments: {
-                                    fileName: newFile?.name,
-                                    fileType: newFile?.type,
-                                    filePath: data?.fullPath,
+                                    id: newFile
+                                        ? null
+                                        : modal.dataSet.value?.floorPlans?.attachments?.id,
+                                    fileName: newFile
+                                        ? newFile?.name
+                                        : modal.dataSet.value?.floorPlans?.attachments?.fileName ||
+                                          "",
+                                    fileType: newFile
+                                        ? newFile?.type
+                                        : modal.dataSet.value?.floorPlans?.attachments?.fileType ||
+                                          "",
+                                    filePath: newFile
+                                        ? uploadedFile?.fullPath
+                                        : modal.dataSet.value?.floorPlans?.attachments?.filePath,
                                 },
-                                areas: modal.dataSet.value?.floorPlans?.floorPlanAreas || [],
+                                areas: removeTempIdAreas || [],
                             });
-
-                            console.log("dataq >> ", dataq);
-
-                            console.log("data >> ", modal.dataSet.value);
-                            console.log("fileName >> ", newFile?.name);
-                            console.log("filePath >> ", data);
-                            console.log("fileType >> ", newFile?.type);
-
-                            // console.log("modal.dataSet >> ", modal.dataSet.value);
-                            // console.log("data >> ", data);
-
-                            // console.log("existingFile >> ", existingFile);
-                            // console.log("markers >> ", markers);
-                            // console.log("currentPage >> ", currentPage);
-                            // console.log("modal.dataSet.value? >> ", modal.dataSet?.value);
                         }}
                         loading={false}
                     >
@@ -223,7 +235,7 @@ const FloorPlandEditor = () => {
                     >
                         {isPdf ? (
                             <Document
-                                file={newFile ? newFile : existingFile?.attachments?.filePath}
+                                file={newFile ? newFile : existingFile?.attachments?.presignedUrl}
                                 // file={newFile ? newFile : existingFile}
                                 onLoadSuccess={({ numPages }) => setNumPages(numPages)}
                                 onLoadError={(error) => {
@@ -255,7 +267,7 @@ const FloorPlandEditor = () => {
                             />
                         ) : null}
 
-                        {modal.dataSet.value?.floorPlans?.floorPlanAreas?.map((area) => (
+                        {modal.dataSet.value?.floorPlans?.areas?.map((area) => (
                             <MarkerPoint
                                 key={area.id}
                                 marker={area}
@@ -269,7 +281,7 @@ const FloorPlandEditor = () => {
                                         description: area.details?.description,
                                     });
                                 }}
-                                onDragEnd={(x, y) => handleMarkerDragEnd(area.id, x, y)}
+                                onDragEnd={(x, y) => handleMarkerDragEnd(area?.id ?? "", x, y)}
                             />
                         ))}
                     </div>
