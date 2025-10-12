@@ -2,8 +2,12 @@ import { Button, Card, Pagination, Radio } from "antd";
 import type { CheckboxGroupProps } from "antd/es/checkbox";
 import { useContext, useEffect, useRef, useState } from "react";
 import { Document, Page, pdfjs } from "react-pdf";
+import { useUpdateFloorPlanWithAreas } from "../../api/hooks/useUpdateFloorPlanWithAreas";
+import { BUCKET_NAME, TEMP_ID_FORMAT } from "../../constant";
 import DrawerVisibilityContext from "../../store/context/DrawerVisibilityContext";
 import type { IFloorPlanArea } from "../../types/floorPlan";
+import customFileName from "../../utils/customFileName";
+import { supabase } from "../../utils/supabaseClient";
 import CustomActionButtons from "../CustomActionButtons";
 import FloorPlanUploader from "./FloorPlanUploader";
 import { MarkerPoint } from "./MarkerPoint";
@@ -17,14 +21,15 @@ const options: CheckboxGroupProps<string>["options"] = [
 
 const FloorPlandEditor = () => {
     const { modal } = useContext(DrawerVisibilityContext);
+    const { handleUpdateFloorPlanWithAreas } = useUpdateFloorPlanWithAreas();
     const containerRef = useRef<HTMLDivElement>(null);
     const [numPages, setNumPages] = useState<number>(1);
     const [currentPage, setCurrentPage] = useState<number>(1);
-    // const [canvasOffset, setCanvasOffset] = useState({ x: 0, y: 0 });
     const [imageUrl, setImageUrl] = useState<string | null>(null);
     const [newFile, setNewFile] = useState<File | null>(null);
     const [highlightMarkers, setHighlightMarkers] = useState(false);
     const existingFile = modal.dataSet.value?.floorPlans;
+    // const [canvasOffset, setCanvasOffset] = useState({ x: 0, y: 0 });
 
     useEffect(() => {
         if (newFile && newFile?.type.startsWith("image/")) {
@@ -100,7 +105,7 @@ const FloorPlandEditor = () => {
             const y = e.clientY - rect.top;
 
             const newMarker = {
-                id: Date.now().toString(),
+                id: `${TEMP_ID_FORMAT}${Date.now().toString()}`,
                 x,
                 y,
                 details: {
@@ -134,21 +139,37 @@ const FloorPlandEditor = () => {
                     <Button
                         type="primary"
                         onClick={async () => {
+                            if (!newFile) {
+                                return;
+                            }
+
+                            const { data, error } = await supabase.storage
+                                .from(BUCKET_NAME.documents)
+                                .upload(customFileName(newFile as any), newFile as any, {
+                                    cacheControl: "3600",
+                                    upsert: true,
+                                });
+
+                            if (error) {
+                                return;
+                            }
+
+                            const dataq = await handleUpdateFloorPlanWithAreas({
+                                floorId: modal.dataSet.value?.id,
+                                attachments: {
+                                    fileName: newFile?.name,
+                                    fileType: newFile?.type,
+                                    filePath: data?.fullPath,
+                                },
+                                areas: modal.dataSet.value?.floorPlans?.floorPlanAreas || [],
+                            });
+
+                            console.log("dataq >> ", dataq);
+
                             console.log("data >> ", modal.dataSet.value);
-                            console.log("newFile >> ", newFile);
-
-                            if (!existingFile) return;
-
-                            // const { data, error } = await supabase.storage
-                            //     .from(BUCKET_NAME.documents)
-                            //     .upload(
-                            //         customFileName(existingFile as any),
-                            //         (existingFile as any).originFileObj,
-                            //         {
-                            //             cacheControl: "3600",
-                            //             upsert: true,
-                            //         }
-                            //     );
+                            console.log("fileName >> ", newFile?.name);
+                            console.log("filePath >> ", data);
+                            console.log("fileType >> ", newFile?.type);
 
                             // console.log("modal.dataSet >> ", modal.dataSet.value);
                             // console.log("data >> ", data);
@@ -202,7 +223,7 @@ const FloorPlandEditor = () => {
                     >
                         {isPdf ? (
                             <Document
-                                file={newFile}
+                                file={newFile ? newFile : existingFile?.attachments?.filePath}
                                 // file={newFile ? newFile : existingFile}
                                 onLoadSuccess={({ numPages }) => setNumPages(numPages)}
                                 onLoadError={(error) => {

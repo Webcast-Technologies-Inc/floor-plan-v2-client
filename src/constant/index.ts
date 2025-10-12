@@ -1,6 +1,6 @@
 export const MANILA_POSITION = { lat: 14.5995, lng: 120.9842 };
 
-export const TEMP_ID_FORMAT = "element-";
+export const TEMP_ID_FORMAT = "area-";
 
 export const BUCKET_NAME = {
     documents: "documents",

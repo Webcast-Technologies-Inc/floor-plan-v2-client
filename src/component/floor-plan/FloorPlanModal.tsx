@@ -105,7 +105,6 @@ const FloorPlanModal = () => {
                 try {
                     const resp = await handleGetLandmarkById(modal.id.value);
 
-                    console.log("resp", resp);
                     if (!resp) {
                         throw new Error("Failed to get Landmark!");
                     }

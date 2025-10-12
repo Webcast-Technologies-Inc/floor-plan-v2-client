@@ -1,3 +1,9 @@
+export interface IAttachment {
+    id?: string;
+    fileName: string;
+    fileType: string;
+    filePath: string;
+}
 export interface IFloorPlanAreaDetails {
     name: string;
     description: string;
@@ -12,8 +18,8 @@ export interface IFloorPlanArea {
 
 export interface IFloorPlan {
     id?: string;
-    pathname?: string;
     floorPlanAreas?: IFloorPlanArea[];
+    attachments?: IAttachment;
 }
 
 export interface IFloor {

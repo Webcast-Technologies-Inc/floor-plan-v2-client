@@ -8,7 +8,21 @@ export const GET_FLOOR_BY_LEVEL_ID_QUERY = gql`
             name
             floorPlans {
                 id
-                pathname
+                areas {
+                    id
+                    x
+                    y
+                    details {
+                        name
+                        description
+                    }
+                }
+                attachments {
+                    id
+                    fileName
+                    fileType
+                    filePath
+                }
             }
         }
     }
