@@ -23,6 +23,7 @@ const Home = () => {
     const [originalDataSet, setOriginalDataSet] = useState<any>(null);
     const [modalDataSet, setModalDataSet] = useState<IFloor | undefined | null>(undefined);
     const [drawerDataSet, setDrawerDataSet] = useState<any>(undefined);
+    const [isShowAllMarksVisible, setIsShowAllMarksVisible] = useState(false);
 
     return (
         <>
@@ -40,6 +41,10 @@ const Home = () => {
                         selectedFloorLevelId: {
                             value: selectedFloorLevelId,
                             setValue: setSelectedFloorLevelId,
+                        },
+                        showAllMarks: {
+                            visible: isShowAllMarksVisible,
+                            setVisible: setIsShowAllMarksVisible,
                         },
                         form,
                     },

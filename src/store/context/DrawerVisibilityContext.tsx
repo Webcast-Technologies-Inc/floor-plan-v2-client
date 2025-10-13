@@ -41,6 +41,7 @@ interface DrawerContextType {
             value: string | undefined;
             setValue: React.Dispatch<React.SetStateAction<string | undefined>>;
         };
+        showAllMarks: DrawerState;
         form: FormInstance;
     };
     drawer: IModalVisibility & {
@@ -94,6 +95,10 @@ const initialState: DrawerContextType = {
         selectedFloorLevelId: {
             value: undefined,
             setValue: () => {},
+        },
+        showAllMarks: {
+            visible: false,
+            setVisible: () => {},
         },
         form: {} as FormInstance,
     },

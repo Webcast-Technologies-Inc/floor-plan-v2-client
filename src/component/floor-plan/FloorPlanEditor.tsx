@@ -1,4 +1,4 @@
-import { Button, Card, message, Modal, Radio, Skeleton } from "antd";
+import { Button, Card, message, Modal, Radio, Skeleton, Switch } from "antd";
 import type { CheckboxGroupProps } from "antd/es/checkbox";
 import { useContext, useEffect, useRef, useState } from "react";
 import { Document, Page, pdfjs } from "react-pdf";
@@ -31,7 +31,7 @@ const FloorPlandEditor = ({ loading }: { loading: boolean }) => {
     const [currentPage, setCurrentPage] = useState<number>(1);
     const [imageUrl, setImageUrl] = useState<string | null>(null);
     const [newFile, setNewFile] = useState<File | null>(null);
-    const [highlightMarkers, setHighlightMarkers] = useState(false);
+    const [highlightMarkers, setHighlightMarkers] = useState(modal.showAllMarks.visible);
     const existingFile = modal.dataSet.value?.floorPlans;
     const highlightTimeoutRef = useRef<number | null>(null);
     // const [canvasOffset, setCanvasOffset] = useState({ x: 0, y: 0 });
@@ -129,7 +129,9 @@ const FloorPlandEditor = ({ loading }: { loading: boolean }) => {
                 clearTimeout(highlightTimeoutRef.current);
             }
             highlightTimeoutRef.current = window.setTimeout(() => {
-                setHighlightMarkers(false);
+                if (!modal.showAllMarks.visible) {
+                    setHighlightMarkers(false);
+                }
             }, 2000);
         }
     };
@@ -146,6 +148,7 @@ const FloorPlandEditor = ({ loading }: { loading: boolean }) => {
             onOk: () => {
                 modal.dataSet.setValue(modal.originalDataSet.value);
                 modal.edit.setVisible(false);
+                modal.selectedArea.setValue(null);
                 modal.selectedTool.setValue("select");
                 modal.form.resetFields();
             },
@@ -215,6 +218,8 @@ const FloorPlandEditor = ({ loading }: { loading: boolean }) => {
         });
 
         drawer.refetch.setValue((prev) => !prev);
+        modal.form.resetFields();
+        modal.selectedArea.setValue(null);
         modal.originalDataSet.setValue(modal.dataSet.value);
         modal.edit.setVisible(false);
         modal.selectedTool.setValue("select");
@@ -239,6 +244,13 @@ const FloorPlandEditor = ({ loading }: { loading: boolean }) => {
                 style={{ width: "100%" }}
                 extra={
                     <div className="flex items-center gap-x-4">
+                        <Switch
+                            value={modal.showAllMarks.visible}
+                            onChange={(checked: boolean) => {
+                                modal.showAllMarks.setVisible(checked);
+                                setHighlightMarkers(checked);
+                            }}
+                        />
                         {modal.edit.visible && modal.selectedFloorLevelId.value && (
                             <>
                                 <Button onClick={onCancel}>Cancel</Button>
