@@ -1,4 +1,4 @@
-import { Button, Card, message, Modal, Pagination, Radio } from "antd";
+import { Button, Card, message, Modal, Radio } from "antd";
 import type { CheckboxGroupProps } from "antd/es/checkbox";
 import { useContext, useEffect, useRef, useState } from "react";
 import { Document, Page, pdfjs } from "react-pdf";
@@ -178,7 +178,7 @@ const FloorPlandEditor = () => {
 
         const resp = await handleUpdateFloorPlanWithAreas({
             floorId: modal.dataSet.value?.id,
-            id: modal.id.value,
+            id: modal.dataSet.value?.floorPlans?.id,
             attachments: {
                 id: newFile ? null : modal.dataSet.value?.floorPlans?.attachments?.id,
                 fileName: newFile
@@ -255,24 +255,26 @@ const FloorPlandEditor = () => {
                     <FloorPlanUploader onFileUpload={(file) => setNewFile(file)} />
                 ) : (
                     <div className="!space-y-4">
-                        <div className="flex justify-between items-center !p-6 rounded-lg bg-gray-100">
-                            <Radio.Group
-                                block
-                                options={options}
-                                defaultValue="select"
-                                optionType="button"
-                                buttonStyle="solid"
-                                onChange={(e) => modal.selectedTool.setValue(e.target.value)}
-                                value={modal.selectedTool.value}
-                            />
-                            <Pagination
-                                simple
-                                current={currentPage}
-                                total={numPages} // total items
-                                pageSize={1} // 1 item per page
-                                onChange={(page) => setCurrentPage(page)}
-                            />
-                        </div>
+                        {modal.edit.visible && (
+                            <div className="flex justify-between items-center !p-6 rounded-lg bg-gray-100">
+                                <Radio.Group
+                                    block
+                                    options={options}
+                                    defaultValue="select"
+                                    optionType="button"
+                                    buttonStyle="solid"
+                                    onChange={(e) => modal.selectedTool.setValue(e.target.value)}
+                                    value={modal.selectedTool.value}
+                                />
+                                {/* <Pagination
+                                    simple
+                                    current={currentPage}
+                                    total={numPages} // total items
+                                    pageSize={1} // 1 item per page
+                                    onChange={(page) => setCurrentPage(page)}
+                                /> */}
+                            </div>
+                        )}
                         <div
                             ref={containerRef}
                             className="relative !bg-gray-100 rounded-lg border-2 border-border shadow-lg min-h-[600px] overflow-auto"
@@ -286,7 +288,9 @@ const FloorPlandEditor = () => {
                             {isPdf ? (
                                 <Document
                                     file={
-                                        newFile ? newFile : existingFile?.attachments?.presignedUrl
+                                        newFile
+                                            ? newFile
+                                            : existingFile?.attachments?.presignedUrl ?? null
                                     }
                                     // file={newFile ? newFile : existingFile}
                                     onLoadSuccess={({ numPages }) => setNumPages(numPages)}
@@ -303,9 +307,13 @@ const FloorPlandEditor = () => {
                                         className="max-w-full !bg-gray-100"
                                     />
                                 </Document>
-                            ) : imageUrl ? (
+                            ) : (
                                 <img
-                                    src={imageUrl}
+                                    src={
+                                        imageUrl ??
+                                        existingFile?.attachments?.presignedUrl ??
+                                        undefined
+                                    }
                                     alt="Floor plan"
                                     style={{
                                         width: "auto",
@@ -317,7 +325,7 @@ const FloorPlandEditor = () => {
                                     }}
                                     draggable={false}
                                 />
-                            ) : null}
+                            )}
 
                             {modal.dataSet.value?.floorPlans?.areas?.map((area) => (
                                 <MarkerPoint

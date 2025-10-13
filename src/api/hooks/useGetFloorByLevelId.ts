@@ -3,8 +3,7 @@ import { useCallback } from "react";
 import { GET_FLOOR_BY_LEVEL_ID_QUERY } from "../queries/getFloorByLevelId";
 
 interface IGetFloorByLevelIdInput {
-    landmarkId: string;
-    levelId: string;
+    floorId: string;
 }
 
 export const useGetFloorByLevelId = () => {

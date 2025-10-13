@@ -120,8 +120,7 @@ const FloorPlanModal = () => {
                         modal.selectedFloorLevelId.setValue(options[0].value);
 
                         const resp = await handleGetFloorByLevelId({
-                            landmarkId: modal.id.value,
-                            levelId: options[0].value,
+                            floorId: options[0].value,
                         });
 
                         if (!resp) {
@@ -159,8 +158,7 @@ const FloorPlanModal = () => {
 
             if (modal.id.value) {
                 const resp = await handleGetFloorByLevelId({
-                    landmarkId: modal.id.value,
-                    levelId: val,
+                    floorId: val,
                 });
 
                 if (resp) {
