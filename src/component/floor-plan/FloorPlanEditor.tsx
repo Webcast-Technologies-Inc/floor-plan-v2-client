@@ -1,4 +1,4 @@
-import { Button, Card, message, Modal, Radio, Skeleton, Switch } from "antd";
+import { Button, Card, Empty, message, Modal, Radio, Skeleton, Spin, Switch } from "antd";
 import type { CheckboxGroupProps } from "antd/es/checkbox";
 import { useContext, useEffect, useRef, useState } from "react";
 import { Document, Page, pdfjs } from "react-pdf";
@@ -34,6 +34,7 @@ const FloorPlandEditor = ({ loading }: { loading: boolean }) => {
     const [highlightMarkers, setHighlightMarkers] = useState(modal.showAllMarks.visible);
     const existingFile = modal.dataSet.value?.floorPlans;
     const highlightTimeoutRef = useRef<number | null>(null);
+    const [loadingSave, setLoadingSave] = useState(false);
     // const [canvasOffset, setCanvasOffset] = useState({ x: 0, y: 0 });
 
     useEffect(() => {
@@ -161,6 +162,8 @@ const FloorPlandEditor = ({ loading }: { loading: boolean }) => {
             return;
         }
 
+        setLoadingSave(true);
+
         let uploadedFile: any;
         if (newFile) {
             const { data, error } = await supabase.storage
@@ -190,7 +193,7 @@ const FloorPlandEditor = ({ loading }: { loading: boolean }) => {
             floorId: modal.dataSet.value?.id,
             id: modal.dataSet.value?.floorPlans?.id,
             attachments: {
-                id: newFile ? null : modal.dataSet.value?.floorPlans?.attachments?.id,
+                id: modal.dataSet.value?.floorPlans?.attachments?.id || null,
                 fileName: newFile
                     ? newFile?.name
                     : modal.dataSet.value?.floorPlans?.attachments?.fileName || "",
@@ -223,6 +226,7 @@ const FloorPlandEditor = ({ loading }: { loading: boolean }) => {
         modal.originalDataSet.setValue(modal.dataSet.value);
         modal.edit.setVisible(false);
         modal.selectedTool.setValue("select");
+        setLoadingSave(false);
     };
 
     // const isPdf = newFile?.type === "application/pdf";
@@ -244,21 +248,20 @@ const FloorPlandEditor = ({ loading }: { loading: boolean }) => {
                 style={{ width: "100%" }}
                 extra={
                     <div className="flex items-center gap-x-4">
-                        <Switch
-                            value={modal.showAllMarks.visible}
-                            onChange={(checked: boolean) => {
-                                modal.showAllMarks.setVisible(checked);
-                                setHighlightMarkers(checked);
-                            }}
-                        />
+                        {(modal.view.visible || modal.edit.visible) &&
+                            modal.selectedFloorLevelId.value && (
+                                <Switch
+                                    value={modal.showAllMarks.visible}
+                                    onChange={(checked: boolean) => {
+                                        modal.showAllMarks.setVisible(checked);
+                                        setHighlightMarkers(checked);
+                                    }}
+                                />
+                            )}
                         {modal.edit.visible && modal.selectedFloorLevelId.value && (
                             <>
                                 <Button onClick={onCancel}>Cancel</Button>
-                                <Button
-                                    type="primary"
-                                    onClick={onSave}
-                                    loading={loadingUpdateFloorPlanWithAreas}
-                                >
+                                <Button type="primary" onClick={onSave} loading={loadingSave}>
                                     Save
                                 </Button>
                             </>
@@ -277,115 +280,118 @@ const FloorPlandEditor = ({ loading }: { loading: boolean }) => {
                 }
                 loading={loading}
             >
-                {!existingFile && !newFile ? (
-                    <FloorPlanUploader onFileUpload={(file) => setNewFile(file)} />
-                ) : (
-                    <div className="!space-y-4">
-                        {modal.edit.visible && (
-                            <div className="flex justify-between items-center !p-6 rounded-lg bg-gray-100">
-                                <Radio.Group
-                                    block
-                                    options={options}
-                                    defaultValue="select"
-                                    optionType="button"
-                                    buttonStyle="solid"
-                                    onChange={(e) => modal.selectedTool.setValue(e.target.value)}
-                                    value={modal.selectedTool.value}
-                                />
-                                {/* <Pagination
+                <div className="!space-y-4">
+                    {modal.edit.visible && (
+                        <div className="flex justify-between items-center !p-6 rounded-lg bg-gray-100">
+                            <Radio.Group
+                                block
+                                options={options}
+                                defaultValue="select"
+                                optionType="button"
+                                buttonStyle="solid"
+                                onChange={(e) => modal.selectedTool.setValue(e.target.value)}
+                                value={modal.selectedTool.value}
+                            />
+                            <FloorPlanUploader onFileUpload={(file) => setNewFile(file)} />
+                            {/* <Pagination
                                     simple
                                     current={currentPage}
                                     total={numPages} // total items
                                     pageSize={1} // 1 item per page
                                     onChange={(page) => setCurrentPage(page)}
                                 /> */}
-                            </div>
-                        )}
-                        <div className="flex justify-center !bg-gray-100 rounded-lg border-2 border-border shadow-lg min-h-[600px]">
-                            <div
-                                ref={containerRef}
-                                className="relative overflow-auto"
-                                onClick={handleCanvasClick}
-                                style={{
-                                    cursor:
-                                        modal.selectedTool.value === "mark"
-                                            ? "crosshair"
-                                            : "default",
-                                    overflow: "auto",
-                                }}
-                            >
-                                {isPdf ? (
-                                    <Document
-                                        key={
-                                            newFile
-                                                ? newFile.name
-                                                : existingFile?.attachments?.filePath
-                                        }
-                                        file={
-                                            newFile
-                                                ? newFile
-                                                : existingFile?.attachments?.presignedUrl ?? ""
-                                        }
-                                        // file={newFile ? newFile : existingFile}
-                                        onLoadSuccess={({ numPages }) => setNumPages(numPages)}
-                                        onLoadError={(error) => {
-                                            console.error("PDF load error:", error);
-                                            // toast.error("Failed to load PDF");
-                                        }}
-                                        className="block"
-                                    >
-                                        <Page
-                                            pageNumber={currentPage}
-                                            renderTextLayer={false}
-                                            renderAnnotationLayer={false}
-                                            className="max-w-full !bg-gray-100"
+                        </div>
+                    )}
+                    <div className="flex justify-center items-center !bg-gray-100 rounded-lg border-2 border-border shadow-lg min-h-[600px]">
+                        <div
+                            ref={containerRef}
+                            className="relative overflow-auto"
+                            onClick={handleCanvasClick}
+                            style={{
+                                cursor:
+                                    modal.selectedTool.value === "mark" ? "crosshair" : "default",
+                            }}
+                        >
+                            {!newFile && !existingFile?.attachments?.filePath ? (
+                                <Empty image={Empty.PRESENTED_IMAGE_SIMPLE} />
+                            ) : (
+                                <>
+                                    {isPdf ? (
+                                        <Document
+                                            key={
+                                                newFile
+                                                    ? newFile.name
+                                                    : existingFile?.attachments?.filePath
+                                            }
+                                            loading={
+                                                <div className="flex justify-center items-center h-[500px]">
+                                                    <Spin />
+                                                </div>
+                                            }
+                                            file={
+                                                newFile
+                                                    ? newFile
+                                                    : existingFile?.attachments?.presignedUrl ?? ""
+                                            }
+                                            onLoadSuccess={({ numPages }) => setNumPages(numPages)}
+                                            onLoadError={(error) => {
+                                                console.error("PDF load error:", error);
+                                            }}
+                                            className="block"
+                                        >
+                                            <Page
+                                                pageNumber={currentPage}
+                                                renderTextLayer={false}
+                                                renderAnnotationLayer={false}
+                                                className="max-w-full !bg-gray-100"
+                                            />
+                                        </Document>
+                                    ) : (
+                                        <img
+                                            src={
+                                                newFile
+                                                    ? imageUrl || undefined
+                                                    : existingFile?.attachments?.presignedUrl ||
+                                                      undefined
+                                            }
+                                            alt="Floor plan"
+                                            style={{
+                                                width: "auto",
+                                                height: "auto",
+                                                display: "block",
+                                                maxWidth: "none",
+                                                maxHeight: "none",
+                                                flexShrink: 0,
+                                            }}
+                                            draggable={false}
                                         />
-                                    </Document>
-                                ) : (
-                                    <img
-                                        src={
-                                            newFile
-                                                ? imageUrl || undefined
-                                                : existingFile?.attachments?.presignedUrl ||
-                                                  undefined
-                                        }
-                                        alt="Floor plan"
-                                        style={{
-                                            width: "auto",
-                                            height: "auto",
-                                            display: "block",
-                                            maxWidth: "none",
-                                            maxHeight: "none",
-                                            flexShrink: 0,
-                                        }}
-                                        draggable={false}
-                                    />
-                                )}
+                                    )}
 
-                                {modal.dataSet.value?.floorPlans?.areas?.map((area) => (
-                                    <MarkerPoint
-                                        key={area.id}
-                                        marker={area}
-                                        isSelected={modal.selectedArea.value?.id === area.id}
-                                        selectedTool={modal.selectedTool.value}
-                                        isHighlighted={highlightMarkers}
-                                        onClick={() => {
-                                            modal.selectedArea.setValue(area);
-                                            modal.form.setFieldsValue({
-                                                name: area.details?.name,
-                                                description: area.details?.description,
-                                            });
-                                        }}
-                                        onDragEnd={(x, y) =>
-                                            handleMarkerDragEnd(area?.id ?? "", x, y)
-                                        }
-                                        isEditable={modal.edit.visible}
-                                    />
-                                ))}
-                            </div>
+                                    {modal.dataSet.value?.floorPlans?.areas?.map((area) => (
+                                        <MarkerPoint
+                                            key={area.id}
+                                            marker={area}
+                                            isSelected={modal.selectedArea.value?.id === area.id}
+                                            selectedTool={modal.selectedTool.value}
+                                            isHighlighted={highlightMarkers}
+                                            onClick={() => {
+                                                modal.selectedArea.setValue(area);
+                                                modal.form.setFieldsValue({
+                                                    name: area.details?.name,
+                                                    description: area.details?.description,
+                                                });
+                                            }}
+                                            onDragEnd={(x, y) =>
+                                                handleMarkerDragEnd(area?.id ?? "", x, y)
+                                            }
+                                            isEditable={modal.edit.visible}
+                                        />
+                                    ))}
+                                </>
+                            )}
                         </div>
                     </div>
-                )}
+                </div>
             </Card>
         </>
     );

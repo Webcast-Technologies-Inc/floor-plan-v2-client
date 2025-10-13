@@ -1,6 +1,5 @@
-import { InboxOutlined } from "@ant-design/icons";
-import { type UploadProps } from "antd";
-import Dragger from "antd/es/upload/Dragger";
+import { UploadOutlined } from "@ant-design/icons";
+import { Button, Upload, type UploadProps } from "antd";
 
 interface FloorPlanUploaderProps {
     onFileUpload: (file: File) => void;
@@ -15,18 +14,13 @@ const FloorPlanUploader = ({ onFileUpload }: FloorPlanUploaderProps) => {
 
             return false;
         },
+        showUploadList: false,
     };
 
     return (
-        <Dragger {...props}>
-            <p className="ant-upload-drag-icon">
-                <InboxOutlined />
-            </p>
-            <p className="ant-upload-text">
-                Drag and drop your floor plan image or PDF here or click to browse
-            </p>
-            <p className="ant-upload-hint">Supports: JPG, PNG, PDF</p>
-        </Dragger>
+        <Upload {...props}>
+            <Button icon={<UploadOutlined />}>Click to Upload</Button>
+        </Upload>
     );
 };
 export default FloorPlanUploader;
