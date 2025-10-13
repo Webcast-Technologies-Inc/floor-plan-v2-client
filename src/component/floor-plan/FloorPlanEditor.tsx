@@ -301,79 +301,88 @@ const FloorPlandEditor = ({ loading }: { loading: boolean }) => {
                                 /> */}
                             </div>
                         )}
-                        <div
-                            ref={containerRef}
-                            className="relative !bg-gray-100 rounded-lg border-2 border-border shadow-lg min-h-[600px] overflow-auto"
-                            onClick={handleCanvasClick}
-                            style={{
-                                cursor:
-                                    modal.selectedTool.value === "mark" ? "crosshair" : "default",
-                                overflow: "auto",
-                            }}
-                        >
-                            {isPdf ? (
-                                <Document
-                                    key={
-                                        newFile ? newFile.name : existingFile?.attachments?.filePath
-                                    }
-                                    file={
-                                        newFile
-                                            ? newFile
-                                            : existingFile?.attachments?.presignedUrl ?? ""
-                                    }
-                                    // file={newFile ? newFile : existingFile}
-                                    onLoadSuccess={({ numPages }) => setNumPages(numPages)}
-                                    onLoadError={(error) => {
-                                        console.error("PDF load error:", error);
-                                        // toast.error("Failed to load PDF");
-                                    }}
-                                    className="block"
-                                >
-                                    <Page
-                                        pageNumber={currentPage}
-                                        renderTextLayer={false}
-                                        renderAnnotationLayer={false}
-                                        className="max-w-full !bg-gray-100"
+                        <div className="flex justify-center !bg-gray-100 rounded-lg border-2 border-border shadow-lg min-h-[600px]">
+                            <div
+                                ref={containerRef}
+                                className="relative overflow-auto"
+                                onClick={handleCanvasClick}
+                                style={{
+                                    cursor:
+                                        modal.selectedTool.value === "mark"
+                                            ? "crosshair"
+                                            : "default",
+                                    overflow: "auto",
+                                }}
+                            >
+                                {isPdf ? (
+                                    <Document
+                                        key={
+                                            newFile
+                                                ? newFile.name
+                                                : existingFile?.attachments?.filePath
+                                        }
+                                        file={
+                                            newFile
+                                                ? newFile
+                                                : existingFile?.attachments?.presignedUrl ?? ""
+                                        }
+                                        // file={newFile ? newFile : existingFile}
+                                        onLoadSuccess={({ numPages }) => setNumPages(numPages)}
+                                        onLoadError={(error) => {
+                                            console.error("PDF load error:", error);
+                                            // toast.error("Failed to load PDF");
+                                        }}
+                                        className="block"
+                                    >
+                                        <Page
+                                            pageNumber={currentPage}
+                                            renderTextLayer={false}
+                                            renderAnnotationLayer={false}
+                                            className="max-w-full !bg-gray-100"
+                                        />
+                                    </Document>
+                                ) : (
+                                    <img
+                                        src={
+                                            newFile
+                                                ? imageUrl || undefined
+                                                : existingFile?.attachments?.presignedUrl ||
+                                                  undefined
+                                        }
+                                        alt="Floor plan"
+                                        style={{
+                                            width: "auto",
+                                            height: "auto",
+                                            display: "block",
+                                            maxWidth: "none",
+                                            maxHeight: "none",
+                                            flexShrink: 0,
+                                        }}
+                                        draggable={false}
                                     />
-                                </Document>
-                            ) : (
-                                <img
-                                    src={
-                                        newFile
-                                            ? imageUrl || undefined
-                                            : existingFile?.attachments?.presignedUrl || undefined
-                                    }
-                                    alt="Floor plan"
-                                    style={{
-                                        width: "auto",
-                                        height: "auto",
-                                        display: "block",
-                                        maxWidth: "none",
-                                        maxHeight: "none",
-                                        flexShrink: 0,
-                                    }}
-                                    draggable={false}
-                                />
-                            )}
+                                )}
 
-                            {modal.dataSet.value?.floorPlans?.areas?.map((area) => (
-                                <MarkerPoint
-                                    key={area.id}
-                                    marker={area}
-                                    isSelected={modal.selectedArea.value?.id === area.id}
-                                    selectedTool={modal.selectedTool.value}
-                                    isHighlighted={highlightMarkers}
-                                    onClick={() => {
-                                        modal.selectedArea.setValue(area);
-                                        modal.form.setFieldsValue({
-                                            name: area.details?.name,
-                                            description: area.details?.description,
-                                        });
-                                    }}
-                                    onDragEnd={(x, y) => handleMarkerDragEnd(area?.id ?? "", x, y)}
-                                    isEditable={modal.edit.visible}
-                                />
-                            ))}
+                                {modal.dataSet.value?.floorPlans?.areas?.map((area) => (
+                                    <MarkerPoint
+                                        key={area.id}
+                                        marker={area}
+                                        isSelected={modal.selectedArea.value?.id === area.id}
+                                        selectedTool={modal.selectedTool.value}
+                                        isHighlighted={highlightMarkers}
+                                        onClick={() => {
+                                            modal.selectedArea.setValue(area);
+                                            modal.form.setFieldsValue({
+                                                name: area.details?.name,
+                                                description: area.details?.description,
+                                            });
+                                        }}
+                                        onDragEnd={(x, y) =>
+                                            handleMarkerDragEnd(area?.id ?? "", x, y)
+                                        }
+                                        isEditable={modal.edit.visible}
+                                    />
+                                ))}
+                            </div>
                         </div>
                     </div>
                 )}
