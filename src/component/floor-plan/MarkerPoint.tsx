@@ -10,6 +10,7 @@ interface MarkerPointProps {
     onClick: () => void;
     onDragEnd: (x: number, y: number) => void;
     isEditable: boolean;
+    containerRef: React.RefObject<HTMLDivElement | null>;
 }
 
 export const MarkerPoint = ({
@@ -20,6 +21,7 @@ export const MarkerPoint = ({
     onClick,
     onDragEnd,
     isEditable,
+    containerRef,
 }: MarkerPointProps) => {
     const [isDragging, setIsDragging] = useState(false);
     const [position, setPosition] = useState({ x: marker.x, y: marker.y });
@@ -56,10 +58,22 @@ export const MarkerPoint = ({
 
             const deltaX = e.clientX - initialMousePos.current.x;
             const deltaY = e.clientY - initialMousePos.current.y;
-            setPosition({
-                x: initialMarkerPos.current.x + deltaX,
-                y: initialMarkerPos.current.y + deltaY,
-            });
+
+            let newX = initialMarkerPos.current.x + deltaX;
+            let newY = initialMarkerPos.current.y + deltaY;
+
+            const container = containerRef.current;
+            const markerSize = 24; // Approximate size of the pin icon
+
+            if (container) {
+                const bounds = container.getBoundingClientRect();
+
+                // Clamp within container bounds
+                newX = Math.max(markerSize / 2, Math.min(newX, bounds.width - markerSize / 2));
+                newY = Math.max(markerSize, Math.min(newY, bounds.height));
+            }
+
+            setPosition({ x: newX, y: newY });
         };
 
         const handleMouseUp = () => {

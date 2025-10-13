@@ -104,8 +104,15 @@ const FloorPlandEditor = ({ loading }: { loading: boolean }) => {
         if (!rect) return;
 
         if (modal.selectedTool.value === "mark") {
-            const x = e.clientX - rect.left;
-            const y = e.clientY - rect.top;
+            const markerSize = 24; // approximate size of your marker icon
+
+            // Get click position relative to container
+            let x = e.clientX - rect.left;
+            let y = e.clientY - rect.top;
+
+            // Clamp to container bounds
+            x = Math.max(markerSize / 2, Math.min(x, rect.width - markerSize / 2));
+            y = Math.max(markerSize, Math.min(y, rect.height));
 
             const newMarker = {
                 id: `${TEMP_ID_FORMAT}${Date.now().toString()}`,
@@ -164,69 +171,69 @@ const FloorPlandEditor = ({ loading }: { loading: boolean }) => {
 
         setLoadingSave(true);
 
-        let uploadedFile: any;
-        if (newFile) {
-            const { data, error } = await supabase.storage
-                .from(BUCKET_NAME.documents)
-                .upload(customFileName(newFile as any), newFile as any, {
-                    cacheControl: "3600",
-                    upsert: true,
-                });
+        try {
+            let uploadedFile: any;
+            if (newFile) {
+                const { data, error } = await supabase.storage
+                    .from(BUCKET_NAME.documents)
+                    .upload(customFileName(newFile as any), newFile as any, {
+                        cacheControl: "3600",
+                        upsert: true,
+                    });
 
-            if (error) {
-                return;
+                if (error) {
+                    return;
+                }
+
+                uploadedFile = data;
             }
 
-            uploadedFile = data;
-        }
+            const removeTempIdAreas = modal.dataSet.value?.floorPlans?.areas?.map((area) => {
+                const isTempId = typeof area.id === "string" && area.id.startsWith(TEMP_ID_FORMAT);
 
-        const removeTempIdAreas = modal.dataSet.value?.floorPlans?.areas?.map((area) => {
-            const isTempId = typeof area.id === "string" && area.id.startsWith(TEMP_ID_FORMAT);
+                return {
+                    ...area,
+                    id: isTempId ? undefined : area.id,
+                };
+            });
 
-            return {
-                ...area,
-                id: isTempId ? undefined : area.id,
-            };
-        });
+            await handleUpdateFloorPlanWithAreas({
+                floorId: modal.dataSet.value?.id,
+                id: modal.dataSet.value?.floorPlans?.id,
+                attachments: {
+                    id: modal.dataSet.value?.floorPlans?.attachments?.id || null,
+                    fileName: newFile
+                        ? newFile?.name
+                        : modal.dataSet.value?.floorPlans?.attachments?.fileName || "",
+                    fileType: newFile
+                        ? newFile?.type
+                        : modal.dataSet.value?.floorPlans?.attachments?.fileType || "",
+                    filePath: newFile
+                        ? uploadedFile?.fullPath
+                        : modal.dataSet.value?.floorPlans?.attachments?.filePath,
+                },
+                areas: removeTypename(removeTempIdAreas) || [],
+            });
 
-        const resp = await handleUpdateFloorPlanWithAreas({
-            floorId: modal.dataSet.value?.id,
-            id: modal.dataSet.value?.floorPlans?.id,
-            attachments: {
-                id: modal.dataSet.value?.floorPlans?.attachments?.id || null,
-                fileName: newFile
-                    ? newFile?.name
-                    : modal.dataSet.value?.floorPlans?.attachments?.fileName || "",
-                fileType: newFile
-                    ? newFile?.type
-                    : modal.dataSet.value?.floorPlans?.attachments?.fileType || "",
-                filePath: newFile
-                    ? uploadedFile?.fullPath
-                    : modal.dataSet.value?.floorPlans?.attachments?.filePath,
-            },
-            areas: removeTypename(removeTempIdAreas) || [],
-        });
+            messageApi.open({
+                type: "success",
+                content: "Floor plan update successfully!",
+            });
 
-        if (!resp) {
+            drawer.refetch.setValue((prev) => !prev);
+            modal.form.resetFields();
+            modal.selectedArea.setValue(null);
+            modal.originalDataSet.setValue(modal.dataSet.value);
+            modal.edit.setVisible(false);
+            modal.selectedTool.setValue("select");
+        } catch (err) {
             messageApi.open({
                 type: "error",
-                content: "Failed to update Floor Plan!",
+                content: err instanceof Error ? err.message : String(err),
             });
-            return;
+        } finally {
+            setLoadingSave(false);
         }
-
-        messageApi.open({
-            type: "success",
-            content: "Floor plan update successfully!",
-        });
-
-        drawer.refetch.setValue((prev) => !prev);
-        modal.form.resetFields();
-        modal.selectedArea.setValue(null);
-        modal.originalDataSet.setValue(modal.dataSet.value);
-        modal.edit.setVisible(false);
-        modal.selectedTool.setValue("select");
-        setLoadingSave(false);
     };
 
     // const isPdf = newFile?.type === "application/pdf";
@@ -385,6 +392,7 @@ const FloorPlandEditor = ({ loading }: { loading: boolean }) => {
                                                 handleMarkerDragEnd(area?.id ?? "", x, y)
                                             }
                                             isEditable={modal.edit.visible}
+                                            containerRef={containerRef}
                                         />
                                     ))}
                                 </>
