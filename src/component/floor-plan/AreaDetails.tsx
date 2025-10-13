@@ -5,7 +5,7 @@ import DrawerVisibilityContext from "../../store/context/DrawerVisibilityContext
 import type { IFloorPlanArea } from "../../types/floorPlan";
 import CustomActionButtons from "../CustomActionButtons";
 
-const AreaDetails = () => {
+const AreaDetails = ({ loading }: { loading: boolean }) => {
     const { modal } = useContext(DrawerVisibilityContext);
 
     const onChange = (
@@ -59,7 +59,13 @@ const AreaDetails = () => {
     return (
         <Card
             title="Details"
-            extra={<CustomActionButtons actions={["delete"]} handleDelete={handleDelete} />}
+            extra={
+                <CustomActionButtons
+                    actions={modal.edit.visible && modal.selectedArea.value ? ["delete"] : []}
+                    handleDelete={handleDelete}
+                />
+            }
+            loading={loading}
         >
             <Form form={modal.form} layout="vertical" autoComplete="off">
                 <Form.Item label="Name" name="name">

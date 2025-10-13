@@ -5,7 +5,7 @@ import {
     EditOutlined,
     PlusOutlined,
 } from "@ant-design/icons";
-import { Button, Col, Dropdown, message, Modal, Row, Select, Spin, type MenuProps } from "antd";
+import { Button, Col, Dropdown, message, Modal, Row, Select, type MenuProps } from "antd";
 import { useCallback, useContext, useEffect, useState } from "react";
 import { useDeleteFloor } from "../../api/hooks/useDeleteFloor";
 import { useGetFloorByLevelId } from "../../api/hooks/useGetFloorByLevelId";
@@ -28,6 +28,7 @@ const FloorPlanModal = () => {
     const { handleDeleteFloor } = useDeleteFloor();
     const { modal, drawer } = useContext(DrawerVisibilityContext);
     const [floorOptions, setFloorOptions] = useState<FloorOption[]>([]);
+    const [modalLoading, setModalLoading] = useState(false);
     const loading = loadingGetLandmarkById || loadingGetFloorByLevelId;
 
     const items: MenuProps["items"] = [
@@ -101,6 +102,7 @@ const FloorPlanModal = () => {
 
     useEffect(() => {
         const fetch = async () => {
+            setModalLoading(true);
             if (modal.id.value && modal.view.visible) {
                 try {
                     const resp = await handleGetLandmarkById(modal.id.value);
@@ -138,6 +140,8 @@ const FloorPlanModal = () => {
                         type: "error",
                         content: "Failed to get Landmark!",
                     });
+                } finally {
+                    setModalLoading(false);
                 }
             }
         };
@@ -214,54 +218,40 @@ const FloorPlanModal = () => {
                 onCancel={onClose}
                 footer={null}
                 destroyOnHidden // force re-mount to reset the states
+                loading={modalLoading}
             >
-                {loading && (
-                    <div
-                        style={{
-                            display: "flex",
-                            justifyContent: "center",
-                            alignItems: "center",
-                            minHeight: "400px",
-                        }}
-                    >
-                        <Spin />
-                    </div>
-                )}
-
-                {!loading && (
-                    <Row gutter={16}>
-                        <Col span={17}>
-                            <FloorPlandEditor />
-                        </Col>
-                        <Col span={7}>
-                            <div className="!space-y-4">
-                                <div className="flex gap-x-4">
-                                    <Select
-                                        placeholder="Select Floor Level"
-                                        style={{ width: 160 }}
-                                        value={modal.selectedFloorLevelId.value}
-                                        onChange={onChangeSelect}
-                                        options={floorOptions}
-                                    />
-                                    <Dropdown
-                                        menu={{
-                                            items: modal.selectedFloorLevelId.value
-                                                ? items
-                                                : items.filter((item) => item?.key === "add"),
-                                        }}
-                                        placement="bottom"
-                                    >
-                                        <Button type="primary">
-                                            Floor Actions
-                                            <DownOutlined />
-                                        </Button>
-                                    </Dropdown>
-                                </div>
-                                <AreaDetails />
+                <Row gutter={16}>
+                    <Col span={17}>
+                        <FloorPlandEditor loading={loading} />
+                    </Col>
+                    <Col span={7}>
+                        <div className="!space-y-4">
+                            <div className="flex gap-x-4">
+                                <Select
+                                    placeholder="Select Floor Level"
+                                    style={{ width: 160 }}
+                                    value={modal.selectedFloorLevelId.value}
+                                    onChange={onChangeSelect}
+                                    options={floorOptions}
+                                />
+                                <Dropdown
+                                    menu={{
+                                        items: modal.selectedFloorLevelId.value
+                                            ? items
+                                            : items.filter((item) => item?.key === "add"),
+                                    }}
+                                    placement="bottom"
+                                >
+                                    <Button type="primary">
+                                        Floor Actions
+                                        <DownOutlined />
+                                    </Button>
+                                </Dropdown>
                             </div>
-                        </Col>
-                    </Row>
-                )}
+                            <AreaDetails loading={loading} />
+                        </div>
+                    </Col>
+                </Row>
             </Modal>
         </>
     );

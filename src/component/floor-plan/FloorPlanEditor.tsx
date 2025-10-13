@@ -1,4 +1,4 @@
-import { Button, Card, message, Modal, Radio } from "antd";
+import { Button, Card, message, Modal, Radio, Skeleton } from "antd";
 import type { CheckboxGroupProps } from "antd/es/checkbox";
 import { useContext, useEffect, useRef, useState } from "react";
 import { Document, Page, pdfjs } from "react-pdf";
@@ -20,7 +20,7 @@ const options: CheckboxGroupProps<string>["options"] = [
     { label: "Marker", value: "mark" },
 ];
 
-const FloorPlandEditor = () => {
+const FloorPlandEditor = ({ loading }: { loading: boolean }) => {
     const [messageApi, contextHolderMessage] = message.useMessage();
     const [modalAntd, contextHolderModal] = Modal.useModal();
     const { modal, drawer } = useContext(DrawerVisibilityContext);
@@ -228,7 +228,13 @@ const FloorPlandEditor = () => {
             {contextHolderModal}
             {contextHolderMessage}
             <Card
-                title={modal.dataSet.value?.name ?? ""}
+                title={
+                    loading ? (
+                        <Skeleton.Input active size="small" style={{ width: 200 }} />
+                    ) : (
+                        modal.dataSet.value?.name ?? ""
+                    )
+                }
                 variant="outlined"
                 style={{ width: "100%" }}
                 extra={
@@ -257,6 +263,7 @@ const FloorPlandEditor = () => {
                         />
                     </div>
                 }
+                loading={loading}
             >
                 {!existingFile && !newFile ? (
                     <FloorPlanUploader onFileUpload={(file) => setNewFile(file)} />
@@ -294,10 +301,13 @@ const FloorPlandEditor = () => {
                         >
                             {isPdf ? (
                                 <Document
+                                    key={
+                                        newFile ? newFile.name : existingFile?.attachments?.filePath
+                                    }
                                     file={
                                         newFile
                                             ? newFile
-                                            : existingFile?.attachments?.presignedUrl ?? null
+                                            : existingFile?.attachments?.presignedUrl ?? ""
                                     }
                                     // file={newFile ? newFile : existingFile}
                                     onLoadSuccess={({ numPages }) => setNumPages(numPages)}
@@ -317,9 +327,9 @@ const FloorPlandEditor = () => {
                             ) : (
                                 <img
                                     src={
-                                        imageUrl ??
-                                        existingFile?.attachments?.presignedUrl ??
-                                        undefined
+                                        newFile
+                                            ? imageUrl || undefined
+                                            : existingFile?.attachments?.presignedUrl || undefined
                                     }
                                     alt="Floor plan"
                                     style={{
