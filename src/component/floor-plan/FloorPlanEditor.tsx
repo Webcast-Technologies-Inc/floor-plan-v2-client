@@ -33,6 +33,7 @@ const FloorPlandEditor = () => {
     const [newFile, setNewFile] = useState<File | null>(null);
     const [highlightMarkers, setHighlightMarkers] = useState(false);
     const existingFile = modal.dataSet.value?.floorPlans;
+    const highlightTimeoutRef = useRef<number | null>(null);
     // const [canvasOffset, setCanvasOffset] = useState({ x: 0, y: 0 });
 
     useEffect(() => {
@@ -123,7 +124,13 @@ const FloorPlandEditor = () => {
             setHighlightMarkers(true);
             modal.selectedArea.setValue(null);
             modal.form.resetFields();
-            setTimeout(() => setHighlightMarkers(false), 2000);
+
+            if (highlightTimeoutRef.current) {
+                clearTimeout(highlightTimeoutRef.current);
+            }
+            highlightTimeoutRef.current = window.setTimeout(() => {
+                setHighlightMarkers(false);
+            }, 2000);
         }
     };
 
@@ -342,6 +349,7 @@ const FloorPlandEditor = () => {
                                         });
                                     }}
                                     onDragEnd={(x, y) => handleMarkerDragEnd(area?.id ?? "", x, y)}
+                                    isEditable={modal.edit.visible}
                                 />
                             ))}
                         </div>

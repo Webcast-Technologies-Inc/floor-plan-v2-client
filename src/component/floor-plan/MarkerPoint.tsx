@@ -9,6 +9,7 @@ interface MarkerPointProps {
     isHighlighted: boolean;
     onClick: () => void;
     onDragEnd: (x: number, y: number) => void;
+    isEditable: boolean;
 }
 
 export const MarkerPoint = ({
@@ -18,6 +19,7 @@ export const MarkerPoint = ({
     isHighlighted,
     onClick,
     onDragEnd,
+    isEditable,
 }: MarkerPointProps) => {
     const [isDragging, setIsDragging] = useState(false);
     const [position, setPosition] = useState({ x: marker.x, y: marker.y });
@@ -32,6 +34,7 @@ export const MarkerPoint = ({
 
     const handleMouseDown = (e: React.MouseEvent) => {
         // only start dragging with left mouse button
+        if (!isEditable) return;
         if (selectedTool !== "select" || (e as React.MouseEvent).button !== 0) return;
         e.stopPropagation();
         e.preventDefault();

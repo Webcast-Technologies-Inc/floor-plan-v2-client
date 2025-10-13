@@ -31,8 +31,7 @@ const FloorDrawer = () => {
             ) {
                 try {
                     const resp = await handleGetFloorByLevelId({
-                        landmarkId: modal.id.value,
-                        levelId: modal.selectedFloorLevelId.value,
+                        floorId: modal.selectedFloorLevelId.value,
                     });
                     if (!resp) {
                         throw new Error("Failed to fetch floor data");
