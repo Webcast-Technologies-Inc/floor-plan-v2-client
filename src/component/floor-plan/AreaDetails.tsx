@@ -67,9 +67,7 @@ const AreaDetails = () => {
                         onChange={(e) => {
                             onChange(e, "name");
                         }}
-                        // readOnly={
-                        //     !modal.edit.visible || !modal.selectedArea.value
-                        // }
+                        readOnly={!modal.edit.visible || !modal.selectedArea.value}
                         allowClear
                     />
                 </Form.Item>
@@ -80,9 +78,7 @@ const AreaDetails = () => {
                         onChange={(e) => {
                             onChange(e, "description");
                         }}
-                        // readOnly={
-                        //     !modal.edit.visible || !modal.selectedArea.value
-                        // }
+                        readOnly={!modal.edit.visible || !modal.selectedArea.value}
                         allowClear
                     />
                 </Form.Item>
