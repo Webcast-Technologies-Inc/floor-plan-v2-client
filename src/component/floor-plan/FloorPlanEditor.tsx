@@ -32,7 +32,6 @@ const FloorPlandEditor = ({ loading }: { loading: boolean }) => {
     const [imageUrl, setImageUrl] = useState<string | null>(null);
     const [newFile, setNewFile] = useState<File | null>(null);
     const [highlightMarkers, setHighlightMarkers] = useState(modal.showAllMarks.visible);
-    const existingFile = modal.dataSet.value?.floorPlans;
     const highlightTimeoutRef = useRef<number | null>(null);
     const [loadingSave, setLoadingSave] = useState(false);
     // const [canvasOffset, setCanvasOffset] = useState({ x: 0, y: 0 });
@@ -67,10 +66,7 @@ const FloorPlandEditor = ({ loading }: { loading: boolean }) => {
 
             return {
                 ...prev,
-                floorPlans: {
-                    ...prev.floorPlans,
-                    areas: [...(prev.floorPlans?.areas ?? []), marker],
-                },
+                areas: [...(prev.areas ?? []), marker],
             };
         });
     };
@@ -81,18 +77,13 @@ const FloorPlandEditor = ({ loading }: { loading: boolean }) => {
 
             return {
                 ...prev,
-                floorPlans: {
-                    ...prev.floorPlans,
-                    areas: prev.floorPlans?.areas?.map((m) =>
-                        m.id === updatedMarker.id ? updatedMarker : m
-                    ),
-                },
+                areas: prev.areas?.map((m) => (m.id === updatedMarker.id ? updatedMarker : m)),
             };
         });
     };
 
     const handleMarkerDragEnd = (markerId: string, x: number, y: number) => {
-        const marker = modal.dataSet.value?.floorPlans?.areas?.find((m) => m.id === markerId);
+        const marker = modal.dataSet.value?.areas?.find((m) => m.id === markerId);
 
         if (marker) {
             handleUpdateMarker({ ...marker, x, y });
@@ -118,10 +109,8 @@ const FloorPlandEditor = ({ loading }: { loading: boolean }) => {
                 id: `${TEMP_ID_FORMAT}${Date.now().toString()}`,
                 x,
                 y,
-                details: {
-                    name: "",
-                    description: "",
-                },
+                name: "",
+                description: "",
             };
 
             handleAddMarker(newMarker);
@@ -189,7 +178,7 @@ const FloorPlandEditor = ({ loading }: { loading: boolean }) => {
                 uploadedFile = data;
             }
 
-            const removeTempIdAreas = modal.dataSet.value?.floorPlans?.areas?.map((area) => {
+            const removeTempIdAreas = modal.dataSet.value?.areas?.map((area) => {
                 const isTempId = typeof area.id === "string" && area.id.startsWith(TEMP_ID_FORMAT);
 
                 return {
@@ -199,20 +188,10 @@ const FloorPlandEditor = ({ loading }: { loading: boolean }) => {
             });
 
             await handleUpdateFloorPlanWithAreas({
-                floorId: modal.dataSet.value?.id,
-                id: modal.dataSet.value?.floorPlans?.id,
-                attachments: {
-                    id: modal.dataSet.value?.floorPlans?.attachments?.id || null,
-                    fileName: newFile
-                        ? newFile?.name
-                        : modal.dataSet.value?.floorPlans?.attachments?.fileName || "",
-                    fileType: newFile
-                        ? newFile?.type
-                        : modal.dataSet.value?.floorPlans?.attachments?.fileType || "",
-                    filePath: newFile
-                        ? uploadedFile?.fullPath
-                        : modal.dataSet.value?.floorPlans?.attachments?.filePath,
-                },
+                id: modal.dataSet.value?.id,
+                fileName: newFile ? newFile?.name : modal.dataSet.value?.fileName || "",
+                fileType: newFile ? newFile?.type : modal.dataSet.value?.fileType || "",
+                filePath: newFile ? uploadedFile?.fullPath : modal.dataSet.value?.filePath,
                 areas: removeTypename(removeTempIdAreas) || [],
             });
 
@@ -238,7 +217,7 @@ const FloorPlandEditor = ({ loading }: { loading: boolean }) => {
     };
 
     // const isPdf = newFile?.type === "application/pdf";
-    const isPdf = (newFile?.type ?? existingFile?.attachments?.fileType) === "application/pdf";
+    const isPdf = (newFile?.type ?? modal.dataSet.value?.fileType) === "application/pdf";
 
     return (
         <>
@@ -291,15 +270,21 @@ const FloorPlandEditor = ({ loading }: { loading: boolean }) => {
                 <div className="!space-y-4">
                     {modal.edit.visible && (
                         <div className="flex justify-between items-center !p-6 rounded-lg bg-gray-100">
-                            <Radio.Group
-                                block
-                                options={options}
-                                defaultValue="select"
-                                optionType="button"
-                                buttonStyle="solid"
-                                onChange={(e) => modal.selectedTool.setValue(e.target.value)}
-                                value={modal.selectedTool.value}
-                            />
+                            <div>
+                                {(modal.dataSet.value?.presignedUrl || newFile) && (
+                                    <Radio.Group
+                                        block
+                                        options={options}
+                                        defaultValue="select"
+                                        optionType="button"
+                                        buttonStyle="solid"
+                                        onChange={(e) =>
+                                            modal.selectedTool.setValue(e.target.value)
+                                        }
+                                        value={modal.selectedTool.value}
+                                    />
+                                )}
+                            </div>
                             <FloorPlanUploader onFileUpload={(file) => setNewFile(file)} />
                             {/* <Pagination
                                     simple
@@ -320,7 +305,7 @@ const FloorPlandEditor = ({ loading }: { loading: boolean }) => {
                                     modal.selectedTool.value === "mark" ? "crosshair" : "default",
                             }}
                         >
-                            {!newFile && !existingFile?.attachments?.filePath ? (
+                            {!newFile && !modal.dataSet.value?.filePath ? (
                                 <Empty image={Empty.PRESENTED_IMAGE_SIMPLE} />
                             ) : (
                                 <>
@@ -329,7 +314,7 @@ const FloorPlandEditor = ({ loading }: { loading: boolean }) => {
                                             key={
                                                 newFile
                                                     ? newFile.name
-                                                    : existingFile?.attachments?.filePath
+                                                    : modal.dataSet.value?.filePath
                                             }
                                             loading={
                                                 <div className="flex justify-center items-center h-[500px]">
@@ -339,7 +324,7 @@ const FloorPlandEditor = ({ loading }: { loading: boolean }) => {
                                             file={
                                                 newFile
                                                     ? newFile
-                                                    : existingFile?.attachments?.presignedUrl ?? ""
+                                                    : modal.dataSet.value?.presignedUrl ?? ""
                                             }
                                             onLoadSuccess={({ numPages }) => setNumPages(numPages)}
                                             onLoadError={(error) => {
@@ -359,8 +344,7 @@ const FloorPlandEditor = ({ loading }: { loading: boolean }) => {
                                             src={
                                                 newFile
                                                     ? imageUrl || undefined
-                                                    : existingFile?.attachments?.presignedUrl ||
-                                                      undefined
+                                                    : modal.dataSet.value?.presignedUrl || undefined
                                             }
                                             alt="Floor plan"
                                             style={{
@@ -375,7 +359,7 @@ const FloorPlandEditor = ({ loading }: { loading: boolean }) => {
                                         />
                                     )}
 
-                                    {modal.dataSet.value?.floorPlans?.areas?.map((area) => (
+                                    {modal.dataSet.value?.areas?.map((area) => (
                                         <MarkerPoint
                                             key={area.id}
                                             marker={area}
@@ -385,8 +369,8 @@ const FloorPlandEditor = ({ loading }: { loading: boolean }) => {
                                             onClick={() => {
                                                 modal.selectedArea.setValue(area);
                                                 modal.form.setFieldsValue({
-                                                    name: area.details?.name,
-                                                    description: area.details?.description,
+                                                    name: area.name,
+                                                    description: area.description,
                                                 });
                                             }}
                                             onDragEnd={(x, y) =>

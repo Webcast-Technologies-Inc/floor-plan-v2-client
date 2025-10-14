@@ -17,20 +17,14 @@ const AreaDetails = ({ loading }: { loading: boolean }) => {
 
             return {
                 ...prev,
-                floorPlans: {
-                    ...prev.floorPlans,
-                    areas: prev.floorPlans?.areas?.map((area) =>
-                        area.id === modal.selectedArea.value?.id
-                            ? {
-                                  ...area,
-                                  details: {
-                                      ...area.details,
-                                      [name]: e.target.value ?? "",
-                                  },
-                              }
-                            : area
-                    ) as IFloorPlanArea[],
-                },
+                areas: prev.areas?.map((area) =>
+                    area.id === modal.selectedArea.value?.id
+                        ? {
+                              ...area,
+                              [name]: e.target.value ?? "",
+                          }
+                        : area
+                ) as IFloorPlanArea[],
             };
         });
     };
@@ -45,12 +39,9 @@ const AreaDetails = ({ loading }: { loading: boolean }) => {
 
                 return {
                     ...prev,
-                    floorPlans: {
-                        ...prev.floorPlans,
-                        areas: prev.floorPlans?.areas?.filter(
-                            (area) => area.id !== modal.selectedArea.value?.id
-                        ) as IFloorPlanArea[],
-                    },
+                    areas: prev.areas?.filter(
+                        (area) => area.id !== modal.selectedArea.value?.id
+                    ) as IFloorPlanArea[],
                 };
             });
         }
