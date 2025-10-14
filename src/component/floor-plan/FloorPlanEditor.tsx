@@ -154,6 +154,7 @@ const FloorPlandEditor = ({ loading }: { loading: boolean }) => {
                 </>
             ),
             onOk: () => {
+                setNewFile(null);
                 modal.dataSet.setValue(modal.originalDataSet.value);
                 modal.edit.setVisible(false);
                 modal.selectedArea.setValue(null);
@@ -309,7 +310,7 @@ const FloorPlandEditor = ({ loading }: { loading: boolean }) => {
                                 /> */}
                         </div>
                     )}
-                    <div className="flex justify-center items-center !bg-gray-100 rounded-lg border-2 border-border shadow-lg min-h-[600px]">
+                    <div className="flex justify-center items-center !bg-gray-100 rounded-lg border-2 border-slate-800 shadow-lg min-h-[600px]">
                         <div
                             ref={containerRef}
                             className="relative overflow-auto"
