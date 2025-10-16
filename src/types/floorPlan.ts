@@ -2,8 +2,8 @@ export interface IFloorPlanArea {
     id: string | null | undefined;
     x: number;
     y: number;
-    name: string;
-    description: string;
+    id_primary: string;
+    alias: string;
 }
 
 export interface IFloor {

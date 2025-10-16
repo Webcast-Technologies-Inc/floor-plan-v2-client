@@ -10,7 +10,7 @@ const AreaDetails = ({ loading }: { loading: boolean }) => {
 
     const onChange = (
         e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
-        name: "name" | "description"
+        name: "id_primary" | "alias"
     ) => {
         modal.dataSet.setValue((prev) => {
             if (!prev) return prev;
@@ -59,21 +59,21 @@ const AreaDetails = ({ loading }: { loading: boolean }) => {
             loading={loading}
         >
             <Form form={modal.form} layout="vertical" autoComplete="off">
-                <Form.Item label="Name" name="name">
+                <Form.Item label="Id" name="id_primary">
                     <Input
                         onChange={(e) => {
-                            onChange(e, "name");
+                            onChange(e, "id_primary");
                         }}
                         readOnly={!modal.edit.visible || !modal.selectedArea.value}
                         allowClear
                     />
                 </Form.Item>
 
-                <Form.Item label="Description" name="description">
+                <Form.Item label="Alias" name="alias">
                     <TextArea
                         rows={3}
                         onChange={(e) => {
-                            onChange(e, "description");
+                            onChange(e, "alias");
                         }}
                         readOnly={!modal.edit.visible || !modal.selectedArea.value}
                         allowClear

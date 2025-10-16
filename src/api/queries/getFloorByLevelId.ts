@@ -14,8 +14,8 @@ export const GET_FLOOR_BY_LEVEL_ID_QUERY = gql`
                 id
                 x
                 y
-                name
-                description
+                id_primary
+                alias
             }
         }
     }

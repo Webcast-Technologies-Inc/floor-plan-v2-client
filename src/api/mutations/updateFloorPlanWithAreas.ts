@@ -26,8 +26,8 @@ export const UPDATE_FLOOR_PLAN_WITH_AREAS_MUTATION = gql`
                 id
                 x
                 y
-                name
-                description
+                id_primary
+                alias
             }
         }
     }

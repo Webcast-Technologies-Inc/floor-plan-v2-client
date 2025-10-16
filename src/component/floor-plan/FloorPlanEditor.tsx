@@ -109,8 +109,8 @@ const FloorPlandEditor = ({ loading }: { loading: boolean }) => {
                 id: `${TEMP_ID_FORMAT}${Date.now().toString()}`,
                 x,
                 y,
-                name: "",
-                description: "",
+                id_primary: "",
+                alias: "",
             };
 
             handleAddMarker(newMarker);
@@ -369,8 +369,8 @@ const FloorPlandEditor = ({ loading }: { loading: boolean }) => {
                                             onClick={() => {
                                                 modal.selectedArea.setValue(area);
                                                 modal.form.setFieldsValue({
-                                                    name: area.name,
-                                                    description: area.description,
+                                                    id_primary: area.id_primary,
+                                                    alias: area.alias,
                                                 });
                                             }}
                                             onDragEnd={(x, y) =>
