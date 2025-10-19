@@ -6,6 +6,7 @@ export const GET_FLOOR_BY_LEVEL_ID_QUERY = gql`
             id
             level
             name
+            dataSetId
             fileName
             fileType
             filePath
@@ -14,8 +15,7 @@ export const GET_FLOOR_BY_LEVEL_ID_QUERY = gql`
                 id
                 x
                 y
-                id_primary
-                alias
+                dataSetInfoId
             }
         }
     }

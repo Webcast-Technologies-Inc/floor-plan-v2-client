@@ -1,10 +1,8 @@
 import { EyeOutlined } from "@ant-design/icons";
 import { Map } from "@vis.gl/react-google-maps";
 import { Alert, Button, Form, Spin } from "antd";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { useGetAllLandmark } from "../api/hooks/useGetAllLandmark";
-import { useGetDatasetInfo } from "../api/hooks/useGetDatasetInfo";
-import { useGetDatasets } from "../api/hooks/useGetDatasets";
 import FloorDrawer from "../component/floor-plan/FloorDrawer";
 import FloorPlanModal from "../component/floor-plan/FloorPlanModal";
 import ClusteredLocationMarkers from "../component/google-maps/ClusteredLocationMarkers";
@@ -26,42 +24,6 @@ const Home = () => {
     const [modalDataSet, setModalDataSet] = useState<IFloor | undefined | null>(undefined);
     const [drawerDataSet, setDrawerDataSet] = useState<any>(undefined);
     const [isShowAllMarksVisible, setIsShowAllMarksVisible] = useState(false);
-
-    const { handleGetDatasets } = useGetDatasets();
-    const { handleGetDatasetInfo } = useGetDatasetInfo();
-
-    useEffect(() => {
-        const fetch = async () => {
-            const datasets = await handleGetDatasets({
-                args: {
-                    andConditions: [
-                        {
-                            field: "alias",
-                            values: "UXT DPA - 1",
-                        },
-                    ],
-                },
-            });
-            console.log("datasets >> ", datasets);
-            const dataSetInfo = await handleGetDatasetInfo({
-                getDatasetInfoId: "1",
-                args: { limit: 200 },
-                boundingBox: [
-                    { lat: 23.306928036810202, lng: 129.30087197781813 },
-                    { lat: 23.306928036810202, lng: 112.66757202218183 },
-                    { lat: 5.533957770220383, lng: 112.66757202218183 },
-                    { lat: 5.533957770220383, lng: 129.30087197781813 },
-                    { lat: 23.306928036810202, lng: 129.30087197781813 },
-                ],
-            });
-
-            console.log("dataset info", dataSetInfo);
-        };
-
-        fetch();
-    }, []);
-
-    console.log("modal >> ", modalDataSet);
 
     return (
         <>

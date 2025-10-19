@@ -20,8 +20,7 @@ export const CREATE_FLOOR_PLAN_AREA_MUTATION = gql`
             y
             pageNumber
             details {
-                id_primary
-                alias
+                dataSetInfoId
             }
         }
     }

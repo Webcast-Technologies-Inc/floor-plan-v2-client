@@ -1,5 +1,4 @@
 import { Card, Form, Input } from "antd";
-import TextArea from "antd/es/input/TextArea";
 import { useContext } from "react";
 import DrawerVisibilityContext from "../../store/context/DrawerVisibilityContext";
 import type { IFloorPlanArea } from "../../types/floorPlan";
@@ -10,7 +9,7 @@ const AreaDetails = ({ loading }: { loading: boolean }) => {
 
     const onChange = (
         e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
-        name: "id_primary" | "alias"
+        name: "dataSetInfoId"
     ) => {
         modal.dataSet.setValue((prev) => {
             if (!prev) return prev;
@@ -49,7 +48,7 @@ const AreaDetails = ({ loading }: { loading: boolean }) => {
 
     return (
         <Card
-            title="Details"
+            title="Dataset Details"
             extra={
                 <CustomActionButtons
                     actions={modal.edit.visible && modal.selectedArea.value ? ["delete"] : []}
@@ -59,21 +58,10 @@ const AreaDetails = ({ loading }: { loading: boolean }) => {
             loading={loading}
         >
             <Form form={modal.form} layout="vertical" autoComplete="off">
-                <Form.Item label="Id" name="id_primary">
+                <Form.Item label="Dataset Information Id" name="dataSetInfoId">
                     <Input
                         onChange={(e) => {
-                            onChange(e, "id_primary");
-                        }}
-                        readOnly={!modal.edit.visible || !modal.selectedArea.value}
-                        allowClear
-                    />
-                </Form.Item>
-
-                <Form.Item label="Alias" name="alias">
-                    <TextArea
-                        rows={3}
-                        onChange={(e) => {
-                            onChange(e, "alias");
+                            onChange(e, "dataSetInfoId");
                         }}
                         readOnly={!modal.edit.visible || !modal.selectedArea.value}
                         allowClear

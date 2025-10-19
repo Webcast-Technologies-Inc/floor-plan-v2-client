@@ -1,7 +1,8 @@
 import { PlusOutlined, SaveOutlined } from "@ant-design/icons";
-import { Button, Drawer, Form, Input, message, Modal, Space, type FormProps } from "antd";
-import { useCallback, useContext, useEffect } from "react";
+import { Button, Drawer, Form, Input, message, Modal, Select, Space, type FormProps } from "antd";
+import { useCallback, useContext, useEffect, useState } from "react";
 import { useCreateFloor } from "../../api/hooks/useCreateFloor";
+import { useGetDatasets } from "../../api/hooks/useGetDatasets";
 import { useGetFloorByLevelId } from "../../api/hooks/useGetFloorByLevelId";
 import { useUpdateFloor } from "../../api/hooks/useUpdateFloor";
 import DrawerVisibilityContext from "../../store/context/DrawerVisibilityContext";
@@ -10,16 +11,19 @@ interface FieldType {
     id?: string;
     name: string;
     level: string;
+    dataSetId: string;
 }
 
 const FloorDrawer = () => {
-    const { modal, drawer } = useContext(DrawerVisibilityContext);
     const [modalAntd, contextHolderModal] = Modal.useModal();
     const [messageApi, contextHolderMessage] = message.useMessage();
     const [form] = Form.useForm();
+    const { modal, drawer } = useContext(DrawerVisibilityContext);
+    const { handleGetDatasets } = useGetDatasets();
     const { handleCreateFloor, loading: loadingCreateFloor } = useCreateFloor();
     const { handleGetFloorByLevelId, loading: loadingGetFloorByLevelId } = useGetFloorByLevelId();
     const { handleUpdateFloor, loading: loadingUpdateFloor } = useUpdateFloor();
+    const [options, setOptions] = useState<{ value: string; label: string }[]>([]);
 
     useEffect(() => {
         const fetch = async () => {
@@ -33,9 +37,11 @@ const FloorDrawer = () => {
                     const resp = await handleGetFloorByLevelId({
                         floorId: modal.selectedFloorLevelId.value,
                     });
+
                     if (!resp) {
                         throw new Error("Failed to fetch floor data");
                     }
+
                     form.setFieldsValue({
                         ...resp.data.getFloorByLevelId,
                     });
@@ -46,9 +52,28 @@ const FloorDrawer = () => {
                     });
                 }
             }
+
+            if (drawer.add.visible || drawer.edit.visible) {
+                const datasets = await handleGetDatasets({
+                    args: {},
+                });
+
+                setOptions(
+                    datasets.data?.get_datasets.datasets.map((dataset: any) => ({
+                        value: dataset.id,
+                        label: dataset.alias,
+                    })) || []
+                );
+            }
         };
         fetch();
-    }, [drawer.edit.visible, modal.id.value, drawer.id.value, modal.selectedFloorLevelId.value]);
+    }, [
+        drawer.add.visible,
+        drawer.edit.visible,
+        modal.id.value,
+        drawer.id.value,
+        modal.selectedFloorLevelId.value,
+    ]);
 
     const onClickSubmit = useCallback(() => {
         form.submit();
@@ -201,6 +226,25 @@ const FloorDrawer = () => {
                         rules={[{ required: true, message: "Floor is required" }]}
                     >
                         <Input allowClear />
+                    </Form.Item>
+
+                    <Form.Item
+                        label="Dataset"
+                        name="dataSetId"
+                        rules={[{ required: true, message: "Dataset is required" }]}
+                    >
+                        <Select
+                            showSearch
+                            style={{ width: 200 }}
+                            placeholder="Search to Select"
+                            optionFilterProp="label"
+                            filterSort={(optionA, optionB) =>
+                                (optionA?.label ?? "")
+                                    .toLowerCase()
+                                    .localeCompare((optionB?.label ?? "").toLowerCase())
+                            }
+                            options={options}
+                        />
                     </Form.Item>
                 </Form>
             </Drawer>

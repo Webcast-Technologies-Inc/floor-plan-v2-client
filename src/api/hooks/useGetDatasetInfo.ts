@@ -13,6 +13,10 @@ interface RetrieveAllInput {
     page?: number;
     limit?: number;
     search?: string;
+    andConditions?: {
+        field: string;
+        values: string | number | boolean | (string | number | boolean)[];
+    }[];
 }
 
 export interface GetDatasetInfoVariables {
