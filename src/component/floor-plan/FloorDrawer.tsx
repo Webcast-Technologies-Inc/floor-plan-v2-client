@@ -120,6 +120,9 @@ const FloorDrawer = () => {
                         });
                         drawer.refetch.setValue((prev) => !prev);
                         drawer.edit.setVisible(false);
+                        modal.selectedArea.setValue(null);
+                        modal.form.dataSetInfo.resetFields();
+                        modal.dataSetInfo.setValue(null);
                     }
                 } catch (err) {
                     messageApi.open({
