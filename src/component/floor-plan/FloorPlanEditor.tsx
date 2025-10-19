@@ -150,6 +150,7 @@ const FloorPlandEditor = ({ loading }: { loading: boolean }) => {
                 modal.selectedArea.setValue(null);
                 modal.selectedTool.setValue("select");
                 modal.form.dataSet.resetFields();
+                setHighlightMarkers(modal.showAllMarks.visible);
             },
             okText: "YES",
         });
@@ -207,6 +208,7 @@ const FloorPlandEditor = ({ loading }: { loading: boolean }) => {
             modal.originalDataSet.setValue(modal.dataSet.value);
             modal.edit.setVisible(false);
             modal.selectedTool.setValue("select");
+            setHighlightMarkers(modal.showAllMarks.visible);
         } catch (err) {
             messageApi.open({
                 type: "error",
@@ -236,16 +238,15 @@ const FloorPlandEditor = ({ loading }: { loading: boolean }) => {
                 style={{ width: "100%" }}
                 extra={
                     <div className="flex items-center gap-x-4">
-                        {(modal.view.visible || modal.edit.visible) &&
-                            modal.selectedFloorLevelId.value && (
-                                <Switch
-                                    value={modal.showAllMarks.visible}
-                                    onChange={(checked: boolean) => {
-                                        modal.showAllMarks.setVisible(checked);
-                                        setHighlightMarkers(checked);
-                                    }}
-                                />
-                            )}
+                        {!modal.edit.visible && modal.selectedFloorLevelId.value && (
+                            <Switch
+                                value={modal.showAllMarks.visible}
+                                onChange={(checked: boolean) => {
+                                    modal.showAllMarks.setVisible(checked);
+                                    setHighlightMarkers(checked);
+                                }}
+                            />
+                        )}
                         {modal.edit.visible && modal.selectedFloorLevelId.value && (
                             <>
                                 <Button onClick={onCancel}>Cancel</Button>
@@ -262,7 +263,10 @@ const FloorPlandEditor = ({ loading }: { loading: boolean }) => {
                                     ? ["edit"]
                                     : []
                             }
-                            handleEdit={() => modal.edit.setVisible(true)}
+                            handleEdit={() => {
+                                modal.edit.setVisible(true);
+                                setHighlightMarkers(true);
+                            }}
                         />
                     </div>
                 }
