@@ -12,6 +12,7 @@ import { useGetFloorByLevelId } from "../../api/hooks/useGetFloorByLevelId";
 import { useGetLandmarkById } from "../../api/hooks/useGetLandmarkById";
 import DrawerVisibilityContext from "../../store/context/DrawerVisibilityContext";
 import AreaDetails from "./AreaDetails";
+import DatasetInfoDetails from "./DatasetInfoDetails";
 import FloorPlandEditor from "./FloorPlanEditor";
 
 interface FloorOption {
@@ -248,7 +249,11 @@ const FloorPlanModal = () => {
                                     </Button>
                                 </Dropdown>
                             </div>
-                            <AreaDetails loading={loading} />
+                            {modal.edit.visible ? (
+                                <AreaDetails loading={loading} />
+                            ) : (
+                                <DatasetInfoDetails />
+                            )}
                         </div>
                     </Col>
                 </Row>

@@ -49,7 +49,7 @@ const AreaDetails = ({ loading }: { loading: boolean }) => {
 
     return (
         <Card
-            title="Details"
+            title="Dataset Details"
             extra={
                 <CustomActionButtons
                     actions={modal.edit.visible && modal.selectedArea.value ? ["delete"] : []}
@@ -59,7 +59,7 @@ const AreaDetails = ({ loading }: { loading: boolean }) => {
             loading={loading}
         >
             <Form form={modal.form} layout="vertical" autoComplete="off">
-                <Form.Item label="Id" name="id_primary">
+                <Form.Item label="Dataset Info ID Primary" name="id_primary">
                     <Input
                         onChange={(e) => {
                             onChange(e, "id_primary");
@@ -69,7 +69,7 @@ const AreaDetails = ({ loading }: { loading: boolean }) => {
                     />
                 </Form.Item>
 
-                <Form.Item label="Alias" name="alias">
+                <Form.Item label="Dataset Alias" name="alias">
                     <TextArea
                         rows={3}
                         onChange={(e) => {

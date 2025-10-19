@@ -10,13 +10,7 @@ export const GET_DATASETS_QUERY = gql`
             success
             datasets {
                 id
-                client_id
-                filename
-                table_name
-                status
-                cluster
                 alias
-                properties
             }
         }
     }
