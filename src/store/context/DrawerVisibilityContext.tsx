@@ -42,7 +42,14 @@ interface DrawerContextType {
             setValue: React.Dispatch<React.SetStateAction<string | undefined>>;
         };
         showAllMarks: DrawerState;
-        form: FormInstance;
+        form: {
+            dataSet: FormInstance;
+            dataSetInfo: FormInstance;
+        };
+        dataSetInfo: {
+            value: any | undefined | null;
+            setValue: React.Dispatch<React.SetStateAction<any | undefined | null>>;
+        };
     };
     drawer: IModalVisibility & {
         dataSet: DataState;
@@ -100,7 +107,14 @@ const initialState: DrawerContextType = {
             visible: false,
             setVisible: () => {},
         },
-        form: {} as FormInstance,
+        form: {
+            dataSet: {} as FormInstance,
+            dataSetInfo: {} as FormInstance,
+        },
+        dataSetInfo: {
+            value: undefined,
+            setValue: () => {},
+        },
     },
     drawer: {
         ...modalVisibility,

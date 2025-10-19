@@ -7,9 +7,7 @@ const DatasetInfoDetails = () => {
     const [messageApi, contextHolderMessage] = message.useMessage();
     const { modal } = useContext(DrawerVisibilityContext);
     const { handleGetDatasetInfo } = useGetDatasetInfo();
-    const [form] = Form.useForm();
     const [loading, setLoading] = useState(false);
-    const [datasetInfo, setDatasetInfo] = useState<any>();
 
     useEffect(() => {
         const fetch = async () => {
@@ -39,17 +37,17 @@ const DatasetInfoDetails = () => {
                         type: "error",
                         content: "Dataset info does not exist!",
                     });
-                    form.resetFields();
-                    setDatasetInfo(null);
+                    modal.form.dataSetInfo.resetFields();
+                    modal.dataSetInfo.setValue(null);
                     return;
                 }
 
                 // Step 3: Save info and update form fields
-                form.setFieldsValue(info);
-                setDatasetInfo(info);
+                modal.form.dataSetInfo.setFieldsValue(info);
+                modal.dataSetInfo.setValue(info);
             } catch (err) {
-                form.resetFields();
-                setDatasetInfo(null);
+                modal.form.dataSetInfo.resetFields();
+                modal.dataSetInfo.setValue(null);
                 messageApi.open({
                     type: "error",
                     content: "Failed to get dataset info!",
@@ -60,7 +58,7 @@ const DatasetInfoDetails = () => {
         };
 
         fetch();
-    }, [modal.selectedArea.value?.dataSetInfoId, modal.selectedArea.value?.dataSetInfoId]);
+    }, [modal.dataSet.value?.dataSetId, modal.selectedArea.value?.dataSetInfoId]);
 
     return (
         <>
@@ -76,9 +74,9 @@ const DatasetInfoDetails = () => {
                     },
                 }}
             >
-                {datasetInfo ? (
-                    <Form form={form} layout="vertical" autoComplete="off">
-                        {Object.entries(datasetInfo || {}).map(([key, value]) => (
+                {modal.dataSetInfo.value ? (
+                    <Form form={modal.form.dataSetInfo} layout="vertical" autoComplete="off">
+                        {Object.entries(modal.dataSetInfo.value || {}).map(([key, value]) => (
                             <Form.Item key={key} label={key} name={key}>
                                 <Input value={String(value)} readOnly />
                             </Form.Item>

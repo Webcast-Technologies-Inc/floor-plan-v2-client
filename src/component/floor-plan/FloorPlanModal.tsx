@@ -84,7 +84,7 @@ const FloorPlanModal = () => {
                             drawer.refetch.setValue((prev) => !prev);
                             modal.edit.setVisible(false);
                             modal.selectedTool.setValue("select");
-                            modal.form.resetFields();
+                            modal.form.dataSet.resetFields();
                             return;
                         } catch (error) {
                             messageApi.open({
@@ -157,7 +157,9 @@ const FloorPlanModal = () => {
 
             modal.edit.setVisible(false);
             modal.selectedArea.setValue(null);
-            modal.form.resetFields();
+            modal.form.dataSet.resetFields();
+            modal.form.dataSetInfo.resetFields();
+            modal.dataSetInfo.setValue(null);
 
             modal.selectedFloorLevelId.setValue(val);
 
@@ -183,7 +185,9 @@ const FloorPlanModal = () => {
         modal.selectedTool.setValue("select");
         modal.dataSet.setValue(null);
         modal.originalDataSet.setValue(null);
-        modal.form.resetFields();
+        modal.form.dataSet.resetFields();
+        modal.form.dataSetInfo.resetFields();
+        modal.dataSetInfo.setValue(null);
     };
 
     const onClose = () => {

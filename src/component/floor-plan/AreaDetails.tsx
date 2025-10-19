@@ -30,7 +30,7 @@ const AreaDetails = ({ loading }: { loading: boolean }) => {
 
     const handleDelete = () => {
         if (modal.edit.visible) {
-            modal.form.resetFields();
+            modal.form.dataSet.resetFields();
             modal.selectedArea.setValue(null);
 
             modal.dataSet.setValue((prev) => {
@@ -57,7 +57,7 @@ const AreaDetails = ({ loading }: { loading: boolean }) => {
             }
             loading={loading}
         >
-            <Form form={modal.form} layout="vertical" autoComplete="off">
+            <Form form={modal.form.dataSet} layout="vertical" autoComplete="off">
                 <Form.Item label="Dataset Information Id" name="dataSetInfoId">
                     <Input
                         onChange={(e) => {

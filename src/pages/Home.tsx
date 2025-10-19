@@ -19,11 +19,11 @@ const Home = () => {
     const [selectedArea, setSelectedArea] = useState<IFloorPlanArea | undefined | null>(undefined);
     const [selectedFloorLevelId, setSelectedFloorLevelId] = useState<string | undefined>(undefined);
     const [refetch, setRefetch] = useState(false);
-    const [form] = Form.useForm();
     const [originalDataSet, setOriginalDataSet] = useState<any>(null);
     const [modalDataSet, setModalDataSet] = useState<IFloor | undefined | null>(undefined);
     const [drawerDataSet, setDrawerDataSet] = useState<any>(undefined);
     const [isShowAllMarksVisible, setIsShowAllMarksVisible] = useState(false);
+    const [dataSetInfo, setDataSetInfo] = useState<any>();
 
     return (
         <>
@@ -46,7 +46,11 @@ const Home = () => {
                             visible: isShowAllMarksVisible,
                             setVisible: setIsShowAllMarksVisible,
                         },
-                        form,
+                        form: {
+                            dataSet: Form.useForm()[0],
+                            dataSetInfo: Form.useForm()[0],
+                        },
+                        dataSetInfo: { value: dataSetInfo, setValue: setDataSetInfo },
                     },
                     drawer: {
                         ...drawer,

@@ -119,7 +119,9 @@ const FloorPlandEditor = ({ loading }: { loading: boolean }) => {
             // Highlight all markers when clicking on open area
             setHighlightMarkers(true);
             modal.selectedArea.setValue(null);
-            modal.form.resetFields();
+            modal.form.dataSet.resetFields();
+            modal.form.dataSetInfo.resetFields();
+            modal.dataSetInfo.setValue(null);
 
             if (highlightTimeoutRef.current) {
                 clearTimeout(highlightTimeoutRef.current);
@@ -147,7 +149,7 @@ const FloorPlandEditor = ({ loading }: { loading: boolean }) => {
                 modal.edit.setVisible(false);
                 modal.selectedArea.setValue(null);
                 modal.selectedTool.setValue("select");
-                modal.form.resetFields();
+                modal.form.dataSet.resetFields();
             },
             okText: "YES",
         });
@@ -200,7 +202,7 @@ const FloorPlandEditor = ({ loading }: { loading: boolean }) => {
             });
 
             drawer.refetch.setValue((prev) => !prev);
-            modal.form.resetFields();
+            modal.form.dataSet.resetFields();
             modal.selectedArea.setValue(null);
             modal.originalDataSet.setValue(modal.dataSet.value);
             modal.edit.setVisible(false);
@@ -367,7 +369,7 @@ const FloorPlandEditor = ({ loading }: { loading: boolean }) => {
                                             isHighlighted={highlightMarkers}
                                             onClick={() => {
                                                 modal.selectedArea.setValue(area);
-                                                modal.form.setFieldsValue({
+                                                modal.form.dataSet.setFieldsValue({
                                                     dataSetInfoId: area.dataSetInfoId,
                                                 });
                                             }}
