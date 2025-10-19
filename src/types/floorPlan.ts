@@ -2,14 +2,14 @@ export interface IFloorPlanArea {
     id: string | null | undefined;
     x: number;
     y: number;
-    id_primary: string;
-    alias: string;
+    dataSetInfoId: string;
 }
 
 export interface IFloor {
     id: string;
     level: string;
     name: string;
+    dataSetId: string;
     fileName?: string;
     fileType?: string;
     filePath?: string;

@@ -6,6 +6,7 @@ interface ICreateFloorInput {
     landmarkId: string;
     level: string;
     name: string;
+    dataSetId: string;
 }
 
 export const useCreateFloor = () => {

@@ -11,6 +11,7 @@ interface FieldType {
     id?: string;
     name: string;
     level: string;
+    dataSetId: string;
 }
 
 const FloorDrawer = () => {
@@ -36,9 +37,11 @@ const FloorDrawer = () => {
                     const resp = await handleGetFloorByLevelId({
                         floorId: modal.selectedFloorLevelId.value,
                     });
+
                     if (!resp) {
                         throw new Error("Failed to fetch floor data");
                     }
+
                     form.setFieldsValue({
                         ...resp.data.getFloorByLevelId,
                     });
@@ -227,7 +230,7 @@ const FloorDrawer = () => {
 
                     <Form.Item
                         label="Dataset"
-                        name="dataset"
+                        name="dataSetId"
                         rules={[{ required: true, message: "Dataset is required" }]}
                     >
                         <Select
