@@ -127,7 +127,7 @@ const FloorPlandEditor = ({ loading }: { loading: boolean }) => {
                 clearTimeout(highlightTimeoutRef.current);
             }
             highlightTimeoutRef.current = window.setTimeout(() => {
-                if (!modal.showAllMarks.visible) {
+                if (!modal.showAllMarks.visible && !modal.edit.visible) {
                     setHighlightMarkers(false);
                 }
             }, 2000);
