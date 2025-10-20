@@ -8,6 +8,7 @@ import DrawerVisibilityContext from "../../store/context/DrawerVisibilityContext
 import type { IFloorPlanArea } from "../../types/floorPlan";
 import customFileName from "../../utils/customFileName";
 import { removeTypename } from "../../utils/removeTypename";
+import { repositionOutOfBoundsMarkers } from "../../utils/repositionMarkers";
 import { supabase } from "../../utils/supabaseClient";
 import CustomActionButtons from "../CustomActionButtons";
 import FloorPlanUploader from "./FloorPlanUploader";
@@ -40,6 +41,31 @@ const FloorPlandEditor = ({ loading }: { loading: boolean }) => {
         if (newFile && newFile?.type.startsWith("image/")) {
             const url = URL.createObjectURL(newFile);
             setImageUrl(url);
+
+            // Load the image to get its dimensions and reposition markers if needed
+            const img = new Image();
+            img.onload = () => {
+                const newWidth = img.width;
+                const newHeight = img.height;
+
+                // Reposition any out-of-bounds markers
+                modal.dataSet.setValue((prev) => {
+                    if (!prev || !prev.areas || prev.areas.length === 0) return prev;
+
+                    const repositionedAreas = repositionOutOfBoundsMarkers(
+                        prev.areas,
+                        newWidth,
+                        newHeight
+                    );
+
+                    return {
+                        ...prev,
+                        areas: repositionedAreas,
+                    };
+                });
+            };
+            img.src = url;
+
             return () => URL.revokeObjectURL(url);
         }
     }, [newFile]);
@@ -344,6 +370,37 @@ const FloorPlandEditor = ({ loading }: { loading: boolean }) => {
                                                     renderTextLayer={false}
                                                     renderAnnotationLayer={false}
                                                     className="max-w-full !bg-gray-100"
+                                                    onLoadSuccess={(page) => {
+                                                        // Reposition markers when PDF page loads with new dimensions
+                                                        if (newFile) {
+                                                            const viewport = page.getViewport({
+                                                                scale: 1,
+                                                            });
+                                                            const newWidth = viewport.width;
+                                                            const newHeight = viewport.height;
+
+                                                            modal.dataSet.setValue((prev) => {
+                                                                if (
+                                                                    !prev ||
+                                                                    !prev.areas ||
+                                                                    prev.areas.length === 0
+                                                                )
+                                                                    return prev;
+
+                                                                const repositionedAreas =
+                                                                    repositionOutOfBoundsMarkers(
+                                                                        prev.areas,
+                                                                        newWidth,
+                                                                        newHeight
+                                                                    );
+
+                                                                return {
+                                                                    ...prev,
+                                                                    areas: repositionedAreas,
+                                                                };
+                                                            });
+                                                        }
+                                                    }}
                                                 />
                                             </Document>
                                         </div>
