@@ -234,6 +234,8 @@ const FloorPlandEditor = ({ loading }: { loading: boolean }) => {
             modal.originalDataSet.setValue(modal.dataSet.value);
             modal.edit.setVisible(false);
             modal.selectedTool.setValue("select");
+            modal.form.dataSetInfo.resetFields();
+            modal.dataSetInfo.setValue(null);
             setHighlightMarkers(modal.showAllMarks.visible);
         } catch (err) {
             messageApi.open({

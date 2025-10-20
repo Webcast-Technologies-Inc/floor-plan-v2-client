@@ -1,4 +1,5 @@
 import { PushpinFilled, PushpinTwoTone } from "@ant-design/icons";
+import { Tooltip } from "antd";
 import { useEffect, useRef, useState } from "react";
 import type { IFloorPlanArea, ITool } from "../../types/floorPlan";
 
@@ -109,7 +110,7 @@ export const MarkerPoint = ({
     return (
         <div
             ref={markerRef}
-            className={`absolute transition-transform duration-200 ${
+            className={`absolute transition-transform duration-200 leading-none ${
                 isDragging ? "scale-110 z-50" : isSelected ? "scale-105 z-40" : "z-30"
             } ${selectedTool === "select" ? "hover:scale-110" : ""}`}
             style={{
@@ -122,15 +123,21 @@ export const MarkerPoint = ({
             onMouseDown={handleMouseDown}
             onClick={handleClick}
         >
-            <div className="relative">
+            <Tooltip
+                placement="top"
+                title={marker.dataSetInfoId}
+                align={{
+                    offset: [0, 0], // move tooltip closer to the element (negative = upward)
+                }}
+            >
                 {isSelected ? (
                     <PushpinFilled
-                        style={{ color: "#3b82f6" }} // filled pin color
+                        style={{ color: "#ff0000" }} // filled pin color
                         className="text-lg drop-shadow-[0_0_8px_hsl(200_95%_55%/0.6)] transition-all duration-500"
                     />
                 ) : (
                     <PushpinTwoTone
-                        twoToneColor={"#3b82f6"}
+                        twoToneColor={"#ff0000"}
                         className={`text-lg transition-all duration-500 ${
                             isHighlighted
                                 ? "drop-shadow-[0_0_12px_rgba(59,130,246,0.8)]"
@@ -138,41 +145,7 @@ export const MarkerPoint = ({
                         }`}
                     />
                 )}
-                {/* <PushpinTwoTone
-                    twoToneColor={
-                        isHighlighted
-                            ? "#3b82f6" // blue-500
-                            : isSelected
-                            ? "hsl(200 95% 55%)"
-                            : "transparent"
-                    }
-                    className={`text-lg transition-all duration-500 ${
-                        isHighlighted
-                            ? "drop-shadow-[0_0_12px_rgba(59,130,246,0.8)]"
-                            : isSelected
-                            ? "drop-shadow-[0_0_8px_hsl(200 95% 55%/0.6)]"
-                            : "drop-shadow-none opacity-0"
-                    }`}
-                /> */}
-                {/* <MapPin
-                    className={`w-8 h-8 transition-all duration-500 ${
-                        isHighlighted
-                            ? "text-blue-500 drop-shadow-[0_0_12px_rgba(59,130,246,0.8)]"
-                            : isSelected
-                            ? "text-accent drop-shadow-[0_0_8px_hsl(var(--accent)/0.6)]"
-                            : "text-transparent drop-shadow-none"
-                    }`}
-                    fill="currentColor"
-                    stroke={isHighlighted || isSelected ? "currentColor" : "transparent"}
-                    strokeWidth={2}
-                /> */}
-                {/* {isSelected && (
-                    <div className="absolute -bottom-1 left-1/2 -translate-x-1/2 w-3 h-3 bg-accent rounded-full animate-pulse" />
-                )} */}
-            </div>
-            {/* <div className="absolute top-full left-1/2 -translate-x-1/2 mt-1 bg-card border border-border rounded px-2 py-1 text-xs font-medium whitespace-nowrap shadow-md">
-                {marker.details.name || `Marker ${marker.id}`}
-            </div> */}
+            </Tooltip>
         </div>
     );
 };
