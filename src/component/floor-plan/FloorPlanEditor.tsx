@@ -26,7 +26,7 @@ const FloorPlandEditor = ({ loading }: { loading: boolean }) => {
     const { modal, drawer } = useContext(DrawerVisibilityContext);
     const { handleUpdateFloorPlanWithAreas, loading: loadingUpdateFloorPlanWithAreas } =
         useUpdateFloorPlanWithAreas();
-    const containerRef = useRef<HTMLDivElement>(null);
+    const containerRef = useRef<any>(null);
     const [numPages, setNumPages] = useState<number>(1);
     const [currentPage, setCurrentPage] = useState<number>(1);
     const [imageUrl, setImageUrl] = useState<string | null>(null);
@@ -302,7 +302,6 @@ const FloorPlandEditor = ({ loading }: { loading: boolean }) => {
                     )}
                     <div className="flex justify-center items-center !bg-gray-100 rounded-lg border-2 border-slate-800 shadow-lg min-h-[600px]">
                         <div
-                            ref={containerRef}
                             className="relative overflow-auto"
                             onClick={handleCanvasClick}
                             style={{
@@ -315,37 +314,42 @@ const FloorPlandEditor = ({ loading }: { loading: boolean }) => {
                             ) : (
                                 <>
                                     {isPdf ? (
-                                        <Document
-                                            key={
-                                                newFile
-                                                    ? newFile.name
-                                                    : modal.dataSet.value?.filePath
-                                            }
-                                            loading={
-                                                <div className="flex justify-center items-center h-[500px]">
-                                                    <Spin />
-                                                </div>
-                                            }
-                                            file={
-                                                newFile
-                                                    ? newFile
-                                                    : modal.dataSet.value?.presignedUrl ?? ""
-                                            }
-                                            onLoadSuccess={({ numPages }) => setNumPages(numPages)}
-                                            onLoadError={(error) => {
-                                                console.error("PDF load error:", error);
-                                            }}
-                                            className="block"
-                                        >
-                                            <Page
-                                                pageNumber={currentPage}
-                                                renderTextLayer={false}
-                                                renderAnnotationLayer={false}
-                                                className="max-w-full !bg-gray-100"
-                                            />
-                                        </Document>
+                                        <div ref={containerRef}>
+                                            <Document
+                                                key={
+                                                    newFile
+                                                        ? newFile.name
+                                                        : modal.dataSet.value?.filePath
+                                                }
+                                                loading={
+                                                    <div className="flex justify-center items-center h-[500px]">
+                                                        <Spin />
+                                                    </div>
+                                                }
+                                                file={
+                                                    newFile
+                                                        ? newFile
+                                                        : modal.dataSet.value?.presignedUrl ?? ""
+                                                }
+                                                onLoadSuccess={({ numPages }) =>
+                                                    setNumPages(numPages)
+                                                }
+                                                onLoadError={(error) => {
+                                                    console.error("PDF load error:", error);
+                                                }}
+                                                className="block"
+                                            >
+                                                <Page
+                                                    pageNumber={currentPage}
+                                                    renderTextLayer={false}
+                                                    renderAnnotationLayer={false}
+                                                    className="max-w-full !bg-gray-100"
+                                                />
+                                            </Document>
+                                        </div>
                                     ) : (
                                         <img
+                                            ref={containerRef}
                                             src={
                                                 newFile
                                                     ? imageUrl || undefined
