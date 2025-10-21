@@ -36,7 +36,7 @@ const DatasetInfoDetails = () => {
                 if (!info) {
                     if (!mounted) return;
                     messageApi.open({
-                        type: "error",
+                        type: "info",
                         content: "Dataset info does not exist!",
                     });
                     modal.form.dataSetInfo.resetFields();

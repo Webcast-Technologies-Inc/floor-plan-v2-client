@@ -139,6 +139,7 @@ const FloorPlandEditor = ({ loading }: { loading: boolean }) => {
             };
 
             handleAddMarker(newMarker);
+            modal.form.dataSet.resetFields();
             modal.selectedArea.setValue(newMarker);
             modal.selectedTool.setValue("select");
         } else {

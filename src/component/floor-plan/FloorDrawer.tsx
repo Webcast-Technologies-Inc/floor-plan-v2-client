@@ -116,7 +116,7 @@ const FloorDrawer = () => {
                     if (resp) {
                         messageApi.open({
                             type: "success",
-                            content: "Floor added successfully!",
+                            content: "Floor updated successfully!",
                         });
                         drawer.refetch.setValue((prev) => !prev);
                         drawer.edit.setVisible(false);
