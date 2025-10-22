@@ -11,6 +11,7 @@ interface CoordinateInput {
 
 interface RetrieveAllInput {
     page?: number;
+    offset?: number;
     limit?: number;
     search?: string;
     andConditions?: {
