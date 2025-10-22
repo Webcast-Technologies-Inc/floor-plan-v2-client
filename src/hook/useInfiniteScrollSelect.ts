@@ -55,10 +55,8 @@ const useInfiniteScrollSelect = (
         searchInput,
         setSearchInput,
         options,
-        loading: loading, // 👈 expose combined loading state
+        loading,
         typing,
-        page,
-        loadOptions,
         handleScroll,
     };
 };

@@ -1,5 +1,5 @@
 import { Card, Empty, Form, Select, Spin } from "antd";
-import { useContext, useEffect } from "react";
+import { useContext } from "react";
 import { useGetDatasetInfo } from "../../api/hooks/useGetDatasetInfo";
 import useInfiniteScrollSelect from "../../hook/useInfiniteScrollSelect";
 import DrawerVisibilityContext from "../../store/context/DrawerVisibilityContext";
@@ -12,9 +12,7 @@ const AreaDetails = ({ loading }: { loading: boolean }) => {
     const {
         options,
         loading: isSelectLoading,
-        page,
         typing,
-        loadOptions,
         handleScroll,
         setSearchInput,
     } = useInfiniteScrollSelect(mockFetch, 30);
@@ -35,10 +33,10 @@ const AreaDetails = ({ loading }: { loading: boolean }) => {
                 limit: pageSize,
                 ...(search
                     ? {
-                          andConditions: [
+                          orMatch: [
                               {
                                   field: "id_primary",
-                                  values: search,
+                                  value: search,
                               },
                           ],
                       }
@@ -54,10 +52,6 @@ const AreaDetails = ({ loading }: { loading: boolean }) => {
 
         return options;
     }
-
-    useEffect(() => {
-        loadOptions(page);
-    }, [page]);
 
     const onChange = (value: string, name: "dataSetInfoId") => {
         modal.dataSet.setValue((prev) => {
