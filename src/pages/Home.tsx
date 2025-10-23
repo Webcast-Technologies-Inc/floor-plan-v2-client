@@ -5,6 +5,7 @@ import { useState } from "react";
 import { useGetAllLandmark } from "../api/hooks/useGetAllLandmark";
 import FloorDrawer from "../component/floor-plan/FloorDrawer";
 import FloorPlanModal from "../component/floor-plan/FloorPlanModal";
+import MarkerFilter from "../component/floor-plan/MarkerFilter";
 import ClusteredLocationMarkers from "../component/google-maps/ClusteredLocationMarkers";
 import { MANILA_POSITION } from "../constant";
 import useDrawerVisibility from "../hook/useDrawerVisibility";
@@ -121,6 +122,7 @@ const Home = () => {
                         />
                     </Map>
                 </div>
+                <MarkerFilter />
                 <FloorPlanModal />
                 <FloorDrawer />
             </DrawerVisibilityProvider>
