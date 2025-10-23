@@ -17,4 +17,10 @@ export interface IFloor {
     areas?: IFloorPlanArea[];
 }
 
+export interface IMarkerFilter {
+    attribute: string;
+    oprerator: string;
+    options: string[];
+}
+
 export type ITool = "select" | "mark";

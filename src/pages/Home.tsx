@@ -10,10 +10,11 @@ import ClusteredLocationMarkers from "../component/google-maps/ClusteredLocation
 import { MANILA_POSITION } from "../constant";
 import useDrawerVisibility from "../hook/useDrawerVisibility";
 import { DrawerVisibilityProvider } from "../store/context/DrawerVisibilityContext";
-import type { IFloor, IFloorPlanArea, ITool } from "../types/floorPlan";
+import type { IFloor, IFloorPlanArea, IMarkerFilter, ITool } from "../types/floorPlan";
 
 const Home = () => {
     const modal = useDrawerVisibility();
+    const filterModal = useDrawerVisibility();
     const drawer = useDrawerVisibility();
     const { data, loading, error } = useGetAllLandmark();
     const [selectedTool, setSelectedTool] = useState<ITool>("select");
@@ -25,11 +26,16 @@ const Home = () => {
     const [drawerDataSet, setDrawerDataSet] = useState<any>(undefined);
     const [isShowAllMarksVisible, setIsShowAllMarksVisible] = useState(false);
     const [dataSetInfo, setDataSetInfo] = useState<any>();
+    const [dataSetFilter, setDataSetFilter] = useState<IMarkerFilter[] | undefined | null>();
 
     return (
         <>
             <DrawerVisibilityProvider
                 value={{
+                    filterModal: {
+                        ...filterModal,
+                        dataSet: { value: dataSetFilter, setValue: setDataSetFilter },
+                    },
                     modal: {
                         ...modal,
                         dataSet: { value: modalDataSet, setValue: setModalDataSet },
@@ -122,8 +128,8 @@ const Home = () => {
                         />
                     </Map>
                 </div>
-                <MarkerFilter />
                 <FloorPlanModal />
+                <MarkerFilter />
                 <FloorDrawer />
             </DrawerVisibilityProvider>
         </>

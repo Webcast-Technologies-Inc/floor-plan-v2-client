@@ -24,9 +24,8 @@ const options: CheckboxGroupProps<string>["options"] = [
 const FloorPlandEditor = ({ loading }: { loading: boolean }) => {
     const [messageApi, contextHolderMessage] = message.useMessage();
     const [modalAntd, contextHolderModal] = Modal.useModal();
-    const { modal, drawer } = useContext(DrawerVisibilityContext);
-    const { handleUpdateFloorPlanWithAreas, loading: loadingUpdateFloorPlanWithAreas } =
-        useUpdateFloorPlanWithAreas();
+    const { modal, filterModal, drawer } = useContext(DrawerVisibilityContext);
+    const { handleUpdateFloorPlanWithAreas } = useUpdateFloorPlanWithAreas();
     const containerRef = useRef<any>(null);
     const [numPages, setNumPages] = useState<number>(1);
     const [currentPage, setCurrentPage] = useState<number>(1);
@@ -267,6 +266,7 @@ const FloorPlandEditor = ({ loading }: { loading: boolean }) => {
                 style={{ width: "100%" }}
                 extra={
                     <div className="flex items-center gap-x-4">
+                        <Button onClick={() => filterModal.view.setVisible(true)}>Filter</Button>
                         {!modal.edit.visible && modal.selectedFloorLevelId.value && (
                             <Switch
                                 value={modal.showAllMarks.visible}

@@ -1,6 +1,6 @@
 import type { FormInstance } from "antd";
 import { createContext } from "react";
-import type { IFloor, IFloorPlanArea } from "../../types/floorPlan";
+import type { IFloor, IFloorPlanArea, IMarkerFilter } from "../../types/floorPlan";
 
 interface DrawerState {
     visible: boolean;
@@ -49,6 +49,12 @@ interface DrawerContextType {
         dataSetInfo: {
             value: any | undefined | null;
             setValue: React.Dispatch<React.SetStateAction<any | undefined | null>>;
+        };
+    };
+    filterModal: IModalVisibility & {
+        dataSet: {
+            value: IMarkerFilter[] | undefined | null;
+            setValue: React.Dispatch<React.SetStateAction<IMarkerFilter[] | undefined | null>>;
         };
     };
     drawer: IModalVisibility & {
@@ -112,6 +118,13 @@ const initialState: DrawerContextType = {
             dataSetInfo: {} as FormInstance,
         },
         dataSetInfo: {
+            value: undefined,
+            setValue: () => {},
+        },
+    },
+    filterModal: {
+        ...modalVisibility,
+        dataSet: {
             value: undefined,
             setValue: () => {},
         },
