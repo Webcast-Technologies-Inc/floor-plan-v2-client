@@ -19,7 +19,7 @@ export interface IFloor {
 
 export interface IMarkerFilter {
     attribute: string;
-    oprerator: string;
+    operator: string;
     options: string[];
 }
 

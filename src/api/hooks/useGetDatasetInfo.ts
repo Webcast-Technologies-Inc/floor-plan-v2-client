@@ -18,6 +18,9 @@ interface RetrieveAllInput {
         field: string;
         values: string | number | boolean | (string | number | boolean)[];
     }[];
+    advanced?: {
+        [key: string]: any;
+    };
 }
 
 export interface GetDatasetInfoVariables {

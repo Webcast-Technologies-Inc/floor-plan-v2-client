@@ -266,7 +266,11 @@ const FloorPlandEditor = ({ loading }: { loading: boolean }) => {
                 style={{ width: "100%" }}
                 extra={
                     <div className="flex items-center gap-x-4">
-                        <Button onClick={() => filterModal.view.setVisible(true)}>Filter</Button>
+                        {!modal.edit.visible && (
+                            <Button onClick={() => filterModal.view.setVisible(true)}>
+                                Filter
+                            </Button>
+                        )}
                         {!modal.edit.visible && modal.selectedFloorLevelId.value && (
                             <Switch
                                 value={modal.showAllMarks.visible}
@@ -295,6 +299,8 @@ const FloorPlandEditor = ({ loading }: { loading: boolean }) => {
                             handleEdit={() => {
                                 modal.edit.setVisible(true);
                                 setHighlightMarkers(true);
+                                filterModal.dataSet.setValue(null);
+                                filterModal.form.resetFields();
                             }}
                         />
                     </div>
@@ -428,26 +434,37 @@ const FloorPlandEditor = ({ loading }: { loading: boolean }) => {
                                         />
                                     )}
 
-                                    {modal.dataSet.value?.areas?.map((area) => (
-                                        <MarkerPoint
-                                            key={area.id}
-                                            marker={area}
-                                            isSelected={modal.selectedArea.value?.id === area.id}
-                                            selectedTool={modal.selectedTool.value}
-                                            isHighlighted={highlightMarkers}
-                                            onClick={() => {
-                                                modal.selectedArea.setValue(area);
-                                                modal.form.dataSet.setFieldsValue({
-                                                    dataSetInfoId: area.dataSetInfoId,
-                                                });
-                                            }}
-                                            onDragEnd={(x, y) =>
-                                                handleMarkerDragEnd(area?.id ?? "", x, y)
-                                            }
-                                            isEditable={modal.edit.visible}
-                                            containerRef={containerRef}
-                                        />
-                                    ))}
+                                    {modal.dataSet.value?.areas?.map((area) => {
+                                        const isVisible = filterModal.dataSet.value
+                                            ? filterModal.dataSet.value.some(
+                                                  (item: any) =>
+                                                      item.id_primary == area.dataSetInfoId
+                                              )
+                                            : true;
+
+                                        return isVisible ? (
+                                            <MarkerPoint
+                                                key={area.id}
+                                                marker={area}
+                                                isSelected={
+                                                    modal.selectedArea.value?.id === area.id
+                                                }
+                                                selectedTool={modal.selectedTool.value}
+                                                isHighlighted={highlightMarkers}
+                                                onClick={() => {
+                                                    modal.selectedArea.setValue(area);
+                                                    modal.form.dataSet.setFieldsValue({
+                                                        dataSetInfoId: area.dataSetInfoId,
+                                                    });
+                                                }}
+                                                onDragEnd={(x, y) =>
+                                                    handleMarkerDragEnd(area?.id ?? "", x, y)
+                                                }
+                                                isEditable={modal.edit.visible}
+                                                containerRef={containerRef}
+                                            />
+                                        ) : null;
+                                    })}
                                 </>
                             )}
                         </div>
