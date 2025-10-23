@@ -139,7 +139,7 @@ export const MarkerPoint = ({
             onMouseDown={handleMouseDown}
             onClick={handleClick}
         >
-            {isDragging ? (
+            {hasMoved ? (
                 icon
             ) : (
                 <Tooltip
