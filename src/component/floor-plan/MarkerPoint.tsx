@@ -107,6 +107,22 @@ export const MarkerPoint = ({
         }
     };
 
+    let icon = isSelected ? (
+        <PushpinFilled
+            style={{ color: "#ff0000" }} // filled pin color
+            className="text-lg drop-shadow-[0_0_8px_hsl(200_95%_55%/0.6)] transition-all duration-500"
+        />
+    ) : (
+        <PushpinTwoTone
+            twoToneColor={"#ff0000"}
+            className={`text-lg transition-all duration-500 ${
+                isHighlighted
+                    ? "drop-shadow-[0_0_12px_rgba(59,130,246,0.8)]"
+                    : "drop-shadow-none opacity-0"
+            }`}
+        />
+    );
+
     return (
         <div
             ref={markerRef}
@@ -123,29 +139,19 @@ export const MarkerPoint = ({
             onMouseDown={handleMouseDown}
             onClick={handleClick}
         >
-            <Tooltip
-                placement="top"
-                title={marker.dataSetInfoId}
-                align={{
-                    offset: [0, 0], // move tooltip closer to the element (negative = upward)
-                }}
-            >
-                {isSelected ? (
-                    <PushpinFilled
-                        style={{ color: "#ff0000" }} // filled pin color
-                        className="text-lg drop-shadow-[0_0_8px_hsl(200_95%_55%/0.6)] transition-all duration-500"
-                    />
-                ) : (
-                    <PushpinTwoTone
-                        twoToneColor={"#ff0000"}
-                        className={`text-lg transition-all duration-500 ${
-                            isHighlighted
-                                ? "drop-shadow-[0_0_12px_rgba(59,130,246,0.8)]"
-                                : "drop-shadow-none opacity-0"
-                        }`}
-                    />
-                )}
-            </Tooltip>
+            {isDragging ? (
+                icon
+            ) : (
+                <Tooltip
+                    placement="top"
+                    title={marker.dataSetInfoId}
+                    align={{
+                        offset: [0, 0], // move tooltip closer to the element (negative = upward)
+                    }}
+                >
+                    {icon}
+                </Tooltip>
+            )}
         </div>
     );
 };

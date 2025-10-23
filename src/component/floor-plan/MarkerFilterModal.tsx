@@ -161,7 +161,7 @@ const MarkerFilter = () => {
                     key="clear"
                     onClick={() => {
                         onClose();
-                        filterModal.dataSet.setValue(undefined);
+                        filterModal.dataSet.setValue(null);
                         filterModal.form.resetFields();
                     }}
                 >

@@ -18,8 +18,8 @@ const FloorDrawer = () => {
     const [modalAntd, contextHolderModal] = Modal.useModal();
     const [messageApi, contextHolderMessage] = message.useMessage();
     const [form] = Form.useForm();
-    const { modal, drawer } = useContext(DrawerVisibilityContext);
-    const { handleGetDatasets } = useGetDatasets();
+    const { modal, filterModal, drawer } = useContext(DrawerVisibilityContext);
+    const { handleGetDatasets, loading: loadingGetDatasets } = useGetDatasets();
     const { handleCreateFloor, loading: loadingCreateFloor } = useCreateFloor();
     const { handleGetFloorByLevelId, loading: loadingGetFloorByLevelId } = useGetFloorByLevelId();
     const { handleUpdateFloor, loading: loadingUpdateFloor } = useUpdateFloor();
@@ -42,9 +42,7 @@ const FloorDrawer = () => {
                         throw new Error("Failed to fetch floor data");
                     }
 
-                    form.setFieldsValue({
-                        ...resp.data.getFloorByLevelId,
-                    });
+                    form.setFieldsValue(resp.data.getFloorByLevelId);
                 } catch (error) {
                     messageApi.open({
                         type: "error",
@@ -118,6 +116,11 @@ const FloorDrawer = () => {
                             type: "success",
                             content: "Floor updated successfully!",
                         });
+                        if (modal.dataSet.value?.dataSetId !== values.dataSetId) {
+                            /* Clear filter if the dataset was changed */
+                            filterModal.dataSet.setValue(null);
+                            filterModal.form.resetFields();
+                        }
                         drawer.refetch.setValue((prev) => !prev);
                         drawer.edit.setVisible(false);
                         modal.selectedArea.setValue(null);
@@ -212,7 +215,7 @@ const FloorDrawer = () => {
                         form.resetFields();
                     }
                 }}
-                loading={loadingGetFloorByLevelId}
+                loading={loadingGetFloorByLevelId || loadingGetDatasets}
             >
                 <Form form={form} layout="vertical" onFinish={onFinish} autoComplete="off">
                     <Form.Item
