@@ -286,6 +286,10 @@ const MarkerFilter = () => {
                                                 mode="multiple"
                                                 options={attributeOptionsMap[name] || []}
                                                 placeholder="Select Options"
+                                                disabled={
+                                                    !attributeOptionsMap[name] ||
+                                                    attributeOptionsMap[name].length === 0
+                                                }
                                             />
                                         </Form.Item>
                                     </React.Fragment>
