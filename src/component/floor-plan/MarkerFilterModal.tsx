@@ -16,12 +16,16 @@ const MarkerFilter = () => {
     const [attributeOptionsMap, setAttributeOptionsMap] = useState<
         Record<number, { value: string; label: string }[]>
     >({});
+    const [savedFormValues, setSavedFormValues] = useState<any>(null);
 
     useEffect(() => {
         const fetch = async () => {
             if (!(modal.dataSet.value?.dataSetId && filterModal.view.visible)) {
                 return;
             }
+
+            // Save current form values when modal opens
+            setSavedFormValues(filterModal.form.getFieldsValue());
 
             const respHeaders = await handleGetDatasetHeaders({
                 getDatasetInfoHeadersId: modal.dataSet.value?.dataSetId,
@@ -78,6 +82,10 @@ const MarkerFilter = () => {
     }, [filterModal.view.visible, modal.dataSet.value?.dataSetId]);
 
     const onClose = () => {
+        // Restore saved form values when closing without applying
+        if (savedFormValues) {
+            filterModal.form.setFieldsValue(savedFormValues);
+        }
         filterModal.view.setVisible(false);
     };
 
@@ -148,7 +156,9 @@ const MarkerFilter = () => {
             modal.selectedArea.setValue(null);
         }
 
-        onClose();
+        // Update saved values after successful apply
+        setSavedFormValues(filterModal.form.getFieldsValue());
+        filterModal.view.setVisible(false);
     };
 
     return (
@@ -160,9 +170,10 @@ const MarkerFilter = () => {
                 <Button
                     key="clear"
                     onClick={() => {
-                        onClose();
                         filterModal.dataSet.setValue(null);
                         filterModal.form.resetFields();
+                        setSavedFormValues(filterModal.form.getFieldsValue());
+                        filterModal.view.setVisible(false);
                     }}
                 >
                     Clear
