@@ -5,6 +5,7 @@ import { useState } from "react";
 import { useGetAllLandmark } from "../api/hooks/useGetAllLandmark";
 import FloorDrawer from "../component/floor-plan/FloorDrawer";
 import FloorPlanModal from "../component/floor-plan/FloorPlanModal";
+import MarkerFilterModal from "../component/floor-plan/MarkerFilterModal";
 import ClusteredLocationMarkers from "../component/google-maps/ClusteredLocationMarkers";
 import { MANILA_POSITION } from "../constant";
 import useDrawerVisibility from "../hook/useDrawerVisibility";
@@ -13,6 +14,7 @@ import type { IFloor, IFloorPlanArea, ITool } from "../types/floorPlan";
 
 const Home = () => {
     const modal = useDrawerVisibility();
+    const filterModal = useDrawerVisibility();
     const drawer = useDrawerVisibility();
     const { data, loading, error } = useGetAllLandmark();
     const [selectedTool, setSelectedTool] = useState<ITool>("select");
@@ -24,11 +26,17 @@ const Home = () => {
     const [drawerDataSet, setDrawerDataSet] = useState<any>(undefined);
     const [isShowAllMarksVisible, setIsShowAllMarksVisible] = useState(false);
     const [dataSetInfo, setDataSetInfo] = useState<any>();
+    const [dataSetFilter, setDataSetFilter] = useState<any[] | undefined | null>();
 
     return (
         <>
             <DrawerVisibilityProvider
                 value={{
+                    filterModal: {
+                        ...filterModal,
+                        dataSet: { value: dataSetFilter, setValue: setDataSetFilter },
+                        form: Form.useForm()[0],
+                    },
                     modal: {
                         ...modal,
                         dataSet: { value: modalDataSet, setValue: setModalDataSet },
@@ -122,6 +130,7 @@ const Home = () => {
                     </Map>
                 </div>
                 <FloorPlanModal />
+                <MarkerFilterModal />
                 <FloorDrawer />
             </DrawerVisibilityProvider>
         </>

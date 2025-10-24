@@ -51,6 +51,13 @@ interface DrawerContextType {
             setValue: React.Dispatch<React.SetStateAction<any | undefined | null>>;
         };
     };
+    filterModal: IModalVisibility & {
+        dataSet: {
+            value: any[] | undefined | null;
+            setValue: React.Dispatch<React.SetStateAction<any[] | undefined | null>>;
+        };
+        form: FormInstance;
+    };
     drawer: IModalVisibility & {
         dataSet: DataState;
         refetch: { value: boolean; setValue: React.Dispatch<React.SetStateAction<boolean>> };
@@ -115,6 +122,14 @@ const initialState: DrawerContextType = {
             value: undefined,
             setValue: () => {},
         },
+    },
+    filterModal: {
+        ...modalVisibility,
+        dataSet: {
+            value: undefined,
+            setValue: () => {},
+        },
+        form: {} as FormInstance,
     },
     drawer: {
         ...modalVisibility,

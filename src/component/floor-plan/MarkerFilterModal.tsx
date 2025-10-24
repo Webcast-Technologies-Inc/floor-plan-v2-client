@@ -1,0 +1,326 @@
+import { DeleteOutlined, FilterOutlined, PlusCircleFilled } from "@ant-design/icons";
+import { Button, Divider, Form, Modal, Select } from "antd";
+import React, { useContext, useEffect, useState } from "react";
+import { useGetDatasetAttributeOptions } from "../../api/hooks/useGetDatasetAttributeOptions";
+import { useGetDatasetHeaders } from "../../api/hooks/useGetDatasetHeaders";
+import { useGetDatasetInfo } from "../../api/hooks/useGetDatasetInfo";
+import DrawerVisibilityContext from "../../store/context/DrawerVisibilityContext";
+import type { IFloorPlanArea, IMarkerFilter } from "../../types/floorPlan";
+
+const MarkerFilter = () => {
+    const { filterModal, modal } = useContext(DrawerVisibilityContext);
+    const { handleGetDatasetInfo } = useGetDatasetInfo();
+    const { handleGetDatasetHeaders } = useGetDatasetHeaders();
+    const { handleGetAttributeOptions } = useGetDatasetAttributeOptions();
+    const [headerOptions, setHeaderOptions] = useState<{ value: string; label: string }[]>([]);
+    const [attributeOptionsMap, setAttributeOptionsMap] = useState<
+        Record<number, { value: string; label: string }[]>
+    >({});
+    const [savedFormValues, setSavedFormValues] = useState<any>(null);
+
+    useEffect(() => {
+        const fetch = async () => {
+            if (!(modal.dataSet.value?.dataSetId && filterModal.view.visible)) {
+                return;
+            }
+
+            // Save current form values when modal opens
+            setSavedFormValues(filterModal.form.getFieldsValue());
+
+            const respHeaders = await handleGetDatasetHeaders({
+                getDatasetInfoHeadersId: modal.dataSet.value?.dataSetId,
+            });
+
+            const options =
+                respHeaders.data?.get_dataset_info_headers.headers?.map((header) => ({
+                    value: header.name,
+                    label: header.name,
+                })) || [];
+
+            setHeaderOptions(options);
+        };
+
+        fetch();
+    }, [filterModal.view.visible, modal.dataSet.value?.dataSetId]);
+
+    useEffect(() => {
+        /* Preloads attribute options for already-selected filters (e.g. restoring state) */
+        const fetchAttributeOptions = async () => {
+            if (!filterModal.view.visible) {
+                return;
+            }
+
+            const filters = filterModal.form.getFieldValue("filter") || [];
+            const updatedMap: Record<number, { value: string; label: string }[]> = {};
+
+            await Promise.all(
+                filters.map(async (filter: any, index: number) => {
+                    if (!(filter?.attribute && modal.dataSet.value?.dataSetId)) {
+                        return;
+                    }
+
+                    const respAttribute = await handleGetAttributeOptions({
+                        attributeName: filter.attribute,
+                        getDatasetAttributeOptionsId: modal.dataSet.value?.dataSetId,
+                    });
+
+                    const attributeOptions = (
+                        respAttribute.data?.get_dataset_attribute_options.options || []
+                    ).map((option) => ({
+                        value: String(option),
+                        label: String(option),
+                    }));
+
+                    updatedMap[index] = attributeOptions;
+                })
+            );
+
+            setAttributeOptionsMap(updatedMap);
+        };
+
+        fetchAttributeOptions();
+    }, [filterModal.view.visible, modal.dataSet.value?.dataSetId]);
+
+    const onClose = () => {
+        // Restore saved form values when closing without applying
+        if (savedFormValues) {
+            filterModal.form.setFieldsValue(savedFormValues);
+        }
+        filterModal.view.setVisible(false);
+    };
+
+    const onAfterClose = () => {
+        setHeaderOptions([]);
+        setAttributeOptionsMap({});
+    };
+
+    const onFinish = async (values: { filter: IMarkerFilter[] }) => {
+        if (!(modal.dataSet.value?.dataSetId && modal.dataSet.value?.areas)) {
+            return;
+        }
+
+        const filter = values.filter
+            .map(({ operator, options, attribute }) => {
+                if (operator === "=") {
+                    return {
+                        equal: options,
+                        field: attribute,
+                    };
+                }
+
+                if (operator === "<>") {
+                    return {
+                        not: options,
+                        field: attribute,
+                    };
+                }
+
+                if (operator === "<" || operator === ">") {
+                    return {
+                        range: options.map((value) => ({
+                            comparator: operator,
+                            value,
+                        })),
+                        field: attribute,
+                    };
+                }
+
+                return undefined;
+            })
+            .filter(Boolean);
+
+        const dataSetInfo = await handleGetDatasetInfo({
+            getDatasetInfoId: modal.dataSet.value?.dataSetId,
+            args: {
+                advanced: filter,
+                andConditions: [
+                    {
+                        field: "id_primary",
+                        values: modal.dataSet.value?.areas.map(
+                            (area: IFloorPlanArea) => area.dataSetInfoId
+                        ),
+                    },
+                ],
+            },
+        });
+
+        const filteredDataSet = dataSetInfo.data?.get_dataset_info.datasets;
+        filterModal.dataSet.setValue(filteredDataSet);
+        if (
+            !filteredDataSet?.some(
+                (data) => data.id_primary == modal.selectedArea.value?.dataSetInfoId
+            )
+        ) {
+            modal.form.dataSetInfo.resetFields();
+            modal.dataSetInfo.setValue(null);
+            modal.selectedArea.setValue(null);
+        }
+
+        // Update saved values after successful apply
+        setSavedFormValues(filterModal.form.getFieldsValue());
+        filterModal.view.setVisible(false);
+    };
+
+    return (
+        <Modal
+            open={filterModal.view.visible}
+            title="Filter"
+            onCancel={onClose}
+            footer={[
+                <Button
+                    key="clear"
+                    onClick={() => {
+                        filterModal.dataSet.setValue(null);
+                        filterModal.form.resetFields();
+                        setSavedFormValues(filterModal.form.getFieldsValue());
+                        filterModal.view.setVisible(false);
+                    }}
+                >
+                    Clear
+                </Button>,
+                <Button
+                    key="apply"
+                    type="primary"
+                    icon={<FilterOutlined />}
+                    onClick={() => filterModal.form.submit()}
+                >
+                    Apply
+                </Button>,
+            ]}
+            afterClose={onAfterClose}
+        >
+            <Form
+                form={filterModal.form}
+                layout="vertical"
+                onFinish={onFinish}
+                initialValues={{ filter: [{}] }}
+            >
+                <Form.List name="filter">
+                    {(fields, { add, remove }) => (
+                        <>
+                            <div className="max-h-[50vh] overflow-y-auto !pr-2">
+                                {fields.map(({ key, name }) => (
+                                    <React.Fragment key={key}>
+                                        {fields.length > 1 && (
+                                            <Divider orientation="right">
+                                                <Button
+                                                    type="text"
+                                                    icon={
+                                                        <DeleteOutlined style={{ color: "red" }} />
+                                                    }
+                                                    onClick={() => remove(name)}
+                                                />
+                                            </Divider>
+                                        )}
+                                        <div className="grid grid-cols-[2fr_1fr] gap-x-4">
+                                            <Form.Item
+                                                name={[name, "attribute"]}
+                                                rules={[
+                                                    {
+                                                        required: true,
+                                                        message: "Attribute is required",
+                                                    },
+                                                ]}
+                                            >
+                                                <Select
+                                                    options={headerOptions}
+                                                    placeholder="Select Attribute"
+                                                    onChange={async (value) => {
+                                                        /* Fetches attribute options when user selects a new attribute */
+                                                        if (!modal.dataSet.value?.dataSetId) {
+                                                            return;
+                                                        }
+
+                                                        const respAttribute =
+                                                            await handleGetAttributeOptions({
+                                                                attributeName: value,
+                                                                getDatasetAttributeOptionsId:
+                                                                    modal.dataSet.value?.dataSetId,
+                                                            });
+
+                                                        const attributeOptions = (
+                                                            respAttribute.data
+                                                                ?.get_dataset_attribute_options
+                                                                .options || []
+                                                        ).map((option) => ({
+                                                            value: String(option),
+                                                            label: String(option),
+                                                        }));
+
+                                                        setAttributeOptionsMap((prev) => ({
+                                                            ...prev,
+                                                            [name]: attributeOptions,
+                                                        }));
+
+                                                        filterModal.form.setFields([
+                                                            {
+                                                                name: ["filter", name, "options"],
+                                                                value: undefined,
+                                                            },
+                                                        ]);
+                                                    }}
+                                                />
+                                            </Form.Item>
+
+                                            <Form.Item
+                                                name={[name, "operator"]}
+                                                initialValue={"="}
+                                                rules={[
+                                                    {
+                                                        required: true,
+                                                        message: "Operator is required",
+                                                    },
+                                                ]}
+                                            >
+                                                <Select
+                                                    options={[
+                                                        { label: "<>", value: "<>" },
+                                                        { label: "=", value: "=" },
+                                                        { label: "<", value: "<" },
+                                                        { label: ">", value: ">" },
+                                                    ]}
+                                                    placeholder="Select Operator"
+                                                />
+                                            </Form.Item>
+                                        </div>
+
+                                        <Form.Item
+                                            name={[name, "options"]}
+                                            rules={[
+                                                {
+                                                    required: true,
+                                                    message: "Options is required",
+                                                },
+                                            ]}
+                                        >
+                                            <Select
+                                                mode="multiple"
+                                                options={attributeOptionsMap[name] || []}
+                                                placeholder="Select Options"
+                                                disabled={
+                                                    !attributeOptionsMap[name] ||
+                                                    attributeOptionsMap[name].length === 0
+                                                }
+                                            />
+                                        </Form.Item>
+                                    </React.Fragment>
+                                ))}
+                            </div>
+                            <Button
+                                className="!font-bold w-full !mt-3"
+                                type="link"
+                                icon={<PlusCircleFilled />}
+                                iconPosition="end"
+                                onClick={() => add()}
+                            >
+                                ADD CONDITION
+                            </Button>
+                        </>
+                    )}
+                </Form.List>
+            </Form>
+        </Modal>
+    );
+};
+
+export default MarkerFilter;
