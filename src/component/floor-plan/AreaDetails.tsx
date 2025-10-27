@@ -89,6 +89,12 @@ const AreaDetails = ({ loading }: { loading: boolean }) => {
         }
     };
 
+    const renderSpinner = (
+        <div style={{ textAlign: "center", padding: 8 }}>
+            <Spin size="small" />
+        </div>
+    );
+
     return (
         <Card
             title="Dataset Details"
@@ -113,16 +119,18 @@ const AreaDetails = ({ loading }: { loading: boolean }) => {
                             setSearchInput(value); // triggers debounce
                         }}
                         onPopupScroll={handleScroll}
-                        popupRender={(menu) => (
-                            <>
-                                {menu}
-                                {!typing && isSelectLoading && (
-                                    <div style={{ textAlign: "center", padding: 8 }}>
-                                        <Spin size="small" />
-                                    </div>
-                                )}
-                            </>
-                        )}
+                        popupRender={(menu) => {
+                            if (typing) {
+                                return renderSpinner;
+                            }
+
+                            return (
+                                <>
+                                    {menu}
+                                    {isSelectLoading && renderSpinner}
+                                </>
+                            );
+                        }}
                         notFoundContent={
                             typing ? (
                                 <div style={{ textAlign: "center", padding: 8 }}>
