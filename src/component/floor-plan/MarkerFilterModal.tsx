@@ -10,8 +10,9 @@ import type { IFloorPlanArea, IMarkerFilter } from "../../types/floorPlan";
 const MarkerFilter = () => {
     const { filterModal, modal } = useContext(DrawerVisibilityContext);
     const { handleGetDatasetInfo } = useGetDatasetInfo();
-    const { handleGetDatasetHeaders } = useGetDatasetHeaders();
-    const { handleGetAttributeOptions } = useGetDatasetAttributeOptions();
+    const { handleGetDatasetHeaders, loading: loadingGetDatasetHeaders } = useGetDatasetHeaders();
+    const { handleGetAttributeOptions, loading: loadingGetAttributeOptions } =
+        useGetDatasetAttributeOptions();
     const [headerOptions, setHeaderOptions] = useState<{ value: string; label: string }[]>([]);
     const [attributeOptionsMap, setAttributeOptionsMap] = useState<
         Record<number, { value: string; label: string }[]>
@@ -188,6 +189,7 @@ const MarkerFilter = () => {
                 </Button>,
             ]}
             afterClose={onAfterClose}
+            loading={loadingGetDatasetHeaders}
         >
             <Form
                 form={filterModal.form}
@@ -299,7 +301,7 @@ const MarkerFilter = () => {
                                                 placeholder="Select Options"
                                                 disabled={
                                                     !attributeOptionsMap[name] ||
-                                                    attributeOptionsMap[name].length === 0
+                                                    loadingGetAttributeOptions
                                                 }
                                             />
                                         </Form.Item>
