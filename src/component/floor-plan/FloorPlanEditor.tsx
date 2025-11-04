@@ -27,14 +27,11 @@ const FloorPlandEditor = ({ loading }: { loading: boolean }) => {
     const { modal, filterModal, drawer } = useContext(DrawerVisibilityContext);
     const { handleUpdateFloorPlanWithAreas } = useUpdateFloorPlanWithAreas();
     const containerRef = useRef<any>(null);
-    const [numPages, setNumPages] = useState<number>(1);
-    const [currentPage, setCurrentPage] = useState<number>(1);
     const [imageUrl, setImageUrl] = useState<string | null>(null);
     const [newFile, setNewFile] = useState<File | null>(null);
     const [highlightMarkers, setHighlightMarkers] = useState(modal.showAllMarks.visible);
     const highlightTimeoutRef = useRef<number | null>(null);
     const [loadingSave, setLoadingSave] = useState(false);
-    // const [canvasOffset, setCanvasOffset] = useState({ x: 0, y: 0 });
 
     useEffect(() => {
         if (newFile && newFile?.type.startsWith("image/")) {
@@ -68,22 +65,6 @@ const FloorPlandEditor = ({ loading }: { loading: boolean }) => {
             return () => URL.revokeObjectURL(url);
         }
     }, [newFile]);
-
-    // useEffect(() => {
-    //     const updateOffset = () => {
-    //         if (containerRef.current) {
-    //             const rect = containerRef.current.getBoundingClientRect();
-    //             setCanvasOffset({ x: rect.left, y: rect.top });
-    //         }
-    //     };
-    //     updateOffset();
-    //     window.addEventListener("resize", updateOffset);
-    //     window.addEventListener("scroll", updateOffset);
-    //     return () => {
-    //         window.removeEventListener("resize", updateOffset);
-    //         window.removeEventListener("scroll", updateOffset);
-    //     };
-    // }, []);
 
     const handleAddMarker = (marker: IFloorPlanArea) => {
         modal.dataSet.setValue((prev) => {
@@ -326,13 +307,6 @@ const FloorPlandEditor = ({ loading }: { loading: boolean }) => {
                                 )}
                             </div>
                             <FloorPlanUploader onFileUpload={(file) => setNewFile(file)} />
-                            {/* <Pagination
-                                    simple
-                                    current={currentPage}
-                                    total={numPages} // total items
-                                    pageSize={1} // 1 item per page
-                                    onChange={(page) => setCurrentPage(page)}
-                                /> */}
                         </div>
                     )}
                     <div className="h-[600px] flex justify-center items-center !bg-gray-100 rounded-lg border-2 border-slate-800 shadow-lg overflow-auto">
@@ -366,16 +340,14 @@ const FloorPlandEditor = ({ loading }: { loading: boolean }) => {
                                                         ? newFile
                                                         : modal.dataSet.value?.presignedUrl ?? ""
                                                 }
-                                                onLoadSuccess={({ numPages }) =>
-                                                    setNumPages(numPages)
-                                                }
+                                                onLoadSuccess={({ numPages }) => {}}
                                                 onLoadError={(error) => {
                                                     console.error("PDF load error:", error);
                                                 }}
                                                 className="block"
                                             >
                                                 <Page
-                                                    pageNumber={currentPage}
+                                                    pageNumber={1}
                                                     renderTextLayer={false}
                                                     renderAnnotationLayer={false}
                                                     className="max-w-full !bg-gray-100"
