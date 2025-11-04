@@ -32,6 +32,8 @@ const FloorPlandEditor = ({ loading }: { loading: boolean }) => {
     const [highlightMarkers, setHighlightMarkers] = useState(modal.showAllMarks.visible);
     const highlightTimeoutRef = useRef<number | null>(null);
     const [loadingSave, setLoadingSave] = useState(false);
+    const [isFileLoaded, setIsFileLoaded] = useState(false);
+    const isPdf = (newFile?.type ?? modal.dataSet.value?.fileType) === "application/pdf";
 
     useEffect(() => {
         if (newFile && newFile?.type.startsWith("image/")) {
@@ -228,9 +230,6 @@ const FloorPlandEditor = ({ loading }: { loading: boolean }) => {
         }
     };
 
-    // const isPdf = newFile?.type === "application/pdf";
-    const isPdf = (newFile?.type ?? modal.dataSet.value?.fileType) === "application/pdf";
-
     return (
         <>
             {contextHolderModal}
@@ -330,17 +329,15 @@ const FloorPlandEditor = ({ loading }: { loading: boolean }) => {
                                                         ? newFile.name
                                                         : modal.dataSet.value?.filePath
                                                 }
-                                                loading={
-                                                    <div className="flex justify-center items-center h-[500px]">
-                                                        <Spin />
-                                                    </div>
-                                                }
+                                                loading={<Spin />}
                                                 file={
                                                     newFile
                                                         ? newFile
                                                         : modal.dataSet.value?.presignedUrl ?? ""
                                                 }
-                                                onLoadSuccess={({ numPages }) => {}}
+                                                onLoadSuccess={() => {
+                                                    setIsFileLoaded(true);
+                                                }}
                                                 onLoadError={(error) => {
                                                     console.error("PDF load error:", error);
                                                 }}
@@ -403,40 +400,44 @@ const FloorPlandEditor = ({ loading }: { loading: boolean }) => {
                                                 flexShrink: 0,
                                             }}
                                             draggable={false}
+                                            onLoad={() => setIsFileLoaded(true)}
                                         />
                                     )}
 
-                                    {modal.dataSet.value?.areas?.map((area) => {
-                                        const isVisible = filterModal.dataSet.value
-                                            ? filterModal.dataSet.value.some(
-                                                  (item: any) =>
-                                                      item.id_primary == area.dataSetInfoId
-                                              )
-                                            : true;
+                                    {!isPdf && !isFileLoaded && <Spin />}
 
-                                        return isVisible ? (
-                                            <MarkerPoint
-                                                key={area.id}
-                                                marker={area}
-                                                isSelected={
-                                                    modal.selectedArea.value?.id === area.id
-                                                }
-                                                selectedTool={modal.selectedTool.value}
-                                                isHighlighted={highlightMarkers}
-                                                onClick={() => {
-                                                    modal.selectedArea.setValue(area);
-                                                    modal.form.dataSet.setFieldsValue({
-                                                        dataSetInfoId: area.dataSetInfoId,
-                                                    });
-                                                }}
-                                                onDragEnd={(x, y) =>
-                                                    handleMarkerDragEnd(area?.id ?? "", x, y)
-                                                }
-                                                isEditable={modal.edit.visible}
-                                                containerRef={containerRef}
-                                            />
-                                        ) : null;
-                                    })}
+                                    {isFileLoaded &&
+                                        modal.dataSet.value?.areas?.map((area) => {
+                                            const isVisible = filterModal.dataSet.value
+                                                ? filterModal.dataSet.value.some(
+                                                      (item: any) =>
+                                                          item.id_primary == area.dataSetInfoId
+                                                  )
+                                                : true;
+
+                                            return isVisible ? (
+                                                <MarkerPoint
+                                                    key={area.id}
+                                                    marker={area}
+                                                    isSelected={
+                                                        modal.selectedArea.value?.id === area.id
+                                                    }
+                                                    selectedTool={modal.selectedTool.value}
+                                                    isHighlighted={highlightMarkers}
+                                                    onClick={() => {
+                                                        modal.selectedArea.setValue(area);
+                                                        modal.form.dataSet.setFieldsValue({
+                                                            dataSetInfoId: area.dataSetInfoId,
+                                                        });
+                                                    }}
+                                                    onDragEnd={(x, y) =>
+                                                        handleMarkerDragEnd(area?.id ?? "", x, y)
+                                                    }
+                                                    isEditable={modal.edit.visible}
+                                                    containerRef={containerRef}
+                                                />
+                                            ) : null;
+                                        })}
                                 </>
                             )}
                         </div>
