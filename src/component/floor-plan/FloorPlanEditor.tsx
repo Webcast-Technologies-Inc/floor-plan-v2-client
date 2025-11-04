@@ -337,7 +337,7 @@ const FloorPlandEditor = ({ loading }: { loading: boolean }) => {
                     )}
                     <div className="flex justify-center items-center !bg-gray-100 rounded-lg border-2 border-slate-800 shadow-lg min-h-[600px]">
                         <div
-                            className="relative overflow-auto"
+                            className="relative overflow-auto max-h-[600px]"
                             onClick={handleCanvasClick}
                             style={{
                                 cursor:
