@@ -54,12 +54,10 @@ const MarkerFilter = () => {
             const filters = filterModal.form.getFieldValue("filter") || [];
             const updatedMap: Record<number, { value: string; label: string }[]> = {};
 
-            await Promise.all(
-                filters.map(async (filter: any, index: number) => {
-                    if (!(filter?.attribute && modal.dataSet.value?.dataSetId)) {
-                        return;
-                    }
+            for (const [index, filter] of filters.entries()) {
+                if (!(filter?.attribute && modal.dataSet.value?.dataSetId)) continue;
 
+                try {
                     const respAttribute = await handleGetAttributeOptions({
                         attributeName: filter.attribute,
                         getDatasetAttributeOptionsId: modal.dataSet.value?.dataSetId,
@@ -73,8 +71,13 @@ const MarkerFilter = () => {
                     }));
 
                     updatedMap[index] = attributeOptions;
-                })
-            );
+                } catch (err: any) {
+                    // Safely ignore abort/cancel errors
+                    if (err.name !== "AbortError" && err.code !== "ERR_CANCELED") {
+                        console.error("Failed to fetch attribute options:", err);
+                    }
+                }
+            }
 
             setAttributeOptionsMap(updatedMap);
         };
