@@ -25,7 +25,6 @@ const FloorPlanModal = () => {
     const [modalAntd, contextHolderModal] = Modal.useModal();
     const { handleGetLandmarkById, loading: loadingGetLandmarkById } = useGetLandmarkById();
     const { handleGetFloorByLevelId, loading: loadingGetFloorByLevelId } = useGetFloorByLevelId();
-    // const { handleUpdateFloorAreas, loading: loadingUpdateFloorAreas } = useUpdateFloorAreas();
     const { handleDeleteFloor } = useDeleteFloor();
     const { modal, drawer } = useContext(DrawerVisibilityContext);
     const [floorOptions, setFloorOptions] = useState<FloorOption[]>([]);
@@ -107,7 +106,7 @@ const FloorPlanModal = () => {
     useEffect(() => {
         const fetch = async () => {
             setModalLoading(true);
-            if (modal.id.value && modal.view.visible) {
+            if (modal.id.value) {
                 try {
                     const resp = await handleGetLandmarkById(modal.id.value);
 
@@ -150,7 +149,7 @@ const FloorPlanModal = () => {
             }
         };
         fetch();
-    }, [modal.id.value, modal.view.visible, drawer.refetch.value]);
+    }, [modal.id.value, drawer.refetch.value]);
 
     const onChangeSelect = useCallback(
         async (val: any) => {
@@ -181,7 +180,6 @@ const FloorPlanModal = () => {
     );
 
     const handleResetStates = () => {
-        modal.view.setVisible(false);
         modal.edit.setVisible(false);
         modal.id.setValue(null);
         modal.selectedArea.setValue(null);
@@ -218,53 +216,52 @@ const FloorPlanModal = () => {
         <>
             {contextHolderMessage}
             {contextHolderModal}
-            <Modal
+            {/* <Modal
                 title="Floor Plan"
                 width={1500}
                 zIndex={500}
-                open={modal.view.visible}
                 onCancel={onClose}
                 footer={null}
                 destroyOnHidden // force re-mount to reset the states
                 loading={modalLoading}
-            >
-                <Row gutter={16}>
-                    <Col span={17}>
-                        <FloorPlandEditor loading={loading} />
-                    </Col>
-                    <Col span={7}>
-                        <div className="!space-y-4">
-                            <div className="flex gap-x-4">
-                                <Select
-                                    placeholder="Select Floor Level"
-                                    style={{ width: 160 }}
-                                    value={modal.selectedFloorLevelId.value}
-                                    onChange={onChangeSelect}
-                                    options={floorOptions}
-                                />
-                                <Dropdown
-                                    menu={{
-                                        items: modal.selectedFloorLevelId.value
-                                            ? items
-                                            : items.filter((item) => item?.key === "add"),
-                                    }}
-                                    placement="bottom"
-                                >
-                                    <Button type="primary">
-                                        Floor Actions
-                                        <DownOutlined />
-                                    </Button>
-                                </Dropdown>
-                            </div>
-                            {modal.edit.visible ? (
-                                <AreaDetails loading={loading} />
-                            ) : (
-                                <DatasetInfoDetails />
-                            )}
+            > */}
+            <Row gutter={16}>
+                <Col span={17}>
+                    <FloorPlandEditor loading={loading} />
+                </Col>
+                <Col span={7}>
+                    <div className="!space-y-4">
+                        <div className="flex gap-x-4">
+                            <Select
+                                placeholder="Select Floor Level"
+                                style={{ width: 160 }}
+                                value={modal.selectedFloorLevelId.value}
+                                onChange={onChangeSelect}
+                                options={floorOptions}
+                            />
+                            <Dropdown
+                                menu={{
+                                    items: modal.selectedFloorLevelId.value
+                                        ? items
+                                        : items.filter((item) => item?.key === "add"),
+                                }}
+                                placement="bottom"
+                            >
+                                <Button type="primary">
+                                    Floor Actions
+                                    <DownOutlined />
+                                </Button>
+                            </Dropdown>
                         </div>
-                    </Col>
-                </Row>
-            </Modal>
+                        {modal.edit.visible ? (
+                            <AreaDetails loading={loading} />
+                        ) : (
+                            <DatasetInfoDetails />
+                        )}
+                    </div>
+                </Col>
+            </Row>
+            {/* </Modal> */}
         </>
     );
 };

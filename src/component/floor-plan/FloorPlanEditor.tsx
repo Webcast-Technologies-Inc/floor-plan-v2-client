@@ -270,9 +270,7 @@ const FloorPlandEditor = ({ loading }: { loading: boolean }) => {
                         )}
                         <CustomActionButtons
                             actions={
-                                modal.view.visible &&
-                                !modal.edit.visible &&
-                                modal.selectedFloorLevelId.value
+                                !modal.edit.visible && modal.selectedFloorLevelId.value
                                     ? ["edit"]
                                     : []
                             }
