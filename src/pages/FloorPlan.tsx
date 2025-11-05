@@ -1,6 +1,5 @@
 import { Card, Form } from "antd";
-import { useEffect, useState } from "react";
-import { useSearchParams } from "react-router-dom";
+import { useState } from "react";
 import FloorDrawer from "../component/floor-plan/FloorDrawer";
 import FloorPlanModal from "../component/floor-plan/FloorPlanModal";
 import MarkerFilterModal from "../component/floor-plan/MarkerFilterModal";
@@ -9,7 +8,6 @@ import { DrawerVisibilityProvider } from "../store/context/DrawerVisibilityConte
 import type { IFloor, IFloorPlanArea, ITool } from "../types/floorPlan";
 
 const FloorPlan = () => {
-    const [searchParams] = useSearchParams();
     const modal = useDrawerVisibility();
     const filterModal = useDrawerVisibility();
     const drawer = useDrawerVisibility();
@@ -23,14 +21,6 @@ const FloorPlan = () => {
     const [isShowAllMarksVisible, setIsShowAllMarksVisible] = useState(false);
     const [dataSetInfo, setDataSetInfo] = useState<any>();
     const [dataSetFilter, setDataSetFilter] = useState<any[] | undefined | null>();
-    const id = searchParams.get("id");
-
-    useEffect(() => {
-        if (id) {
-            modal.id.setValue(id);
-            drawer.id.setValue(id);
-        }
-    }, [id]);
 
     return (
         <DrawerVisibilityProvider

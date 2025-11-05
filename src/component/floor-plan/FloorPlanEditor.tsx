@@ -2,6 +2,7 @@ import { Button, Card, Empty, message, Modal, Radio, Skeleton, Spin, Switch } fr
 import type { CheckboxGroupProps } from "antd/es/checkbox";
 import { useContext, useEffect, useRef, useState } from "react";
 import { Document, Page, pdfjs } from "react-pdf";
+import { useSearchParams } from "react-router-dom";
 import { useUpdateFloorPlanWithAreas } from "../../api/hooks/useUpdateFloorPlanWithAreas";
 import { BUCKET_NAME, TEMP_ID_FORMAT } from "../../constant";
 import DrawerVisibilityContext from "../../store/context/DrawerVisibilityContext";
@@ -22,6 +23,8 @@ const options: CheckboxGroupProps<string>["options"] = [
 ];
 
 const FloorPlandEditor = ({ loading }: { loading: boolean }) => {
+    const [searchParams] = useSearchParams();
+    const id = searchParams.get("id");
     const [messageApi, contextHolderMessage] = message.useMessage();
     const [modalAntd, contextHolderModal] = Modal.useModal();
     const { modal, filterModal, drawer } = useContext(DrawerVisibilityContext);
@@ -166,7 +169,7 @@ const FloorPlandEditor = ({ loading }: { loading: boolean }) => {
     };
 
     const onSave = async () => {
-        if (!modal.id.value) {
+        if (!id) {
             return;
         }
 

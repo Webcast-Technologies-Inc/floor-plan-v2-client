@@ -1,6 +1,7 @@
 import { PlusOutlined, SaveOutlined } from "@ant-design/icons";
 import { Button, Drawer, Form, Input, message, Modal, Select, Space, type FormProps } from "antd";
 import { useCallback, useContext, useEffect, useState } from "react";
+import { useSearchParams } from "react-router-dom";
 import { useCreateFloor } from "../../api/hooks/useCreateFloor";
 import { useGetDatasets } from "../../api/hooks/useGetDatasets";
 import { useGetFloorByLevelId } from "../../api/hooks/useGetFloorByLevelId";
@@ -15,6 +16,8 @@ interface FieldType {
 }
 
 const FloorDrawer = () => {
+    const [searchParams] = useSearchParams();
+    const id = searchParams.get("id");
     const [modalAntd, contextHolderModal] = Modal.useModal();
     const [messageApi, contextHolderMessage] = message.useMessage();
     const [form] = Form.useForm();
@@ -27,12 +30,7 @@ const FloorDrawer = () => {
 
     useEffect(() => {
         const fetch = async () => {
-            if (
-                drawer.edit.visible &&
-                modal.id.value &&
-                drawer.id.value &&
-                modal.selectedFloorLevelId.value
-            ) {
+            if (id && drawer.edit.visible && modal.selectedFloorLevelId.value) {
                 try {
                     const resp = await handleGetFloorByLevelId({
                         floorId: modal.selectedFloorLevelId.value,
@@ -65,13 +63,7 @@ const FloorDrawer = () => {
             }
         };
         fetch();
-    }, [
-        drawer.add.visible,
-        drawer.edit.visible,
-        modal.id.value,
-        drawer.id.value,
-        modal.selectedFloorLevelId.value,
-    ]);
+    }, [id, drawer.add.visible, drawer.edit.visible, modal.selectedFloorLevelId.value]);
 
     const onClickSubmit = useCallback(() => {
         form.submit();
@@ -79,9 +71,9 @@ const FloorDrawer = () => {
 
     const onFinish: FormProps<FieldType>["onFinish"] = useCallback(
         async (values: FieldType) => {
-            if (drawer.add.visible && modal.id.value) {
+            if (id && drawer.add.visible) {
                 try {
-                    const resp = await handleCreateFloor({ landmarkId: modal.id.value, ...values });
+                    const resp = await handleCreateFloor({ landmarkId: id, ...values });
 
                     if (resp) {
                         messageApi.open({
@@ -99,14 +91,14 @@ const FloorDrawer = () => {
                 }
             }
 
-            if (drawer.edit.visible && modal.id.value) {
+            if (id && drawer.edit.visible) {
                 try {
                     if (!modal.selectedFloorLevelId.value) {
                         return;
                     }
 
                     const resp = await handleUpdateFloor({
-                        landmarkId: modal.id.value,
+                        landmarkId: id,
                         id: modal.selectedFloorLevelId.value,
                         ...values,
                     });
@@ -135,13 +127,7 @@ const FloorDrawer = () => {
                 }
             }
         },
-        [
-            drawer.add.visible,
-            drawer.edit.visible,
-            drawer.id.value,
-            modal.id.value,
-            modal.selectedFloorLevelId.value,
-        ]
+        [id, drawer.add.visible, drawer.edit.visible, modal.selectedFloorLevelId.value]
     );
 
     const onClose = useCallback(() => {

@@ -7,6 +7,7 @@ import {
 } from "@ant-design/icons";
 import { Button, Col, Dropdown, message, Modal, Row, Select, type MenuProps } from "antd";
 import { useCallback, useContext, useEffect, useState } from "react";
+import { useSearchParams } from "react-router-dom";
 import { useDeleteFloor } from "../../api/hooks/useDeleteFloor";
 import { useGetFloorByLevelId } from "../../api/hooks/useGetFloorByLevelId";
 import { useGetLandmarkById } from "../../api/hooks/useGetLandmarkById";
@@ -21,6 +22,8 @@ interface FloorOption {
 }
 
 const FloorPlanModal = () => {
+    const [searchParams] = useSearchParams();
+    const id = searchParams.get("id");
     const [messageApi, contextHolderMessage] = message.useMessage();
     const [modalAntd, contextHolderModal] = Modal.useModal();
     const { handleGetLandmarkById, loading: loadingGetLandmarkById } = useGetLandmarkById();
@@ -62,12 +65,12 @@ const FloorPlanModal = () => {
                     ),
                     onOk: async () => {
                         try {
-                            if (!modal.id.value || !modal.dataSet.value?.id) {
+                            if (!id || !modal.dataSet.value?.id) {
                                 return;
                             }
 
                             const resp = await handleDeleteFloor({
-                                landmarkId: modal.id.value,
+                                landmarkId: id,
                                 id: modal.dataSet.value?.id,
                             });
 
@@ -104,52 +107,87 @@ const FloorPlanModal = () => {
     ];
 
     useEffect(() => {
-        const fetch = async () => {
-            setModalLoading(true);
-            if (modal.id.value) {
-                try {
-                    const resp = await handleGetLandmarkById(modal.id.value);
+        let isMounted = true; // flag for mount state
 
-                    if (!resp) {
-                        throw new Error("Failed to get Landmark!");
+        const fetch = async () => {
+            if (!id) {
+                return;
+            }
+            setModalLoading(true);
+
+            try {
+                const resp = await handleGetLandmarkById(id);
+
+                if (!resp) {
+                    throw new Error("Failed to get Landmark!");
+                }
+
+                if (!isMounted) {
+                    return;
+                }
+
+                const options = resp.data.getLandmarkById.floors?.map(({ id, level }: any) => ({
+                    value: id,
+                    label: level,
+                }));
+
+                if (isMounted) {
+                    setFloorOptions(options ?? []);
+                }
+
+                if (options.length > 0) {
+                    const firstFloorId = options[0].value;
+
+                    if (isMounted) {
+                        modal.selectedFloorLevelId.setValue(firstFloorId);
                     }
 
-                    const options = resp.data.getLandmarkById.floors.map(({ id, level }: any) => ({
-                        value: id,
-                        label: level,
-                    }));
+                    const resp = await handleGetFloorByLevelId({
+                        floorId: firstFloorId,
+                    });
 
-                    setFloorOptions(options ?? []);
+                    if (!resp) {
+                        throw new Error("Failed to get Floor!");
+                    }
 
-                    if (options.length > 0) {
-                        modal.selectedFloorLevelId.setValue(options[0].value);
-
-                        const resp = await handleGetFloorByLevelId({
-                            floorId: options[0].value,
-                        });
-
-                        if (!resp) {
-                            throw new Error("Failed to get Floor!");
-                        }
-
+                    if (isMounted) {
                         modal.dataSet.setValue(resp.data.getFloorByLevelId);
                         modal.originalDataSet.setValue(resp.data.getFloorByLevelId);
-                    } else {
+                    }
+                } else {
+                    if (isMounted) {
                         modal.selectedFloorLevelId.setValue(undefined);
                         modal.dataSet.setValue(null);
                     }
-                } catch (err) {
-                    messageApi.open({
-                        type: "error",
-                        content: "Failed to get Landmark!",
-                    });
-                } finally {
+                }
+            } catch (err: any) {
+                if (!isMounted) {
+                    return;
+                }
+
+                // Ignore AbortErrors safely
+                if (err.name === "AbortError") {
+                    return;
+                }
+
+                messageApi.open({
+                    type: "error",
+                    content: err.message || "Failed to get Landmark!",
+                });
+            } finally {
+                if (isMounted) {
                     setModalLoading(false);
                 }
             }
         };
+
         fetch();
-    }, [modal.id.value, drawer.refetch.value]);
+
+        return () => {
+            // prevent state updates after unmount
+            isMounted = false;
+        };
+    }, [id, drawer.refetch.value]);
 
     const onChangeSelect = useCallback(
         async (val: any) => {
@@ -165,7 +203,7 @@ const FloorPlanModal = () => {
 
             modal.selectedFloorLevelId.setValue(val);
 
-            if (modal.id.value) {
+            if (id) {
                 const resp = await handleGetFloorByLevelId({
                     floorId: val,
                 });
@@ -176,12 +214,11 @@ const FloorPlanModal = () => {
                 }
             }
         },
-        [modal.id.value]
+        [id]
     );
 
     const handleResetStates = () => {
         modal.edit.setVisible(false);
-        modal.id.setValue(null);
         modal.selectedArea.setValue(null);
         modal.selectedTool.setValue("select");
         modal.dataSet.setValue(null);
