@@ -63,7 +63,7 @@ const Home = () => {
                                     <Button
                                         icon={<EyeOutlined />}
                                         onClick={() => {
-                                            navigate(`/floor-plan?id=${e.id}`);
+                                            navigate(`/floor-plan?id=${e.id}&name=${e.name}`);
                                         }}
                                     />
                                 </div>

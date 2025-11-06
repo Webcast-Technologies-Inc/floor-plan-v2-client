@@ -249,7 +249,7 @@ const FloorPlandEditor = ({ loading }: { loading: boolean }) => {
                 style={{ width: "100%" }}
                 extra={
                     <div className="flex items-center gap-x-4">
-                        {!modal.edit.visible && (
+                        {!modal.edit.visible && modal.selectedFloorLevelId.value && (
                             <Button onClick={() => filterModal.view.setVisible(true)}>
                                 Filter
                             </Button>

@@ -25,6 +25,7 @@ const FloorPlanModal = () => {
     const navigate = useNavigate();
     const [searchParams] = useSearchParams();
     const id = searchParams.get("id");
+    const name = searchParams.get("name");
     const [messageApi, contextHolderMessage] = message.useMessage();
     const [modalAntd, contextHolderModal] = Modal.useModal();
     const { handleGetLandmarkById, loading: loadingGetLandmarkById } = useGetLandmarkById();
@@ -254,10 +255,10 @@ const FloorPlanModal = () => {
         <>
             {contextHolderMessage}
             {contextHolderModal}
-            <div className="min-h-screen">
+            <div className="min-h-screen !p-4 !space-y-4">
                 <Button onClick={onClose}>Back to maps</Button>
                 <Card
-                    title="Floor Plan"
+                    title={`Floor Plan : ${name}`}
                     variant="outlined"
                     style={{ width: "100%" }}
                     loading={modalLoading}
