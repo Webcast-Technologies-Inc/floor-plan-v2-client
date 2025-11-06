@@ -1,4 +1,4 @@
-import { Card, Form } from "antd";
+import { Form } from "antd";
 import { useState } from "react";
 import FloorDrawer from "../component/floor-plan/FloorDrawer";
 import FloorPlanModal from "../component/floor-plan/FloorPlanModal";
@@ -60,9 +60,7 @@ const FloorPlan = () => {
                 },
             }}
         >
-            <Card title="Floor Plan" variant="outlined" style={{ width: "100%" }}>
-                <FloorPlanModal />
-            </Card>
+            <FloorPlanModal />
             <MarkerFilterModal />
             <FloorDrawer />
         </DrawerVisibilityProvider>

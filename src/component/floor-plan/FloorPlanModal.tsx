@@ -5,9 +5,9 @@ import {
     EditOutlined,
     PlusOutlined,
 } from "@ant-design/icons";
-import { Button, Col, Dropdown, message, Modal, Row, Select, type MenuProps } from "antd";
+import { Button, Card, Col, Dropdown, message, Modal, Row, Select, type MenuProps } from "antd";
 import { useCallback, useContext, useEffect, useState } from "react";
-import { useSearchParams } from "react-router-dom";
+import { useNavigate, useSearchParams } from "react-router-dom";
 import { useDeleteFloor } from "../../api/hooks/useDeleteFloor";
 import { useGetFloorByLevelId } from "../../api/hooks/useGetFloorByLevelId";
 import { useGetLandmarkById } from "../../api/hooks/useGetLandmarkById";
@@ -22,6 +22,7 @@ interface FloorOption {
 }
 
 const FloorPlanModal = () => {
+    const navigate = useNavigate();
     const [searchParams] = useSearchParams();
     const id = searchParams.get("id");
     const [messageApi, contextHolderMessage] = message.useMessage();
@@ -217,20 +218,20 @@ const FloorPlanModal = () => {
         [id]
     );
 
-    const handleResetStates = () => {
-        modal.edit.setVisible(false);
-        modal.selectedArea.setValue(null);
-        modal.selectedTool.setValue("select");
-        modal.dataSet.setValue(null);
-        modal.originalDataSet.setValue(null);
-        modal.form.dataSet.resetFields();
-        modal.form.dataSetInfo.resetFields();
-        modal.dataSetInfo.setValue(null);
-    };
+    // const handleResetStates = () => {
+    //     modal.edit.setVisible(false);
+    //     modal.selectedArea.setValue(null);
+    //     modal.selectedTool.setValue("select");
+    //     modal.dataSet.setValue(null);
+    //     modal.originalDataSet.setValue(null);
+    //     modal.form.dataSet.resetFields();
+    //     modal.form.dataSetInfo.resetFields();
+    //     modal.dataSetInfo.setValue(null);
+    // };
 
     const onClose = () => {
         if (!modal.selectedFloorLevelId.value || !modal.edit.visible) {
-            handleResetStates();
+            navigate("/");
             return;
         }
 
@@ -243,7 +244,7 @@ const FloorPlanModal = () => {
                 </>
             ),
             onOk: () => {
-                handleResetStates();
+                navigate("/");
             },
             okText: "YES",
         });
@@ -253,52 +254,52 @@ const FloorPlanModal = () => {
         <>
             {contextHolderMessage}
             {contextHolderModal}
-            {/* <Modal
-                title="Floor Plan"
-                width={1500}
-                zIndex={500}
-                onCancel={onClose}
-                footer={null}
-                destroyOnHidden // force re-mount to reset the states
-                loading={modalLoading}
-            > */}
-            <Row gutter={16}>
-                <Col span={17}>
-                    <FloorPlandEditor loading={loading} />
-                </Col>
-                <Col span={7}>
-                    <div className="!space-y-4">
-                        <div className="flex gap-x-4">
-                            <Select
-                                placeholder="Select Floor Level"
-                                style={{ width: 160 }}
-                                value={modal.selectedFloorLevelId.value}
-                                onChange={onChangeSelect}
-                                options={floorOptions}
-                            />
-                            <Dropdown
-                                menu={{
-                                    items: modal.selectedFloorLevelId.value
-                                        ? items
-                                        : items.filter((item) => item?.key === "add"),
-                                }}
-                                placement="bottom"
-                            >
-                                <Button type="primary">
-                                    Floor Actions
-                                    <DownOutlined />
-                                </Button>
-                            </Dropdown>
-                        </div>
-                        {modal.edit.visible ? (
-                            <AreaDetails loading={loading} />
-                        ) : (
-                            <DatasetInfoDetails />
-                        )}
-                    </div>
-                </Col>
-            </Row>
-            {/* </Modal> */}
+            <div className="min-h-screen">
+                <Button onClick={onClose}>Back to maps</Button>
+                <Card
+                    title="Floor Plan"
+                    variant="outlined"
+                    style={{ width: "100%" }}
+                    loading={modalLoading}
+                >
+                    <Row gutter={16}>
+                        <Col span={17}>
+                            <FloorPlandEditor loading={loading} />
+                        </Col>
+                        <Col span={7}>
+                            <div className="!space-y-4">
+                                <div className="flex gap-x-4">
+                                    <Select
+                                        placeholder="Select Floor Level"
+                                        style={{ width: 160 }}
+                                        value={modal.selectedFloorLevelId.value}
+                                        onChange={onChangeSelect}
+                                        options={floorOptions}
+                                    />
+                                    <Dropdown
+                                        menu={{
+                                            items: modal.selectedFloorLevelId.value
+                                                ? items
+                                                : items.filter((item) => item?.key === "add"),
+                                        }}
+                                        placement="bottom"
+                                    >
+                                        <Button type="primary">
+                                            Floor Actions
+                                            <DownOutlined />
+                                        </Button>
+                                    </Dropdown>
+                                </div>
+                                {modal.edit.visible ? (
+                                    <AreaDetails loading={loading} />
+                                ) : (
+                                    <DatasetInfoDetails />
+                                )}
+                            </div>
+                        </Col>
+                    </Row>
+                </Card>
+            </div>
         </>
     );
 };
