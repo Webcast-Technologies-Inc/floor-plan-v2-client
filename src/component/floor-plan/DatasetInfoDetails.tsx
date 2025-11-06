@@ -84,7 +84,6 @@ const DatasetInfoDetails = () => {
                     body: {
                         maxHeight: "calc(100vh - 314px)",
                         overflowY: "auto",
-                        paddingRight: 8,
                     },
                 }}
             >
