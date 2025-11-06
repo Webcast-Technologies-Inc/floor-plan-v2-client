@@ -255,7 +255,7 @@ const FloorPlanModal = () => {
         <>
             {contextHolderMessage}
             {contextHolderModal}
-            <div className="min-h-screen !p-4 !space-y-4">
+            <div className="min-h-screen !p-6 !space-y-6">
                 <Button onClick={onClose}>Back to maps</Button>
                 <Card
                     title={`Floor Plan : ${name}`}

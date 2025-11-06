@@ -309,7 +309,7 @@ const FloorPlandEditor = ({ loading }: { loading: boolean }) => {
                             <FloorPlanUploader onFileUpload={(file) => setNewFile(file)} />
                         </div>
                     )}
-                    <div className="h-[65vh] flex justify-center items-center !bg-gray-100 rounded-lg border-2 border-slate-800 shadow-lg overflow-auto">
+                    <div className="h-[calc(100vh-314px)] flex justify-center items-center !bg-gray-100 rounded-lg border-2 border-slate-800 shadow-lg overflow-auto">
                         <div
                             className="relative max-w-full max-h-full"
                             onClick={handleCanvasClick}

@@ -82,7 +82,7 @@ const DatasetInfoDetails = () => {
                 loading={loading}
                 styles={{
                     body: {
-                        maxHeight: "65vh",
+                        maxHeight: "calc(100vh - 314px)",
                         overflowY: "auto",
                         paddingRight: 8,
                     },
