@@ -1,5 +1,27 @@
 @import "tailwindcss";
 
+@theme {
+    --color-background: hsl(var(--background));
+    --color-foreground: hsl(var(--foreground));
+    --color-card: hsl(var(--card));
+    --color-card-foreground: hsl(var(--card-foreground));
+    --color-popover: hsl(var(--popover));
+    --color-popover-foreground: hsl(var(--popover-foreground));
+    --color-primary: hsl(var(--primary));
+    --color-primary-foreground: hsl(var(--primary-foreground));
+    --color-secondary: hsl(var(--secondary));
+    --color-secondary-foreground: hsl(var(--secondary-foreground));
+    --color-muted: hsl(var(--muted));
+    --color-muted-foreground: hsl(var(--muted-foreground));
+    --color-accent: hsl(var(--accent));
+    --color-accent-foreground: hsl(var(--accent-foreground));
+    --color-destructive: hsl(var(--destructive));
+    --color-destructive-foreground: hsl(var(--destructive-foreground));
+    --color-border: hsl(var(--border));
+    --color-input: hsl(var(--input));
+    --color-ring: hsl(var(--ring));
+}
+
 :root {
     font-family: system-ui, Avenir, Helvetica, Arial, sans-serif;
     line-height: 1.5;
@@ -9,6 +31,102 @@
     text-rendering: optimizeLegibility;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
+
+    --background: 0 0% 100%;
+    --foreground: 222.2 84% 4.9%;
+    --card: 0 0% 100%;
+    --card-foreground: 222.2 84% 4.9%;
+    --popover: 0 0% 100%;
+    --popover-foreground: 222.2 84% 4.9%;
+    --primary: 216 85% 34%;
+    --primary-light: 217 82% 40%;
+    --primary-foreground: 210 40% 98%;
+    --secondary: 0 0% 12%;
+    --secondary-foreground: 210 40% 96.1%;
+    --muted: 210 40% 96.1%;
+    --muted-foreground: 215.4 16.3% 46.9%;
+    --accent: 210 40% 96.1%;
+    --accent-foreground: 222.2 47.4% 11.2%;
+    --destructive: 0 84.2% 60.2%;
+    --destructive-foreground: 210 40% 98%;
+    --border: 214.3 31.8% 91.4%;
+    --input: 214.3 31.8% 91.4%;
+    --ring: 216 85% 34%;
+    --radius: 0.3rem;
+    --page-header-height: 72px;
+    --page-container-height: calc(100vh - var(--page-header-height));
+    --module-header-height: 72px;
+    --module-container-height: calc(100% - var(--module-header-height));
+
+    /* Chart Colors */
+
+    /* Blues */
+    --chart-1: 217 85% 84%;
+    --chart-2: 262 85% 84%;
+    --chart-3: 216 85% 69%;
+    --chart-4: 262 85% 69%;
+    --chart-5: 217 85% 53%;
+    --chart-6: 261 85% 53%;
+    --chart-7: 216 85% 34%;
+    --chart-8: 261 85% 38%;
+    --chart-9: 216 85% 19%;
+    --chart-10: 261 84% 23%;
+
+    /* Purples */
+    --chart-11: 292 84% 80%;
+    --chart-12: 291 85% 65%;
+    --chart-13: 291 85% 50%;
+    --chart-14: 291 85% 34%;
+    --chart-15: 292 85% 19%;
+
+    /* Reds */
+    --chart-16: 6 100% 74%;
+    --chart-17: 6 100% 58%;
+    --chart-18: 6 100% 47%;
+    --chart-19: 6 100% 31%;
+    --chart-20: 6 100% 16%;
+
+    /* Greens */
+    --chart-21: 36 100% 81%;
+    --chart-22: 36 100% 66%;
+    --chart-23: 36 100% 50%;
+    --chart-24: 36 100% 35%;
+    --chart-25: 36 100% 20%;
+
+    /* Yellows */
+    --chart-26: 52 85% 69%;
+    --chart-27: 51 85% 61%;
+    --chart-28: 51 85% 50%;
+    --chart-29: 51 85% 34%;
+    --chart-30: 51 85% 19%;
+
+    /* Teals */
+    --chart-31: 81 85% 77%;
+    --chart-32: 81 85% 61%;
+    --chart-33: 81 85% 50%;
+    --chart-34: 81 85% 35%;
+    --chart-35: 81 86% 19%;
+
+    /* Cyans */
+    --chart-36: 218 38% 72%;
+    --chart-37: 218 37% 57%;
+    --chart-38: 217 37% 41%;
+    --chart-39: 218 37% 26%;
+
+    /* Magentas */
+    --chart-40: 336 100% 81%;
+    --chart-41: 336 100% 66%;
+    --chart-42: 336 100% 50%;
+    --chart-43: 336 100% 35%;
+    --chart-44: 335 100% 20%;
+
+    /* Grays */
+    --chart-45: 216 13% 84%;
+    --chart-46: 217 37% 88%;
+    --chart-47: 215 12% 69%;
+    --chart-48: 215 12% 54%;
+    --chart-49: 215 12% 38%;
+    --chart-50: 214 12% 23%;
 }
 
 * {
