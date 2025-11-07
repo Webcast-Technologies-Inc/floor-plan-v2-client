@@ -1,5 +1,5 @@
 import { type Marker, MarkerClusterer } from "@googlemaps/markerclusterer";
-import { InfoWindow, useMap } from "@vis.gl/react-google-maps";
+import { AdvancedMarker, useMap } from "@vis.gl/react-google-maps";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import LocationMarker from "./LocationMarker";
 
@@ -8,7 +8,8 @@ export type ClusteredLocationMarkersProps<T> = {
     getKey: (item: T) => string;
     getPosition: (item: T) => google.maps.LatLngLiteral;
     renderMarker?: (item: T) => React.ReactNode;
-    renderInfoWindow?: (item: T) => React.ReactNode;
+    // renderInfoWindow?: (item: T) => React.ReactNode;
+    renderPopup?: (item: T, close: () => void) => React.ReactNode;
     onMarkerClick?: (item: T) => void;
 };
 
@@ -17,7 +18,8 @@ const ClusteredLocationMarkers = <T,>({
     getKey,
     getPosition,
     renderMarker,
-    renderInfoWindow,
+    // renderInfoWindow,
+    renderPopup,
     onMarkerClick,
 }: ClusteredLocationMarkersProps<T>) => {
     const [markers, setMarkers] = useState<{ [key: string]: Marker }>({});
@@ -87,11 +89,17 @@ const ClusteredLocationMarkers = <T,>({
                 );
             })}
 
-            {renderInfoWindow && selectedKey && selectedItem && (
+            {selectedItem && selectedKey && renderPopup && (
+                <AdvancedMarker position={getPosition(selectedItem)} zIndex={100}>
+                    {renderPopup(selectedItem, handleInfoWindowClose)}
+                </AdvancedMarker>
+            )}
+
+            {/* {renderInfoWindow && selectedKey && selectedItem && (
                 <InfoWindow anchor={markers[selectedKey]} onCloseClick={handleInfoWindowClose}>
                     {renderInfoWindow?.(selectedItem) ?? <div>{selectedKey}</div>}
                 </InfoWindow>
-            )}
+            )} */}
         </>
     );
 };

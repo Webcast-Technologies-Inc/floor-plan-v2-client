@@ -44,28 +44,48 @@ const Home = () => {
                             lng: +longitude,
                         })}
                         renderMarker={() => <span className="text-2xl">📍</span>}
-                        renderInfoWindow={(e) => (
-                            <div className="grid grid-cols-2">
-                                <div>
-                                    <p>Id :</p>
-                                    <p>Name :</p>
-                                    <p>Category :</p>
-                                    <p>Longitude :</p>
-                                    <p>Latitude :</p>
-                                    <p>Floor Plan :</p>
-                                </div>
-                                <div>
-                                    <div>{e.id}</div>
-                                    <div>{e.name}</div>
-                                    <div>{e.category}</div>
-                                    <div>{e.longitude}</div>
-                                    <div>{e.latitude}</div>
-                                    <Button
-                                        icon={<EyeOutlined />}
-                                        onClick={() => {
-                                            navigate(`/floor-plan?id=${e.id}&name=${e.name}`);
-                                        }}
-                                    />
+                        renderPopup={(e, close) => (
+                            <div className="absolute bottom-[4.4rem] -translate-x-1/2">
+                                <div className="relative w-[330px] bg-[rgba(0,0,0,0.8)] text-sm text-white rounded-md">
+                                    {/* Arrow */}
+                                    <div className="h-10 w-[68px] absolute -bottom-10 left-1/2 -translate-x-1/2 rotate-180 bg-[rgba(0,0,0,0.8)] [clip-path:polygon(50%_0%,_0%_100%,_100%_100%)]" />
+
+                                    <div className="max-h-96 !p-5 !space-y-7 overflow-auto">
+                                        <div className="text-[15px] font-bold grid grid-cols-2 items-center [&>*:nth-child(even)]:text-right">
+                                            <p>Market Block</p>
+                                            <button onClick={close} className="cursor-pointer">
+                                                close
+                                            </button>
+                                        </div>
+                                        <div className="text-[13px] grid grid-cols-2 items-center [&>*:nth-child(even)]:text-right gap-y-[5px]">
+                                            <p>FLOOR PLAN</p>
+                                            <span>
+                                                <Button
+                                                    icon={<EyeOutlined />}
+                                                    onClick={() => {
+                                                        navigate(
+                                                            `/floor-plan?id=${e.id}&name=${e.name}`
+                                                        );
+                                                    }}
+                                                />
+                                            </span>
+
+                                            <p>Id :</p>
+                                            <p>{e.id}</p>
+
+                                            <p>Name :</p>
+                                            <p>{e.name}</p>
+
+                                            <p>Category :</p>
+                                            <p>{e.category}</p>
+
+                                            <p>Longitude :</p>
+                                            <p>{e.longitude}</p>
+
+                                            <p>Latitude :</p>
+                                            <p>{e.latitude}</p>
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
                         )}
