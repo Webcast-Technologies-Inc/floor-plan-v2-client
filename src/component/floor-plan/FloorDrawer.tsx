@@ -1,18 +1,33 @@
-import { PlusOutlined, SaveOutlined } from "@ant-design/icons";
-import { Button, Drawer, Form, Input, message, Modal, Select, Space, type FormProps } from "antd";
+import { PlusOutlined, SaveOutlined, UploadOutlined } from "@ant-design/icons";
+import {
+    Button,
+    Drawer,
+    Form,
+    Input,
+    message,
+    Modal,
+    Select,
+    Space,
+    Upload,
+    type FormProps,
+    type UploadFile,
+} from "antd";
 import { useCallback, useContext, useEffect, useState } from "react";
 import { useSearchParams } from "react-router-dom";
 import { useCreateFloor } from "../../api/hooks/useCreateFloor";
 import { useGetDatasets } from "../../api/hooks/useGetDatasets";
 import { useGetFloorByLevelId } from "../../api/hooks/useGetFloorByLevelId";
 import { useUpdateFloor } from "../../api/hooks/useUpdateFloor";
+import { BUCKET_NAME } from "../../constant";
 import DrawerVisibilityContext from "../../store/context/DrawerVisibilityContext";
-
+import customFileName from "../../utils/customFileName";
+import { supabase } from "../../utils/supabaseClient";
 interface FieldType {
     id?: string;
     name: string;
     level: string;
     dataSetId: string;
+    floorPlanFile: UploadFile[];
 }
 
 const FloorDrawer = () => {
@@ -23,10 +38,11 @@ const FloorDrawer = () => {
     const [form] = Form.useForm();
     const { modal, filterModal, drawer } = useContext(DrawerVisibilityContext);
     const { handleGetDatasets, loading: loadingGetDatasets } = useGetDatasets();
-    const { handleCreateFloor, loading: loadingCreateFloor } = useCreateFloor();
+    const { handleCreateFloor } = useCreateFloor();
     const { handleGetFloorByLevelId, loading: loadingGetFloorByLevelId } = useGetFloorByLevelId();
-    const { handleUpdateFloor, loading: loadingUpdateFloor } = useUpdateFloor();
+    const { handleUpdateFloor } = useUpdateFloor();
     const [options, setOptions] = useState<{ value: string; label: string }[]>([]);
+    const [isSubmitting, setIsSubmitting] = useState(false);
 
     useEffect(() => {
         const fetch = async () => {
@@ -71,9 +87,37 @@ const FloorDrawer = () => {
 
     const onFinish: FormProps<FieldType>["onFinish"] = useCallback(
         async (values: FieldType) => {
-            if (id && drawer.add.visible) {
+            const {
+                floorPlanFile: [{ originFileObj: file }],
+                ...payload
+            } = values;
+
+            setIsSubmitting(true);
+
+            const { data, error } = await supabase.storage
+                .from(BUCKET_NAME.documents)
+                .upload(customFileName(file), file, {
+                    cacheControl: "3600",
+                    upsert: true,
+                });
+
+            if (error) {
+                messageApi.open({
+                    type: "error",
+                    content: "Failed to upload floor plan file!",
+                });
+                return;
+            }
+
+            if (id && drawer.add.visible && file) {
                 try {
-                    const resp = await handleCreateFloor({ landmarkId: id, ...values });
+                    const resp = await handleCreateFloor({
+                        ...payload,
+                        landmarkId: id,
+                        fileName: file.name,
+                        fileType: file.type,
+                        filePath: data.fullPath,
+                    });
 
                     if (resp) {
                         messageApi.open({
@@ -88,19 +132,24 @@ const FloorDrawer = () => {
                         type: "error",
                         content: "Failed to add Floor!",
                     });
+                } finally {
+                    setIsSubmitting(false);
                 }
             }
 
-            if (id && drawer.edit.visible) {
+            if (id && drawer.edit.visible && file) {
                 try {
                     if (!modal.selectedFloorLevelId.value) {
                         return;
                     }
 
                     const resp = await handleUpdateFloor({
+                        ...payload,
                         landmarkId: id,
                         id: modal.selectedFloorLevelId.value,
-                        ...values,
+                        fileName: file.name,
+                        fileType: file.type,
+                        filePath: data.fullPath,
                     });
 
                     if (resp) {
@@ -108,7 +157,7 @@ const FloorDrawer = () => {
                             type: "success",
                             content: "Floor updated successfully!",
                         });
-                        if (modal.dataSet.value?.dataSetId !== values.dataSetId) {
+                        if (modal.dataSet.value?.dataSetId !== payload.dataSetId) {
                             /* Clear filter if the dataset was changed */
                             filterModal.dataSet.setValue(null);
                             filterModal.form.resetFields();
@@ -124,6 +173,8 @@ const FloorDrawer = () => {
                         type: "error",
                         content: "Failed to update Floor!",
                     });
+                } finally {
+                    setIsSubmitting(false);
                 }
             }
         },
@@ -189,7 +240,7 @@ const FloorDrawer = () => {
                                         ""
                                     )
                                 }
-                                loading={loadingCreateFloor || loadingUpdateFloor}
+                                loading={isSubmitting}
                             >
                                 {drawer.add.visible ? "Add" : drawer.edit.visible ? "Save" : ""}
                             </Button>
@@ -237,6 +288,35 @@ const FloorDrawer = () => {
                             }
                             options={options}
                         />
+                    </Form.Item>
+
+                    <Form.Item
+                        label="Upload Floor Plan"
+                        name="floorPlanFile"
+                        valuePropName="fileList"
+                        getValueFromEvent={(e) => {
+                            if (Array.isArray(e)) {
+                                return e;
+                            }
+                            return e?.fileList;
+                        }}
+                        rules={[{ required: true, message: "Floor Plan file is required" }]}
+                    >
+                        <Upload
+                            fileList={form.getFieldValue("floorPlanFile") as any}
+                            listType="picture"
+                            beforeUpload={() => false}
+                            maxCount={1}
+                            multiple
+                            style={{ width: "100%" }}
+                            disabled={drawer.view.visible}
+                        >
+                            {(drawer.add.visible || drawer.edit.visible) && (
+                                <Button icon={<UploadOutlined />} style={{ width: "100%" }}>
+                                    Upload
+                                </Button>
+                            )}
+                        </Upload>
                     </Form.Item>
                 </Form>
             </Drawer>

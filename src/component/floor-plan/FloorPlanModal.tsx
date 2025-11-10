@@ -284,7 +284,6 @@ const FloorPlanModal = () => {
                         <div className="flex gap-x-4">
                             <Select
                                 placeholder="Select Floor Level"
-                                style={{ width: 160 }}
                                 value={modal.selectedFloorLevelId.value}
                                 onChange={onChangeSelect}
                                 options={floorOptions}

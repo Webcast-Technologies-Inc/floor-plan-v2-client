@@ -1,12 +1,10 @@
 import { useMutation } from "@apollo/client/react";
 import { useCallback } from "react";
 import { UPDATE_FLOOR_MUTATION } from "../mutations/updateFloor";
+import type { IFloorInput } from "./useCreateFloor";
 
-interface IUpdateFloorInput {
-    landmarkId: string;
+export interface IUpdateFloorInput extends IFloorInput {
     id: string;
-    level: string;
-    name: string;
 }
 
 export const useUpdateFloor = () => {

@@ -138,3 +138,9 @@
 .ant-select {
     width: 100% !important;
 }
+
+.ant-btn,
+.ant-btn span {
+    display: inline-flex;
+    align-items: center;
+}
