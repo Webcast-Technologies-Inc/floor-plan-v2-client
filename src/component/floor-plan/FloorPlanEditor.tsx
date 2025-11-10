@@ -2,6 +2,7 @@ import { Button, Card, Empty, message, Modal, Radio, Skeleton, Spin, Switch } fr
 import type { CheckboxGroupProps } from "antd/es/checkbox";
 import { useContext, useEffect, useRef, useState } from "react";
 import { Document, Page, pdfjs } from "react-pdf";
+import { useSearchParams } from "react-router-dom";
 import { useUpdateFloorPlanWithAreas } from "../../api/hooks/useUpdateFloorPlanWithAreas";
 import { BUCKET_NAME, TEMP_ID_FORMAT } from "../../constant";
 import DrawerVisibilityContext from "../../store/context/DrawerVisibilityContext";
@@ -22,6 +23,8 @@ const options: CheckboxGroupProps<string>["options"] = [
 ];
 
 const FloorPlandEditor = ({ loading }: { loading: boolean }) => {
+    const [searchParams] = useSearchParams();
+    const id = searchParams.get("id");
     const [messageApi, contextHolderMessage] = message.useMessage();
     const [modalAntd, contextHolderModal] = Modal.useModal();
     const { modal, filterModal, drawer } = useContext(DrawerVisibilityContext);
@@ -166,7 +169,7 @@ const FloorPlandEditor = ({ loading }: { loading: boolean }) => {
     };
 
     const onSave = async () => {
-        if (!modal.id.value) {
+        if (!id) {
             return;
         }
 
@@ -246,7 +249,7 @@ const FloorPlandEditor = ({ loading }: { loading: boolean }) => {
                 style={{ width: "100%" }}
                 extra={
                     <div className="flex items-center gap-x-4">
-                        {!modal.edit.visible && (
+                        {!modal.edit.visible && modal.selectedFloorLevelId.value && (
                             <Button onClick={() => filterModal.view.setVisible(true)}>
                                 Filter
                             </Button>
@@ -270,9 +273,7 @@ const FloorPlandEditor = ({ loading }: { loading: boolean }) => {
                         )}
                         <CustomActionButtons
                             actions={
-                                modal.view.visible &&
-                                !modal.edit.visible &&
-                                modal.selectedFloorLevelId.value
+                                !modal.edit.visible && modal.selectedFloorLevelId.value
                                     ? ["edit"]
                                     : []
                             }
@@ -308,7 +309,7 @@ const FloorPlandEditor = ({ loading }: { loading: boolean }) => {
                             <FloorPlanUploader onFileUpload={(file) => setNewFile(file)} />
                         </div>
                     )}
-                    <div className="h-[600px] flex justify-center items-center !bg-gray-100 rounded-lg border-2 border-slate-800 shadow-lg overflow-auto">
+                    <div className="h-[calc(100vh-314px)] flex justify-center items-center !bg-gray-100 rounded-lg border-2 border-slate-800 shadow-lg overflow-auto">
                         <div
                             className="relative max-w-full max-h-full"
                             onClick={handleCanvasClick}

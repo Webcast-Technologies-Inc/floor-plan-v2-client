@@ -5,8 +5,9 @@ import {
     EditOutlined,
     PlusOutlined,
 } from "@ant-design/icons";
-import { Button, Col, Dropdown, message, Modal, Row, Select, type MenuProps } from "antd";
+import { Button, Card, Col, Dropdown, message, Modal, Row, Select, type MenuProps } from "antd";
 import { useCallback, useContext, useEffect, useState } from "react";
+import { useNavigate, useSearchParams } from "react-router-dom";
 import { useDeleteFloor } from "../../api/hooks/useDeleteFloor";
 import { useGetFloorByLevelId } from "../../api/hooks/useGetFloorByLevelId";
 import { useGetLandmarkById } from "../../api/hooks/useGetLandmarkById";
@@ -21,11 +22,14 @@ interface FloorOption {
 }
 
 const FloorPlanModal = () => {
+    const navigate = useNavigate();
+    const [searchParams] = useSearchParams();
+    const id = searchParams.get("id");
+    const name = searchParams.get("name");
     const [messageApi, contextHolderMessage] = message.useMessage();
     const [modalAntd, contextHolderModal] = Modal.useModal();
     const { handleGetLandmarkById, loading: loadingGetLandmarkById } = useGetLandmarkById();
     const { handleGetFloorByLevelId, loading: loadingGetFloorByLevelId } = useGetFloorByLevelId();
-    // const { handleUpdateFloorAreas, loading: loadingUpdateFloorAreas } = useUpdateFloorAreas();
     const { handleDeleteFloor } = useDeleteFloor();
     const { modal, drawer } = useContext(DrawerVisibilityContext);
     const [floorOptions, setFloorOptions] = useState<FloorOption[]>([]);
@@ -63,12 +67,12 @@ const FloorPlanModal = () => {
                     ),
                     onOk: async () => {
                         try {
-                            if (!modal.id.value || !modal.dataSet.value?.id) {
+                            if (!id || !modal.dataSet.value?.id) {
                                 return;
                             }
 
                             const resp = await handleDeleteFloor({
-                                landmarkId: modal.id.value,
+                                landmarkId: id,
                                 id: modal.dataSet.value?.id,
                             });
 
@@ -105,52 +109,87 @@ const FloorPlanModal = () => {
     ];
 
     useEffect(() => {
-        const fetch = async () => {
-            setModalLoading(true);
-            if (modal.id.value && modal.view.visible) {
-                try {
-                    const resp = await handleGetLandmarkById(modal.id.value);
+        let isMounted = true; // flag for mount state
 
-                    if (!resp) {
-                        throw new Error("Failed to get Landmark!");
+        const fetch = async () => {
+            if (!id) {
+                return;
+            }
+            setModalLoading(true);
+
+            try {
+                const resp = await handleGetLandmarkById(id);
+
+                if (!resp) {
+                    throw new Error("Failed to get Landmark!");
+                }
+
+                if (!isMounted) {
+                    return;
+                }
+
+                const options = resp.data.getLandmarkById.floors?.map(({ id, level }: any) => ({
+                    value: id,
+                    label: level,
+                }));
+
+                if (isMounted) {
+                    setFloorOptions(options ?? []);
+                }
+
+                if (options.length > 0) {
+                    const firstFloorId = options[0].value;
+
+                    if (isMounted) {
+                        modal.selectedFloorLevelId.setValue(firstFloorId);
                     }
 
-                    const options = resp.data.getLandmarkById.floors.map(({ id, level }: any) => ({
-                        value: id,
-                        label: level,
-                    }));
+                    const resp = await handleGetFloorByLevelId({
+                        floorId: firstFloorId,
+                    });
 
-                    setFloorOptions(options ?? []);
+                    if (!resp) {
+                        throw new Error("Failed to get Floor!");
+                    }
 
-                    if (options.length > 0) {
-                        modal.selectedFloorLevelId.setValue(options[0].value);
-
-                        const resp = await handleGetFloorByLevelId({
-                            floorId: options[0].value,
-                        });
-
-                        if (!resp) {
-                            throw new Error("Failed to get Floor!");
-                        }
-
+                    if (isMounted) {
                         modal.dataSet.setValue(resp.data.getFloorByLevelId);
                         modal.originalDataSet.setValue(resp.data.getFloorByLevelId);
-                    } else {
+                    }
+                } else {
+                    if (isMounted) {
                         modal.selectedFloorLevelId.setValue(undefined);
                         modal.dataSet.setValue(null);
                     }
-                } catch (err) {
-                    messageApi.open({
-                        type: "error",
-                        content: "Failed to get Landmark!",
-                    });
-                } finally {
+                }
+            } catch (err: any) {
+                if (!isMounted) {
+                    return;
+                }
+
+                // Ignore AbortErrors safely
+                if (err.name === "AbortError") {
+                    return;
+                }
+
+                messageApi.open({
+                    type: "error",
+                    content: err.message || "Failed to get Landmark!",
+                });
+            } finally {
+                if (isMounted) {
                     setModalLoading(false);
                 }
             }
         };
+
         fetch();
-    }, [modal.id.value, modal.view.visible, drawer.refetch.value]);
+
+        return () => {
+            // prevent state updates after unmount
+            isMounted = false;
+        };
+    }, [id, drawer.refetch.value]);
 
     const onChangeSelect = useCallback(
         async (val: any) => {
@@ -166,7 +205,7 @@ const FloorPlanModal = () => {
 
             modal.selectedFloorLevelId.setValue(val);
 
-            if (modal.id.value) {
+            if (id) {
                 const resp = await handleGetFloorByLevelId({
                     floorId: val,
                 });
@@ -177,25 +216,23 @@ const FloorPlanModal = () => {
                 }
             }
         },
-        [modal.id.value]
+        [id]
     );
 
-    const handleResetStates = () => {
-        modal.view.setVisible(false);
-        modal.edit.setVisible(false);
-        modal.id.setValue(null);
-        modal.selectedArea.setValue(null);
-        modal.selectedTool.setValue("select");
-        modal.dataSet.setValue(null);
-        modal.originalDataSet.setValue(null);
-        modal.form.dataSet.resetFields();
-        modal.form.dataSetInfo.resetFields();
-        modal.dataSetInfo.setValue(null);
-    };
+    // const handleResetStates = () => {
+    //     modal.edit.setVisible(false);
+    //     modal.selectedArea.setValue(null);
+    //     modal.selectedTool.setValue("select");
+    //     modal.dataSet.setValue(null);
+    //     modal.originalDataSet.setValue(null);
+    //     modal.form.dataSet.resetFields();
+    //     modal.form.dataSetInfo.resetFields();
+    //     modal.dataSetInfo.setValue(null);
+    // };
 
     const onClose = () => {
         if (!modal.selectedFloorLevelId.value || !modal.edit.visible) {
-            handleResetStates();
+            navigate("/");
             return;
         }
 
@@ -208,7 +245,7 @@ const FloorPlanModal = () => {
                 </>
             ),
             onOk: () => {
-                handleResetStates();
+                navigate("/");
             },
             okText: "YES",
         });
@@ -218,53 +255,52 @@ const FloorPlanModal = () => {
         <>
             {contextHolderMessage}
             {contextHolderModal}
-            <Modal
-                title="Floor Plan"
-                width={1500}
-                zIndex={500}
-                open={modal.view.visible}
-                onCancel={onClose}
-                footer={null}
-                destroyOnHidden // force re-mount to reset the states
-                loading={modalLoading}
-            >
-                <Row gutter={16}>
-                    <Col span={17}>
-                        <FloorPlandEditor loading={loading} />
-                    </Col>
-                    <Col span={7}>
-                        <div className="!space-y-4">
-                            <div className="flex gap-x-4">
-                                <Select
-                                    placeholder="Select Floor Level"
-                                    style={{ width: 160 }}
-                                    value={modal.selectedFloorLevelId.value}
-                                    onChange={onChangeSelect}
-                                    options={floorOptions}
-                                />
-                                <Dropdown
-                                    menu={{
-                                        items: modal.selectedFloorLevelId.value
-                                            ? items
-                                            : items.filter((item) => item?.key === "add"),
-                                    }}
-                                    placement="bottom"
-                                >
-                                    <Button type="primary">
-                                        Floor Actions
-                                        <DownOutlined />
-                                    </Button>
-                                </Dropdown>
+            <div className="min-h-screen !p-6 !space-y-6">
+                <Button onClick={onClose}>Back to maps</Button>
+                <Card
+                    title={`Floor Plan : ${name}`}
+                    variant="outlined"
+                    style={{ width: "100%" }}
+                    loading={modalLoading}
+                >
+                    <Row gutter={16}>
+                        <Col span={17}>
+                            <FloorPlandEditor loading={loading} />
+                        </Col>
+                        <Col span={7}>
+                            <div className="!space-y-4">
+                                <div className="flex gap-x-4">
+                                    <Select
+                                        placeholder="Select Floor Level"
+                                        style={{ width: 160 }}
+                                        value={modal.selectedFloorLevelId.value}
+                                        onChange={onChangeSelect}
+                                        options={floorOptions}
+                                    />
+                                    <Dropdown
+                                        menu={{
+                                            items: modal.selectedFloorLevelId.value
+                                                ? items
+                                                : items.filter((item) => item?.key === "add"),
+                                        }}
+                                        placement="bottom"
+                                    >
+                                        <Button type="primary">
+                                            Floor Actions
+                                            <DownOutlined />
+                                        </Button>
+                                    </Dropdown>
+                                </div>
+                                {modal.edit.visible ? (
+                                    <AreaDetails loading={loading} />
+                                ) : (
+                                    <DatasetInfoDetails />
+                                )}
                             </div>
-                            {modal.edit.visible ? (
-                                <AreaDetails loading={loading} />
-                            ) : (
-                                <DatasetInfoDetails />
-                            )}
-                        </div>
-                    </Col>
-                </Row>
-            </Modal>
+                        </Col>
+                    </Row>
+                </Card>
+            </div>
         </>
     );
 };

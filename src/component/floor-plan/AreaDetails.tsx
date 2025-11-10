@@ -1,4 +1,4 @@
-import { Card, Empty, Form, Select, Spin } from "antd";
+import { Card, Empty, Form, Modal, Select, Spin } from "antd";
 import { useContext } from "react";
 import { useGetDatasetInfo } from "../../api/hooks/useGetDatasetInfo";
 import useInfiniteScrollSelect from "../../hook/useInfiniteScrollSelect";
@@ -7,6 +7,7 @@ import type { IFloorPlanArea } from "../../types/floorPlan";
 import CustomActionButtons from "../CustomActionButtons";
 
 const AreaDetails = ({ loading }: { loading: boolean }) => {
+    const [modalAntd, contextHolderModal] = Modal.useModal();
     const { handleGetDatasetInfo } = useGetDatasetInfo();
     const { modal } = useContext(DrawerVisibilityContext);
     const {
@@ -73,18 +74,30 @@ const AreaDetails = ({ loading }: { loading: boolean }) => {
 
     const handleDelete = () => {
         if (modal.edit.visible) {
-            modal.form.dataSet.resetFields();
-            modal.selectedArea.setValue(null);
+            modalAntd.confirm({
+                title: "Confirm Discard",
+                content: (
+                    <>
+                        <p>Are you sure you want to delete the marker?</p>
+                        <p>This action cannot be undone.</p>
+                    </>
+                ),
+                onOk: () => {
+                    modal.form.dataSet.resetFields();
+                    modal.selectedArea.setValue(null);
 
-            modal.dataSet.setValue((prev) => {
-                if (!prev) return prev;
+                    modal.dataSet.setValue((prev) => {
+                        if (!prev) return prev;
 
-                return {
-                    ...prev,
-                    areas: prev.areas?.filter(
-                        (area) => area.id !== modal.selectedArea.value?.id
-                    ) as IFloorPlanArea[],
-                };
+                        return {
+                            ...prev,
+                            areas: prev.areas?.filter(
+                                (area) => area.id !== modal.selectedArea.value?.id
+                            ) as IFloorPlanArea[],
+                        };
+                    });
+                },
+                okText: "YES",
             });
         }
     };
@@ -96,57 +109,60 @@ const AreaDetails = ({ loading }: { loading: boolean }) => {
     );
 
     return (
-        <Card
-            title="Dataset Details"
-            extra={
-                <CustomActionButtons
-                    actions={modal.edit.visible && modal.selectedArea.value ? ["delete"] : []}
-                    handleDelete={handleDelete}
-                />
-            }
-            loading={loading}
-        >
-            <Form form={modal.form.dataSet} layout="vertical" autoComplete="off">
-                <Form.Item label="Dataset Information Id" name="dataSetInfoId">
-                    <Select
-                        showSearch
-                        placeholder="Search to Select"
-                        options={options}
-                        onChange={(e) => {
-                            onChange(e, "dataSetInfoId");
-                        }}
-                        onSearch={(value) => {
-                            setSearchInput(value); // triggers debounce
-                        }}
-                        onPopupScroll={handleScroll}
-                        popupRender={(menu) => {
-                            if (typing) {
-                                return renderSpinner;
-                            }
-
-                            return (
-                                <>
-                                    {menu}
-                                    {isSelectLoading && renderSpinner}
-                                </>
-                            );
-                        }}
-                        notFoundContent={
-                            typing ? (
-                                <div style={{ textAlign: "center", padding: 8 }}>
-                                    <Spin size="small" />
-                                </div>
-                            ) : (
-                                <Empty image={Empty.PRESENTED_IMAGE_SIMPLE} />
-                            )
-                        }
-                        disabled={!modal.edit.visible || !modal.selectedArea.value}
-                        allowClear
-                        optionFilterProp="label"
+        <>
+            {contextHolderModal}
+            <Card
+                title="Dataset Details"
+                extra={
+                    <CustomActionButtons
+                        actions={modal.edit.visible && modal.selectedArea.value ? ["delete"] : []}
+                        handleDelete={handleDelete}
                     />
-                </Form.Item>
-            </Form>
-        </Card>
+                }
+                loading={loading}
+            >
+                <Form form={modal.form.dataSet} layout="vertical" autoComplete="off">
+                    <Form.Item label="Dataset Information Id" name="dataSetInfoId">
+                        <Select
+                            showSearch
+                            placeholder="Search to Select"
+                            options={options}
+                            onChange={(e) => {
+                                onChange(e, "dataSetInfoId");
+                            }}
+                            onSearch={(value) => {
+                                setSearchInput(value); // triggers debounce
+                            }}
+                            onPopupScroll={handleScroll}
+                            popupRender={(menu) => {
+                                if (typing) {
+                                    return renderSpinner;
+                                }
+
+                                return (
+                                    <>
+                                        {menu}
+                                        {isSelectLoading && renderSpinner}
+                                    </>
+                                );
+                            }}
+                            notFoundContent={
+                                typing ? (
+                                    <div style={{ textAlign: "center", padding: 8 }}>
+                                        <Spin size="small" />
+                                    </div>
+                                ) : (
+                                    <Empty image={Empty.PRESENTED_IMAGE_SIMPLE} />
+                                )
+                            }
+                            disabled={!modal.edit.visible || !modal.selectedArea.value}
+                            allowClear
+                            optionFilterProp="label"
+                        />
+                    </Form.Item>
+                </Form>
+            </Card>
+        </>
     );
 };
 export default AreaDetails;
