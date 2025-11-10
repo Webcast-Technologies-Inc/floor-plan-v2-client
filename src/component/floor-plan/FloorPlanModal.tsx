@@ -5,13 +5,24 @@ import {
     EditOutlined,
     PlusOutlined,
 } from "@ant-design/icons";
-import { Button, Card, Col, Dropdown, message, Modal, Row, Select, type MenuProps } from "antd";
+import {
+    Button as ButtonAntd,
+    Col,
+    Dropdown,
+    message,
+    Modal,
+    Row,
+    Select,
+    type MenuProps,
+} from "antd";
+import { ArrowLeft } from "lucide-react";
 import { useCallback, useContext, useEffect, useState } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { useDeleteFloor } from "../../api/hooks/useDeleteFloor";
 import { useGetFloorByLevelId } from "../../api/hooks/useGetFloorByLevelId";
 import { useGetLandmarkById } from "../../api/hooks/useGetLandmarkById";
 import DrawerVisibilityContext from "../../store/context/DrawerVisibilityContext";
+import { Button } from "../ui/button";
 import AreaDetails from "./AreaDetails";
 import DatasetInfoDetails from "./DatasetInfoDetails";
 import FloorPlandEditor from "./FloorPlanEditor";
@@ -256,50 +267,54 @@ const FloorPlanModal = () => {
             {contextHolderMessage}
             {contextHolderModal}
             <div className="min-h-screen !p-6 !space-y-6">
-                <Button onClick={onClose}>Back to maps</Button>
-                <Card
-                    title={`Floor Plan : ${name}`}
-                    variant="outlined"
-                    style={{ width: "100%" }}
-                    loading={modalLoading}
-                >
-                    <Row gutter={16}>
-                        <Col span={17}>
-                            <FloorPlandEditor loading={loading} />
-                        </Col>
-                        <Col span={7}>
-                            <div className="!space-y-4">
-                                <div className="flex gap-x-4">
-                                    <Select
-                                        placeholder="Select Floor Level"
-                                        style={{ width: 160 }}
-                                        value={modal.selectedFloorLevelId.value}
-                                        onChange={onChangeSelect}
-                                        options={floorOptions}
-                                    />
-                                    <Dropdown
-                                        menu={{
-                                            items: modal.selectedFloorLevelId.value
-                                                ? items
-                                                : items.filter((item) => item?.key === "add"),
-                                        }}
-                                        placement="bottom"
-                                    >
-                                        <Button type="primary">
-                                            Floor Actions
-                                            <DownOutlined />
-                                        </Button>
-                                    </Dropdown>
-                                </div>
-                                {modal.edit.visible ? (
-                                    <AreaDetails loading={loading} />
-                                ) : (
-                                    <DatasetInfoDetails />
-                                )}
-                            </div>
-                        </Col>
-                    </Row>
-                </Card>
+                <Row gutter={[16, 24]}>
+                    <Col span={17}>
+                        <div className="flex items-center gap-x-6">
+                            <Button
+                                onClick={onClose}
+                                className="h-auto w-auto !p-2 text-white bg-black rounded-[100%] cursor-pointer hover:opacity-80"
+                                variant={"link"}
+                            >
+                                <ArrowLeft strokeWidth={3} />
+                            </Button>
+                            <p className="font-bold text-xl">Floor Plan : {name}</p>
+                        </div>
+                    </Col>
+                    <Col span={7}>
+                        <div className="flex gap-x-4">
+                            <Select
+                                placeholder="Select Floor Level"
+                                style={{ width: 160 }}
+                                value={modal.selectedFloorLevelId.value}
+                                onChange={onChangeSelect}
+                                options={floorOptions}
+                            />
+                            <Dropdown
+                                menu={{
+                                    items: modal.selectedFloorLevelId.value
+                                        ? items
+                                        : items.filter((item) => item?.key === "add"),
+                                }}
+                                placement="bottom"
+                            >
+                                <ButtonAntd type="primary">
+                                    Floor Actions
+                                    <DownOutlined />
+                                </ButtonAntd>
+                            </Dropdown>
+                        </div>
+                    </Col>
+                    <Col span={17}>
+                        <FloorPlandEditor loading={loading} />
+                    </Col>
+                    <Col span={7}>
+                        {modal.edit.visible ? (
+                            <AreaDetails loading={loading} />
+                        ) : (
+                            <DatasetInfoDetails />
+                        )}
+                    </Col>
+                </Row>
             </div>
         </>
     );

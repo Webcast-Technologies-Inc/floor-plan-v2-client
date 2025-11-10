@@ -78,7 +78,7 @@ const DatasetInfoDetails = () => {
         <>
             {contextHolderMessage}
             <Card
-                title="Dataset Information"
+                title="Stall Information"
                 loading={loading}
                 styles={{
                     body: {

@@ -122,7 +122,7 @@ const AreaDetails = ({ loading }: { loading: boolean }) => {
                 loading={loading}
             >
                 <Form form={modal.form.dataSet} layout="vertical" autoComplete="off">
-                    <Form.Item label="Dataset Information Id" name="dataSetInfoId">
+                    <Form.Item label="Stall Information Id" name="dataSetInfoId">
                         <Select
                             showSearch
                             placeholder="Search to Select"
