@@ -4,15 +4,12 @@ import { useContext, useEffect, useRef, useState } from "react";
 import { Document, Page, pdfjs } from "react-pdf";
 import { useSearchParams } from "react-router-dom";
 import { useUpdateFloorPlanWithAreas } from "../../api/hooks/useUpdateFloorPlanWithAreas";
-import { BUCKET_NAME, TEMP_ID_FORMAT } from "../../constant";
+import { TEMP_ID_FORMAT } from "../../constant";
 import DrawerVisibilityContext from "../../store/context/DrawerVisibilityContext";
 import type { IFloorPlanArea } from "../../types/floorPlan";
-import customFileName from "../../utils/customFileName";
 import { removeTypename } from "../../utils/removeTypename";
 import { repositionOutOfBoundsMarkers } from "../../utils/repositionMarkers";
-import { supabase } from "../../utils/supabaseClient";
 import CustomActionButtons from "../CustomActionButtons";
-import FloorPlanUploader from "./FloorPlanUploader";
 import { MarkerPoint } from "./MarkerPoint";
 
 pdfjs.GlobalWorkerOptions.workerSrc = `//unpkg.com/pdfjs-dist@${pdfjs.version}/build/pdf.worker.min.mjs`;
@@ -30,46 +27,45 @@ const FloorPlandEditor = ({ loading }: { loading: boolean }) => {
     const { modal, filterModal, drawer } = useContext(DrawerVisibilityContext);
     const { handleUpdateFloorPlanWithAreas } = useUpdateFloorPlanWithAreas();
     const containerRef = useRef<any>(null);
-    const [imageUrl, setImageUrl] = useState<string | null>(null);
-    const [newFile, setNewFile] = useState<File | null>(null);
     const [highlightMarkers, setHighlightMarkers] = useState(modal.showAllMarks.visible);
     const highlightTimeoutRef = useRef<number | null>(null);
     const [loadingSave, setLoadingSave] = useState(false);
     const [isFileLoaded, setIsFileLoaded] = useState(false);
-    const isPdf = (newFile?.type ?? modal.dataSet.value?.fileType) === "application/pdf";
+    const isPdf = modal.dataSet.value?.fileType === "application/pdf";
 
     useEffect(() => {
-        if (newFile && newFile?.type.startsWith("image/")) {
-            const url = URL.createObjectURL(newFile);
-            setImageUrl(url);
-
-            // Load the image to get its dimensions and reposition markers if needed
-            const img = new Image();
-            img.onload = () => {
-                const newWidth = img.width;
-                const newHeight = img.height;
-
-                // Reposition any out-of-bounds markers
-                modal.dataSet.setValue((prev) => {
-                    if (!prev || !prev.areas || prev.areas.length === 0) return prev;
-
-                    const repositionedAreas = repositionOutOfBoundsMarkers(
-                        prev.areas,
-                        newWidth,
-                        newHeight
-                    );
-
-                    return {
-                        ...prev,
-                        areas: repositionedAreas,
-                    };
-                });
-            };
-            img.src = url;
-
-            return () => URL.revokeObjectURL(url);
+        const presignedUrl = modal.dataSet.value?.presignedUrl;
+        if (!presignedUrl || !modal.dataSet.value?.fileType?.startsWith("image/")) {
+            return;
         }
-    }, [newFile]);
+
+        const img = new Image();
+        img.onload = () => {
+            const newWidth = img.width;
+            const newHeight = img.height;
+
+            modal.dataSet.setValue((prev) => {
+                if (!prev?.areas?.length) return prev;
+
+                const repositionedAreas = repositionOutOfBoundsMarkers(
+                    prev.areas,
+                    newWidth,
+                    newHeight
+                );
+
+                return {
+                    ...prev,
+                    areas: repositionedAreas,
+                };
+            });
+        };
+
+        img.onerror = (err) => {
+            console.error("Image failed to load:", err);
+        };
+
+        img.src = presignedUrl;
+    }, [modal.dataSet.value?.presignedUrl]);
 
     const handleAddMarker = (marker: IFloorPlanArea) => {
         modal.dataSet.setValue((prev) => {
@@ -156,7 +152,6 @@ const FloorPlandEditor = ({ loading }: { loading: boolean }) => {
                 </>
             ),
             onOk: () => {
-                setNewFile(null);
                 modal.dataSet.setValue(modal.originalDataSet.value);
                 modal.edit.setVisible(false);
                 modal.selectedArea.setValue(null);
@@ -176,22 +171,6 @@ const FloorPlandEditor = ({ loading }: { loading: boolean }) => {
         setLoadingSave(true);
 
         try {
-            let uploadedFile: any;
-            if (newFile) {
-                const { data, error } = await supabase.storage
-                    .from(BUCKET_NAME.documents)
-                    .upload(customFileName(newFile as any), newFile as any, {
-                        cacheControl: "3600",
-                        upsert: true,
-                    });
-
-                if (error) {
-                    return;
-                }
-
-                uploadedFile = data;
-            }
-
             const removeTempIdAreas = modal.dataSet.value?.areas?.map((area) => {
                 const isTempId = typeof area.id === "string" && area.id.startsWith(TEMP_ID_FORMAT);
 
@@ -203,9 +182,6 @@ const FloorPlandEditor = ({ loading }: { loading: boolean }) => {
 
             await handleUpdateFloorPlanWithAreas({
                 id: modal.dataSet.value?.id,
-                fileName: newFile ? newFile?.name : modal.dataSet.value?.fileName || "",
-                fileType: newFile ? newFile?.type : modal.dataSet.value?.fileType || "",
-                filePath: newFile ? uploadedFile?.fullPath : modal.dataSet.value?.filePath,
                 areas: removeTypename(removeTempIdAreas) || [],
             });
 
@@ -292,7 +268,7 @@ const FloorPlandEditor = ({ loading }: { loading: boolean }) => {
                     {modal.edit.visible && (
                         <div className="flex justify-between items-center !p-6 rounded-lg bg-gray-100">
                             <div>
-                                {(modal.dataSet.value?.presignedUrl || newFile) && (
+                                {modal.dataSet.value?.presignedUrl && (
                                     <Radio.Group
                                         block
                                         options={options}
@@ -306,7 +282,6 @@ const FloorPlandEditor = ({ loading }: { loading: boolean }) => {
                                     />
                                 )}
                             </div>
-                            <FloorPlanUploader onFileUpload={(file) => setNewFile(file)} />
                         </div>
                     )}
                     <div className="h-[calc(100vh-314px)] flex justify-center items-center !bg-gray-100 rounded-lg border-2 border-slate-800 shadow-lg overflow-auto">
@@ -318,24 +293,16 @@ const FloorPlandEditor = ({ loading }: { loading: boolean }) => {
                                     modal.selectedTool.value === "mark" ? "crosshair" : "default",
                             }}
                         >
-                            {!newFile && !modal.dataSet.value?.filePath ? (
+                            {!modal.dataSet.value?.filePath ? (
                                 <Empty image={Empty.PRESENTED_IMAGE_SIMPLE} />
                             ) : (
                                 <>
                                     {isPdf ? (
                                         <div ref={containerRef}>
                                             <Document
-                                                key={
-                                                    newFile
-                                                        ? newFile.name
-                                                        : modal.dataSet.value?.filePath
-                                                }
+                                                key={modal.dataSet.value?.filePath}
                                                 loading={<Spin />}
-                                                file={
-                                                    newFile
-                                                        ? newFile
-                                                        : modal.dataSet.value?.presignedUrl ?? ""
-                                                }
+                                                file={modal.dataSet.value?.presignedUrl}
                                                 onLoadSuccess={() => {
                                                     setIsFileLoaded(true);
                                                 }}
@@ -351,34 +318,32 @@ const FloorPlandEditor = ({ loading }: { loading: boolean }) => {
                                                     className="max-w-full !bg-gray-100"
                                                     onLoadSuccess={(page) => {
                                                         // Reposition markers when PDF page loads with new dimensions
-                                                        if (newFile) {
-                                                            const viewport = page.getViewport({
-                                                                scale: 1,
-                                                            });
-                                                            const newWidth = viewport.width;
-                                                            const newHeight = viewport.height;
+                                                        const viewport = page.getViewport({
+                                                            scale: 1,
+                                                        });
+                                                        const newWidth = viewport.width;
+                                                        const newHeight = viewport.height;
 
-                                                            modal.dataSet.setValue((prev) => {
-                                                                if (
-                                                                    !prev ||
-                                                                    !prev.areas ||
-                                                                    prev.areas.length === 0
-                                                                )
-                                                                    return prev;
+                                                        modal.dataSet.setValue((prev) => {
+                                                            if (
+                                                                !prev ||
+                                                                !prev.areas ||
+                                                                prev.areas.length === 0
+                                                            )
+                                                                return prev;
 
-                                                                const repositionedAreas =
-                                                                    repositionOutOfBoundsMarkers(
-                                                                        prev.areas,
-                                                                        newWidth,
-                                                                        newHeight
-                                                                    );
+                                                            const repositionedAreas =
+                                                                repositionOutOfBoundsMarkers(
+                                                                    prev.areas,
+                                                                    newWidth,
+                                                                    newHeight
+                                                                );
 
-                                                                return {
-                                                                    ...prev,
-                                                                    areas: repositionedAreas,
-                                                                };
-                                                            });
-                                                        }
+                                                            return {
+                                                                ...prev,
+                                                                areas: repositionedAreas,
+                                                            };
+                                                        });
                                                     }}
                                                 />
                                             </Document>
@@ -386,11 +351,7 @@ const FloorPlandEditor = ({ loading }: { loading: boolean }) => {
                                     ) : (
                                         <img
                                             ref={containerRef}
-                                            src={
-                                                newFile
-                                                    ? imageUrl || undefined
-                                                    : modal.dataSet.value?.presignedUrl || undefined
-                                            }
+                                            src={modal.dataSet.value?.presignedUrl || undefined}
                                             alt="Floor plan"
                                             style={{
                                                 width: "auto",
