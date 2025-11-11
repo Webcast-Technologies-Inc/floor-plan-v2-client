@@ -7,6 +7,9 @@ export const UPDATE_FLOOR_MUTATION = gql`
         $level: String!
         $name: String!
         $dataSetId: ID!
+        $fileName: String!
+        $fileType: String!
+        $filePath: String!
     ) {
         updateFloor(
             id: $id
@@ -14,11 +17,18 @@ export const UPDATE_FLOOR_MUTATION = gql`
             level: $level
             name: $name
             dataSetId: $dataSetId
+            fileName: $fileName
+            fileType: $fileType
+            filePath: $filePath
         ) {
             id
             level
             name
             dataSetId
+            fileName
+            fileType
+            filePath
+            fileType
         }
     }
 `;

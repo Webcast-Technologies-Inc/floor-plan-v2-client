@@ -269,7 +269,7 @@ const FloorPlanModal = () => {
             <div className="min-h-screen !p-6 !space-y-6">
                 <Row gutter={[16, 24]}>
                     <Col span={17}>
-                        <div className="flex items-center gap-x-6">
+                        <div className="h-full flex items-center gap-x-6">
                             <Button
                                 onClick={onClose}
                                 className="h-auto w-auto !p-2 text-white bg-black rounded-[100%] cursor-pointer hover:opacity-80"
@@ -281,7 +281,7 @@ const FloorPlanModal = () => {
                         </div>
                     </Col>
                     <Col span={7}>
-                        <div className="flex gap-x-4">
+                        <div className="h-full flex items-center gap-x-4">
                             <Select
                                 placeholder="Select Floor Level"
                                 value={modal.selectedFloorLevelId.value}

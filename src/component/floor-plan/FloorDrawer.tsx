@@ -20,6 +20,7 @@ import { useGetFloorByLevelId } from "../../api/hooks/useGetFloorByLevelId";
 import { useUpdateFloor } from "../../api/hooks/useUpdateFloor";
 import { BUCKET_NAME } from "../../constant";
 import DrawerVisibilityContext from "../../store/context/DrawerVisibilityContext";
+import type { IUploadFile } from "../../types/floorPlan";
 import customFileName from "../../utils/customFileName";
 import { supabase } from "../../utils/supabaseClient";
 interface FieldType {
@@ -56,7 +57,19 @@ const FloorDrawer = () => {
                         throw new Error("Failed to fetch floor data");
                     }
 
-                    form.setFieldsValue(resp.data.getFloorByLevelId);
+                    const { id, fileName, fileType, filePath, presignedUrl, ...restData } =
+                        resp.data.getFloorByLevelId;
+
+                    const floorPlanFile = {
+                        uid: id,
+                        name: fileName,
+                        status: "done",
+                        url: presignedUrl,
+                        filePath: filePath,
+                        fileType: fileType,
+                    };
+
+                    form.setFieldsValue({ ...restData, floorPlanFile: [floorPlanFile] });
                 } catch (error) {
                     messageApi.open({
                         type: "error",
@@ -87,26 +100,41 @@ const FloorDrawer = () => {
 
     const onFinish: FormProps<FieldType>["onFinish"] = useCallback(
         async (values: FieldType) => {
+            setIsSubmitting(true);
+            let modifiedFile: IUploadFile;
+
             const {
-                floorPlanFile: [{ originFileObj: file }],
+                floorPlanFile: [file],
                 ...payload
             } = values;
 
-            setIsSubmitting(true);
+            if (!file.originFileObj) {
+                modifiedFile = {
+                    fileName: file.name,
+                    fileType: (file as any).fileType,
+                    filePath: (file as any).filePath,
+                };
+            } else {
+                const { data, error } = await supabase.storage
+                    .from(BUCKET_NAME.documents)
+                    .upload(customFileName(file.originFileObj), file.originFileObj, {
+                        cacheControl: "3600",
+                        upsert: true,
+                    });
 
-            const { data, error } = await supabase.storage
-                .from(BUCKET_NAME.documents)
-                .upload(customFileName(file), file, {
-                    cacheControl: "3600",
-                    upsert: true,
-                });
+                if (error) {
+                    messageApi.open({
+                        type: "error",
+                        content: "Failed to upload floor plan file!",
+                    });
+                    return;
+                }
 
-            if (error) {
-                messageApi.open({
-                    type: "error",
-                    content: "Failed to upload floor plan file!",
-                });
-                return;
+                modifiedFile = {
+                    fileName: file.name,
+                    fileType: file.type,
+                    filePath: data.fullPath,
+                };
             }
 
             if (id && drawer.add.visible && file) {
@@ -114,9 +142,7 @@ const FloorDrawer = () => {
                     const resp = await handleCreateFloor({
                         ...payload,
                         landmarkId: id,
-                        fileName: file.name,
-                        fileType: file.type,
-                        filePath: data.fullPath,
+                        ...(modifiedFile as any),
                     });
 
                     if (resp) {
@@ -147,9 +173,7 @@ const FloorDrawer = () => {
                         ...payload,
                         landmarkId: id,
                         id: modal.selectedFloorLevelId.value,
-                        fileName: file.name,
-                        fileType: file.type,
-                        filePath: data.fullPath,
+                        ...(modifiedFile as any),
                     });
 
                     if (resp) {

@@ -1,3 +1,11 @@
+export interface IUploadFile {
+    id?: string;
+    fileName?: string;
+    fileType?: string;
+    filePath?: string;
+    presignedUrl?: string | undefined | null;
+}
+
 export interface IFloorPlanArea {
     id: string | null | undefined;
     x: number;
@@ -5,15 +13,11 @@ export interface IFloorPlanArea {
     dataSetInfoId: string;
 }
 
-export interface IFloor {
+export interface IFloor extends IUploadFile {
     id: string;
     level: string;
     name: string;
     dataSetId: string;
-    fileName?: string;
-    fileType?: string;
-    filePath?: string;
-    presignedUrl?: string | undefined | null;
     areas?: IFloorPlanArea[];
 }
 
