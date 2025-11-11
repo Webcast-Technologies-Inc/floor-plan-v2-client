@@ -293,14 +293,14 @@ const FloorPlandEditor = ({ loading }: { loading: boolean }) => {
                                     modal.selectedTool.value === "mark" ? "crosshair" : "default",
                             }}
                         >
-                            {!modal.dataSet.value?.filePath ? (
+                            {!modal.dataSet.value?.presignedUrl ? (
                                 <Empty image={Empty.PRESENTED_IMAGE_SIMPLE} />
                             ) : (
                                 <>
                                     {isPdf ? (
                                         <div ref={containerRef}>
                                             <Document
-                                                key={modal.dataSet.value?.filePath}
+                                                key={modal.dataSet.value?.presignedUrl}
                                                 loading={<Spin />}
                                                 file={modal.dataSet.value?.presignedUrl}
                                                 onLoadSuccess={() => {
