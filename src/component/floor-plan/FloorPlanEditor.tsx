@@ -1,13 +1,10 @@
-import { Button, Card, Empty, message, Modal, Radio, Skeleton, Spin, Switch } from "antd";
+import { Button, Card, Empty, Radio, Skeleton, Spin, Switch } from "antd";
 import type { CheckboxGroupProps } from "antd/es/checkbox";
 import { useContext, useEffect, useRef, useState } from "react";
 import { Document, Page, pdfjs } from "react-pdf";
-import { useSearchParams } from "react-router-dom";
-import { useUpdateFloorPlanWithAreas } from "../../api/hooks/useUpdateFloorPlanWithAreas";
 import { TEMP_ID_FORMAT } from "../../constant";
 import DrawerVisibilityContext from "../../store/context/DrawerVisibilityContext";
 import type { IFloorPlanArea } from "../../types/floorPlan";
-import { removeTypename } from "../../utils/removeTypename";
 import { repositionOutOfBoundsMarkers } from "../../utils/repositionMarkers";
 import CustomActionButtons from "../CustomActionButtons";
 import { MarkerPoint } from "./MarkerPoint";
@@ -19,17 +16,18 @@ const options: CheckboxGroupProps<string>["options"] = [
     { label: "Marker", value: "mark" },
 ];
 
-const FloorPlandEditor = ({ loading }: { loading: boolean }) => {
-    const [searchParams] = useSearchParams();
-    const id = searchParams.get("id");
-    const [messageApi, contextHolderMessage] = message.useMessage();
-    const [modalAntd, contextHolderModal] = Modal.useModal();
-    const { modal, filterModal, drawer } = useContext(DrawerVisibilityContext);
-    const { handleUpdateFloorPlanWithAreas } = useUpdateFloorPlanWithAreas();
+const FloorPlandEditor = ({
+    loading,
+    highlightMarkers,
+    setHighlightMarkers,
+}: {
+    loading: boolean;
+    highlightMarkers: boolean;
+    setHighlightMarkers: React.Dispatch<React.SetStateAction<boolean>>;
+}) => {
+    const { modal, filterModal } = useContext(DrawerVisibilityContext);
     const containerRef = useRef<any>(null);
-    const [highlightMarkers, setHighlightMarkers] = useState(modal.showAllMarks.visible);
     const highlightTimeoutRef = useRef<number | null>(null);
-    const [loadingSave, setLoadingSave] = useState(false);
     const [isFileLoaded, setIsFileLoaded] = useState(false);
     const isPdf = modal.dataSet.value?.fileType === "application/pdf";
 
@@ -87,6 +85,7 @@ const FloorPlandEditor = ({ loading }: { loading: boolean }) => {
                 areas: prev.areas?.map((m) => (m.id === updatedMarker.id ? updatedMarker : m)),
             };
         });
+        modal.selectedArea.setValue(updatedMarker);
     };
 
     const handleMarkerDragEnd = (markerId: string, x: number, y: number) => {
@@ -142,77 +141,8 @@ const FloorPlandEditor = ({ loading }: { loading: boolean }) => {
         }
     };
 
-    const onCancel = () => {
-        modalAntd.confirm({
-            title: "Confirm Discard",
-            content: (
-                <>
-                    <p>Are you sure you want to discard changes?</p>
-                    <p>This action cannot be undone.</p>
-                </>
-            ),
-            onOk: () => {
-                modal.dataSet.setValue(modal.originalDataSet.value);
-                modal.edit.setVisible(false);
-                modal.selectedArea.setValue(null);
-                modal.selectedTool.setValue("select");
-                modal.form.dataSet.resetFields();
-                setHighlightMarkers(modal.showAllMarks.visible);
-            },
-            okText: "YES",
-        });
-    };
-
-    const onSave = async () => {
-        if (!id) {
-            return;
-        }
-
-        setLoadingSave(true);
-
-        try {
-            const removeTempIdAreas = modal.dataSet.value?.areas?.map((area) => {
-                const isTempId = typeof area.id === "string" && area.id.startsWith(TEMP_ID_FORMAT);
-
-                return {
-                    ...area,
-                    id: isTempId ? undefined : area.id,
-                };
-            });
-
-            await handleUpdateFloorPlanWithAreas({
-                id: modal.dataSet.value?.id,
-                areas: removeTypename(removeTempIdAreas) || [],
-            });
-
-            messageApi.open({
-                type: "success",
-                content: "Floor plan update successfully!",
-            });
-
-            drawer.refetch.setValue((prev) => !prev);
-            modal.form.dataSet.resetFields();
-            modal.selectedArea.setValue(null);
-            modal.originalDataSet.setValue(modal.dataSet.value);
-            modal.edit.setVisible(false);
-            modal.selectedTool.setValue("select");
-            modal.form.dataSetInfo.resetFields();
-            modal.dataSetInfo.setValue(null);
-            setHighlightMarkers(modal.showAllMarks.visible);
-        } catch (err) {
-            messageApi.open({
-                type: "error",
-                content: err instanceof Error ? err.message : String(err),
-            });
-        } finally {
-            setLoadingSave(false);
-        }
-    };
-
     return (
         <>
-            {contextHolderModal}
-            {contextHolderMessage}
             <Card
                 title={
                     loading ? (
@@ -238,14 +168,6 @@ const FloorPlandEditor = ({ loading }: { loading: boolean }) => {
                                     setHighlightMarkers(checked);
                                 }}
                             />
-                        )}
-                        {modal.edit.visible && modal.selectedFloorLevelId.value && (
-                            <>
-                                <Button onClick={onCancel}>Cancel</Button>
-                                <Button type="primary" onClick={onSave} loading={loadingSave}>
-                                    Save
-                                </Button>
-                            </>
                         )}
                         <CustomActionButtons
                             actions={

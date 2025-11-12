@@ -1,10 +1,4 @@
-import {
-    CheckCircleFilled,
-    DeleteOutlined,
-    DownOutlined,
-    EditOutlined,
-    PlusOutlined,
-} from "@ant-design/icons";
+import { CheckCircleFilled, MoreOutlined } from "@ant-design/icons";
 import {
     Button as ButtonAntd,
     Col,
@@ -45,6 +39,7 @@ const FloorPlanModal = () => {
     const { modal, drawer } = useContext(DrawerVisibilityContext);
     const [floorOptions, setFloorOptions] = useState<FloorOption[]>([]);
     const [modalLoading, setModalLoading] = useState(false);
+    const [highlightMarkers, setHighlightMarkers] = useState(modal.showAllMarks.visible);
     const loading = loadingGetLandmarkById || loadingGetFloorByLevelId;
 
     const items: MenuProps["items"] = [
@@ -54,7 +49,6 @@ const FloorPlanModal = () => {
             onClick: () => {
                 drawer.add.setVisible(true);
             },
-            icon: <PlusOutlined className="!text-blue-500" />,
         },
         {
             key: "edit",
@@ -62,7 +56,6 @@ const FloorPlanModal = () => {
             onClick: () => {
                 drawer.edit.setVisible(true);
             },
-            icon: <EditOutlined className="!text-blue-500" />,
         },
         {
             key: "delete",
@@ -115,7 +108,6 @@ const FloorPlanModal = () => {
                     okType: "danger",
                 });
             },
-            icon: <DeleteOutlined className="!text-red-500" />,
         },
     ];
 
@@ -295,20 +287,29 @@ const FloorPlanModal = () => {
                                         : items.filter((item) => item?.key === "add"),
                                 }}
                                 placement="bottom"
+                                trigger={["click"]}
+                                overlayClassName="!min-w-40"
                             >
-                                <ButtonAntd type="primary">
-                                    Floor Actions
-                                    <DownOutlined />
+                                <ButtonAntd type="text">
+                                    <MoreOutlined style={{ fontSize: 30, strokeWidth: 10 }} />
                                 </ButtonAntd>
                             </Dropdown>
                         </div>
                     </Col>
                     <Col span={17}>
-                        <FloorPlandEditor loading={loading} />
+                        <FloorPlandEditor
+                            loading={loading}
+                            highlightMarkers={highlightMarkers}
+                            setHighlightMarkers={setHighlightMarkers}
+                        />
                     </Col>
                     <Col span={7}>
                         {modal.edit.visible ? (
-                            <AreaDetails loading={loading} />
+                            <AreaDetails
+                                loading={loading}
+                                highlightMarkers={highlightMarkers}
+                                setHighlightMarkers={setHighlightMarkers}
+                            />
                         ) : (
                             <DatasetInfoDetails />
                         )}
