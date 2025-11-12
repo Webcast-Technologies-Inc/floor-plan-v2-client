@@ -43,20 +43,19 @@ const FloorPlandEditor = ({
             const newWidth = img.width;
             const newHeight = img.height;
 
-            modal.dataSet.setValue((prev) => {
-                if (!prev?.areas?.length) return prev;
-
-                const repositionedAreas = repositionOutOfBoundsMarkers(
-                    prev.areas,
-                    newWidth,
-                    newHeight
-                );
+            const reposition = (prev: any) => {
+                if (!prev?.areas?.length) {
+                    return prev;
+                }
 
                 return {
                     ...prev,
-                    areas: repositionedAreas,
+                    areas: repositionOutOfBoundsMarkers(prev.areas, newWidth, newHeight),
                 };
-            });
+            };
+
+            modal.dataSet.setValue(reposition);
+            modal.originalDataSet.setValue(reposition);
         };
 
         img.onerror = (err) => {
@@ -248,26 +247,23 @@ const FloorPlandEditor = ({
                                                         const newWidth = viewport.width;
                                                         const newHeight = viewport.height;
 
-                                                        modal.dataSet.setValue((prev) => {
-                                                            if (
-                                                                !prev ||
-                                                                !prev.areas ||
-                                                                prev.areas.length === 0
-                                                            )
+                                                        const reposition = (prev: any) => {
+                                                            if (!prev?.areas?.length) {
                                                                 return prev;
-
-                                                            const repositionedAreas =
-                                                                repositionOutOfBoundsMarkers(
-                                                                    prev.areas,
-                                                                    newWidth,
-                                                                    newHeight
-                                                                );
+                                                            }
 
                                                             return {
                                                                 ...prev,
-                                                                areas: repositionedAreas,
+                                                                areas: repositionOutOfBoundsMarkers(
+                                                                    prev.areas,
+                                                                    newWidth,
+                                                                    newHeight
+                                                                ),
                                                             };
-                                                        });
+                                                        };
+
+                                                        modal.dataSet.setValue(reposition);
+                                                        modal.originalDataSet.setValue(reposition);
                                                     }}
                                                 />
                                             </Document>

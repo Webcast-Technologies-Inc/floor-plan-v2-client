@@ -129,6 +129,8 @@ const AreaDetails = ({
                 modal.selectedArea.setValue(null);
                 modal.selectedTool.setValue("select");
                 modal.form.dataSet.resetFields();
+                modal.form.dataSetInfo.resetFields();
+                modal.dataSetInfo.setValue(null);
                 setHighlightMarkers(modal.showAllMarks.visible);
             },
             okText: "YES",
@@ -208,10 +210,15 @@ const AreaDetails = ({
                                           modal.form.dataSet.submit();
                                       }}
                                       loading={loadingSave}
+                                      disabled={!modal.edit.visible || !modal.selectedArea.value}
                                   >
                                       Save
                                   </Button>
-                                  <Button key="cancel" onClick={onCancel}>
+                                  <Button
+                                      key="cancel"
+                                      onClick={onCancel}
+                                      disabled={!modal.edit.visible || !modal.selectedArea.value}
+                                  >
                                       Cancel
                                   </Button>
                               </div>,
