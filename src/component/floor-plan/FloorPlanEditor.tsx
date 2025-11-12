@@ -124,6 +124,7 @@ const FloorPlandEditor = ({
             modal.form.dataSet.resetFields();
             modal.form.dataSetInfo.resetFields();
             modal.dataSetInfo.setValue(null);
+            modal.edit.setVisible(false);
 
             if (highlightTimeoutRef.current) {
                 clearTimeout(highlightTimeoutRef.current);
@@ -151,6 +152,15 @@ const FloorPlandEditor = ({
                 extra={
                     <div className="flex items-center gap-x-4">
                         {!modal.edit.visible && modal.selectedFloorLevelId.value && (
+                            <Switch
+                                value={modal.showAllMarks.visible}
+                                onChange={(checked: boolean) => {
+                                    modal.showAllMarks.setVisible(checked);
+                                    setHighlightMarkers(checked);
+                                }}
+                            />
+                        )}
+                        {!modal.edit.visible && modal.selectedFloorLevelId.value && (
                             <Button type="text" onClick={() => filterModal.view.setVisible(true)}>
                                 <Funnel size={18} />
                             </Button>
@@ -172,33 +182,6 @@ const FloorPlandEditor = ({
                                 <PinOff size={18} />
                             )}
                         </Button>
-                        {!modal.edit.visible && modal.selectedFloorLevelId.value && (
-                            <Switch
-                                value={modal.showAllMarks.visible}
-                                onChange={(checked: boolean) => {
-                                    modal.showAllMarks.setVisible(checked);
-                                    setHighlightMarkers(checked);
-                                }}
-                            />
-                        )}
-                        <Switch
-                            checked={modal.edit.visible}
-                            onChange={(checked) => {
-                                modal.edit.setVisible(checked);
-                                setHighlightMarkers(checked);
-
-                                if (checked) {
-                                    filterModal.dataSet.setValue(null);
-                                    filterModal.form.resetFields();
-                                } else {
-                                    // Returning to View mode
-                                    modal.dataSet.setValue(modal.originalDataSet.value);
-                                }
-                            }}
-                            disabled={!modal.selectedFloorLevelId.value}
-                            checkedChildren="Edit"
-                            unCheckedChildren="View"
-                        />
                     </div>
                 }
                 loading={loading}

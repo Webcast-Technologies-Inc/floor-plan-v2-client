@@ -1,4 +1,4 @@
-import { Button, Card, Empty, Form, Input, message, Modal, Select, Spin } from "antd";
+import { Button, Card, Empty, Form, Input, message, Modal, Select, Spin, Switch } from "antd";
 import { useContext, useEffect, useState } from "react";
 import { useGetDatasetInfo } from "../../api/hooks/useGetDatasetInfo";
 import { useUpsertMarkerById, type IUpsertMarkerById } from "../../api/hooks/useUpsertMarkerById";
@@ -19,7 +19,7 @@ const StallInformation = ({
     const [modalAntd, contextHolderModal] = Modal.useModal();
     const { handleUpsertMarkerById } = useUpsertMarkerById();
     const { handleGetDatasetInfo } = useGetDatasetInfo();
-    const { modal, drawer } = useContext(DrawerVisibilityContext);
+    const { modal, drawer, filterModal } = useContext(DrawerVisibilityContext);
     const {
         options,
         loading: isSelectLoading,
@@ -282,10 +282,35 @@ const StallInformation = ({
                 }}
                 title="Stall Information"
                 extra={
-                    <CustomActionButtons
-                        actions={modal.edit.visible && modal.selectedArea.value ? ["delete"] : []}
-                        handleDelete={handleDelete}
-                    />
+                    <div className="flex items-center gap-x-4">
+                        <Switch
+                            checked={modal.edit.visible}
+                            onChange={(checked) => {
+                                modal.edit.setVisible(checked);
+                                setHighlightMarkers(checked);
+
+                                if (checked) {
+                                    filterModal.dataSet.setValue(null);
+                                    filterModal.form.resetFields();
+                                } else {
+                                    // Returning to View mode
+                                    modal.dataSet.setValue(modal.originalDataSet.value);
+                                }
+                            }}
+                            disabled={
+                                !modal.selectedFloorLevelId.value || !modal.selectedArea.value
+                            }
+                            checkedChildren="Edit"
+                            unCheckedChildren="View"
+                        />
+                        <CustomActionButtons
+                            actions={["delete"]}
+                            handleDelete={handleDelete}
+                            disabledActions={
+                                modal.edit.visible && modal.selectedArea.value ? [] : ["delete"]
+                            }
+                        />
+                    </div>
                 }
                 loading={loading || loadingDatasetInfoDisplay}
                 actions={[
