@@ -37,6 +37,7 @@ const FloorPlandEditor = ({
             return;
         }
 
+        setIsFileLoaded(true);
         const img = new Image();
         img.onload = () => {
             const newWidth = img.width;
@@ -63,6 +64,7 @@ const FloorPlandEditor = ({
         };
 
         img.src = presignedUrl;
+        setIsFileLoaded(false);
     }, [modal.dataSet.value?.presignedUrl]);
 
     const handleAddMarker = (marker: IFloorPlanArea) => {
@@ -276,9 +278,9 @@ const FloorPlandEditor = ({
                                             src={modal.dataSet.value?.presignedUrl || undefined}
                                             alt="Floor plan"
                                             style={{
+                                                display: isFileLoaded ? "block" : "none",
                                                 width: "auto",
                                                 height: "auto",
-                                                display: "block",
                                                 maxWidth: "none",
                                                 maxHeight: "none",
                                                 flexShrink: 0,
