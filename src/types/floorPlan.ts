@@ -1,3 +1,5 @@
+import type { TOOL } from "../constant";
+
 export interface IUploadFile {
     id?: string;
     fileName?: string;
@@ -27,4 +29,4 @@ export interface IMarkerFilter {
     options: string[];
 }
 
-export type ITool = "select" | "mark";
+export type ITool = typeof TOOL.SELECT | typeof TOOL.MARKER;

@@ -1,6 +1,7 @@
 import { PushpinFilled, PushpinTwoTone } from "@ant-design/icons";
 import { Tooltip } from "antd";
 import { useEffect, useRef, useState } from "react";
+import { TOOL } from "../../constant";
 import type { IFloorPlanArea, ITool } from "../../types/floorPlan";
 
 interface MarkerPointProps {
@@ -38,7 +39,7 @@ export const MarkerPoint = ({
     const handleMouseDown = (e: React.MouseEvent) => {
         // only start dragging with left mouse button
         if (!isEditable) return;
-        if (selectedTool !== "select" || (e as React.MouseEvent).button !== 0) return;
+        if (selectedTool !== TOOL.SELECT || (e as React.MouseEvent).button !== 0) return;
         e.stopPropagation();
         e.preventDefault();
 
@@ -128,7 +129,7 @@ export const MarkerPoint = ({
             ref={markerRef}
             className={`absolute transition-transform duration-200 leading-none ${
                 isDragging ? "scale-110 z-50" : isSelected ? "scale-105 z-40" : "z-30"
-            } ${selectedTool === "select" ? "hover:scale-110" : ""}`}
+            } ${selectedTool === TOOL.SELECT ? "hover:scale-110" : ""}`}
             style={{
                 left: `${position.x}px`,
                 top: `${position.y}px`,

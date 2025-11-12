@@ -3,6 +3,7 @@ import { useState } from "react";
 import FloorDrawer from "../component/floor-plan/FloorDrawer";
 import FloorPlanModal from "../component/floor-plan/FloorPlanModal";
 import MarkerFilterModal from "../component/floor-plan/MarkerFilterModal";
+import { TOOL } from "../constant";
 import useDrawerVisibility from "../hook/useDrawerVisibility";
 import { DrawerVisibilityProvider } from "../store/context/DrawerVisibilityContext";
 import type { IFloor, IFloorPlanArea, ITool } from "../types/floorPlan";
@@ -11,7 +12,7 @@ const FloorPlan = () => {
     const modal = useDrawerVisibility();
     const filterModal = useDrawerVisibility();
     const drawer = useDrawerVisibility();
-    const [selectedTool, setSelectedTool] = useState<ITool>("select");
+    const [selectedTool, setSelectedTool] = useState<ITool>(TOOL.SELECT);
     const [selectedArea, setSelectedArea] = useState<IFloorPlanArea | undefined | null>(undefined);
     const [selectedFloorLevelId, setSelectedFloorLevelId] = useState<string | undefined>(undefined);
     const [refetch, setRefetch] = useState(false);

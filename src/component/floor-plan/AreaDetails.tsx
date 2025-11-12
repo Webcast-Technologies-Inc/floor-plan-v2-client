@@ -2,7 +2,7 @@ import { Button, Card, Empty, Form, message, Modal, Select, Spin } from "antd";
 import { useContext, useState } from "react";
 import { useGetDatasetInfo } from "../../api/hooks/useGetDatasetInfo";
 import { useUpsertMarkerById, type IUpsertMarkerById } from "../../api/hooks/useUpsertMarkerById";
-import { TEMP_ID_FORMAT } from "../../constant";
+import { TEMP_ID_FORMAT, TOOL } from "../../constant";
 import useInfiniteScrollSelect from "../../hook/useInfiniteScrollSelect";
 import DrawerVisibilityContext from "../../store/context/DrawerVisibilityContext";
 import type { IFloorPlanArea } from "../../types/floorPlan";
@@ -127,7 +127,7 @@ const AreaDetails = ({
                 modal.dataSet.setValue(modal.originalDataSet.value);
                 modal.edit.setVisible(false);
                 modal.selectedArea.setValue(null);
-                modal.selectedTool.setValue("select");
+                modal.selectedTool.setValue(TOOL.SELECT);
                 modal.form.dataSet.resetFields();
                 modal.form.dataSetInfo.resetFields();
                 modal.dataSetInfo.setValue(null);
@@ -166,7 +166,7 @@ const AreaDetails = ({
             modal.selectedArea.setValue(null);
             modal.originalDataSet.setValue(modal.dataSet.value);
             modal.edit.setVisible(false);
-            modal.selectedTool.setValue("select");
+            modal.selectedTool.setValue(TOOL.SELECT);
             modal.form.dataSetInfo.resetFields();
             modal.dataSetInfo.setValue(null);
             setHighlightMarkers(modal.showAllMarks.visible);

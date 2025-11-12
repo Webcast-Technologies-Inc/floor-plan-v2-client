@@ -1,20 +1,14 @@
 import { Button, Card, Empty, Skeleton, Spin, Switch } from "antd";
-import type { CheckboxGroupProps } from "antd/es/checkbox";
 import { Funnel, Pin, PinOff } from "lucide-react";
 import { useContext, useEffect, useRef, useState } from "react";
 import { Document, Page, pdfjs } from "react-pdf";
-import { TEMP_ID_FORMAT } from "../../constant";
+import { TEMP_ID_FORMAT, TOOL } from "../../constant";
 import DrawerVisibilityContext from "../../store/context/DrawerVisibilityContext";
 import type { IFloorPlanArea } from "../../types/floorPlan";
 import { repositionOutOfBoundsMarkers } from "../../utils/repositionMarkers";
 import { MarkerPoint } from "./MarkerPoint";
 
 pdfjs.GlobalWorkerOptions.workerSrc = `//unpkg.com/pdfjs-dist@${pdfjs.version}/build/pdf.worker.min.mjs`;
-
-const options: CheckboxGroupProps<string>["options"] = [
-    { label: "Select", value: "select" },
-    { label: "Marker", value: "mark" },
-];
 
 const FloorPlandEditor = ({
     loading,
@@ -101,7 +95,7 @@ const FloorPlandEditor = ({
         const rect = containerRef.current?.getBoundingClientRect();
         if (!rect) return;
 
-        if (modal.selectedTool.value === "mark") {
+        if (modal.selectedTool.value === TOOL.MARKER) {
             const markerSize = 24; // approximate size of your marker icon
 
             // Get click position relative to container
@@ -122,7 +116,7 @@ const FloorPlandEditor = ({
             handleAddMarker(newMarker);
             modal.form.dataSet.resetFields();
             modal.selectedArea.setValue(newMarker);
-            modal.selectedTool.setValue("select");
+            modal.selectedTool.setValue(TOOL.SELECT);
         } else {
             // Highlight all markers when clicking on open area
             setHighlightMarkers(true);
@@ -165,12 +159,14 @@ const FloorPlandEditor = ({
                             type="text"
                             onClick={() => {
                                 modal.selectedTool.setValue(
-                                    modal.selectedTool.value === "mark" ? "select" : "mark"
+                                    modal.selectedTool.value === TOOL.MARKER
+                                        ? TOOL.SELECT
+                                        : TOOL.MARKER
                                 );
                             }}
                             disabled={!modal.edit.visible}
                         >
-                            {modal.selectedTool.value === "mark" ? (
+                            {modal.selectedTool.value === TOOL.MARKER ? (
                                 <Pin size={18} />
                             ) : (
                                 <PinOff size={18} />
@@ -209,7 +205,8 @@ const FloorPlandEditor = ({
                         className="relative max-w-full max-h-full"
                         onClick={handleCanvasClick}
                         style={{
-                            cursor: modal.selectedTool.value === "mark" ? "crosshair" : "default",
+                            cursor:
+                                modal.selectedTool.value === TOOL.MARKER ? "crosshair" : "default",
                         }}
                     >
                         {!modal.dataSet.value?.presignedUrl ? (

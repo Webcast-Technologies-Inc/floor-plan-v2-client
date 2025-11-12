@@ -15,6 +15,7 @@ import { useNavigate, useSearchParams } from "react-router-dom";
 import { useDeleteFloor } from "../../api/hooks/useDeleteFloor";
 import { useGetFloorByLevelId } from "../../api/hooks/useGetFloorByLevelId";
 import { useGetLandmarkById } from "../../api/hooks/useGetLandmarkById";
+import { TOOL } from "../../constant";
 import DrawerVisibilityContext from "../../store/context/DrawerVisibilityContext";
 import { Button } from "../ui/button";
 import AreaDetails from "./AreaDetails";
@@ -91,7 +92,7 @@ const FloorPlanModal = () => {
                             });
                             drawer.refetch.setValue((prev) => !prev);
                             modal.edit.setVisible(false);
-                            modal.selectedTool.setValue("select");
+                            modal.selectedTool.setValue(TOOL.SELECT);
                             modal.form.dataSet.resetFields();
                             modal.selectedArea.setValue(null);
                             modal.dataSet.setValue(null);
@@ -221,17 +222,6 @@ const FloorPlanModal = () => {
         },
         [id]
     );
-
-    // const handleResetStates = () => {
-    //     modal.edit.setVisible(false);
-    //     modal.selectedArea.setValue(null);
-    //     modal.selectedTool.setValue("select");
-    //     modal.dataSet.setValue(null);
-    //     modal.originalDataSet.setValue(null);
-    //     modal.form.dataSet.resetFields();
-    //     modal.form.dataSetInfo.resetFields();
-    //     modal.dataSetInfo.setValue(null);
-    // };
 
     const onClose = () => {
         if (!modal.selectedFloorLevelId.value || !modal.edit.visible) {
