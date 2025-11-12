@@ -297,7 +297,6 @@ const FloorPlanModal = () => {
                         {modal.edit.visible ? (
                             <AreaDetails
                                 loading={loading}
-                                highlightMarkers={highlightMarkers}
                                 setHighlightMarkers={setHighlightMarkers}
                             />
                         ) : (

@@ -164,7 +164,7 @@ const FloorPlandEditor = ({
                                         : TOOL.MARKER
                                 );
                             }}
-                            disabled={!modal.edit.visible}
+                            disabled={modal.edit.visible}
                         >
                             {modal.selectedTool.value === TOOL.MARKER ? (
                                 <Pin size={18} />
@@ -190,6 +190,9 @@ const FloorPlandEditor = ({
                                 if (checked) {
                                     filterModal.dataSet.setValue(null);
                                     filterModal.form.resetFields();
+                                } else {
+                                    // Returning to View mode
+                                    modal.dataSet.setValue(modal.originalDataSet.value);
                                 }
                             }}
                             disabled={!modal.selectedFloorLevelId.value}

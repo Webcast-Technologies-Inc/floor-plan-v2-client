@@ -13,7 +13,6 @@ const AreaDetails = ({
     setHighlightMarkers,
 }: {
     loading: boolean;
-    highlightMarkers: boolean;
     setHighlightMarkers: React.Dispatch<React.SetStateAction<boolean>>;
 }) => {
     const [messageApi, contextHolderMessage] = message.useMessage();
