@@ -18,9 +18,8 @@ import { useGetLandmarkById } from "../../api/hooks/useGetLandmarkById";
 import { TOOL } from "../../constant";
 import DrawerVisibilityContext from "../../store/context/DrawerVisibilityContext";
 import { Button } from "../ui/button";
-import AreaDetails from "./AreaDetails";
-import DatasetInfoDetails from "./DatasetInfoDetails";
 import FloorPlandEditor from "./FloorPlanEditor";
+import StallInformation from "./StallInformation";
 
 interface FloorOption {
     value: string;
@@ -294,14 +293,10 @@ const FloorPlanModal = () => {
                         />
                     </Col>
                     <Col span={7}>
-                        {modal.edit.visible ? (
-                            <AreaDetails
-                                loading={loading}
-                                setHighlightMarkers={setHighlightMarkers}
-                            />
-                        ) : (
-                            <DatasetInfoDetails />
-                        )}
+                        <StallInformation
+                            loading={loading}
+                            setHighlightMarkers={setHighlightMarkers}
+                        />
                     </Col>
                 </Row>
             </div>

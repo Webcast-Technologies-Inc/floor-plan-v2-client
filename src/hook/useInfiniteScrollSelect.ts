@@ -51,6 +51,11 @@ const useInfiniteScrollSelect = (
         loadOptions(page, debouncedSearch);
     }, [page, debouncedSearch]);
 
+    // Use this function to reset states when necessary (e.g., after saving data or re-rendering the page).
+    const resetInfiniteScrollStates = () => {
+        setSearchInputRaw("");
+    };
+
     return {
         searchInput,
         setSearchInput,
@@ -58,6 +63,7 @@ const useInfiniteScrollSelect = (
         loading,
         typing,
         handleScroll,
+        resetInfiniteScrollStates,
     };
 };
 
