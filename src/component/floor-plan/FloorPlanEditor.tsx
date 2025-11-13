@@ -127,8 +127,6 @@ const FloorPlandEditor = ({
             modal.selectedArea.setValue(newMarker);
             modal.edit.setVisible(true);
         } else {
-            // Highlight all markers when clicking on open area
-            setHighlightMarkers(true);
             modal.selectedArea.setValue(null);
             modal.form.dataSet.resetFields();
             modal.form.dataSetInfo.resetFields();
@@ -136,6 +134,8 @@ const FloorPlandEditor = ({
             modal.edit.setVisible(false);
             modal.dataSet.setValue(modal.originalDataSet.value);
 
+            // Highlight all markers when clicking on open area
+            setHighlightMarkers(true);
             if (highlightTimeoutRef.current) {
                 clearTimeout(highlightTimeoutRef.current);
             }
