@@ -192,17 +192,6 @@ const StallInformation = ({
                         modal.dataSetInfo.setValue(null);
                         modal.selectedArea.setValue(null);
                         modal.edit.setVisible(false);
-
-                        modal.dataSet.setValue((prev) => {
-                            if (!prev) return prev;
-
-                            return {
-                                ...prev,
-                                areas: prev.areas?.filter(
-                                    (area) => area.id !== modal.selectedArea.value?.id
-                                ) as IFloorPlanArea[],
-                            };
-                        });
                     }
                 },
                 okText: "YES",
