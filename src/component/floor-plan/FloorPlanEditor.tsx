@@ -195,7 +195,7 @@ const FloorPlandEditor = ({
                 }
                 loading={loading}
             >
-                <div className="h-[calc(100vh-314px)] flex justify-center items-center !bg-gray-100 rounded-lg border-2 border-slate-800 shadow-lg overflow-auto">
+                <div className="h-[calc(100vh-13.5625rem)] flex justify-center items-center !bg-gray-100 rounded-lg border-2 border-slate-800 shadow-lg overflow-auto">
                     <div
                         className="relative max-w-full max-h-full"
                         onClick={handleCanvasClick}

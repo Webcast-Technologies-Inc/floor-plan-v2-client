@@ -277,7 +277,7 @@ const StallInformation = ({
             <Card
                 styles={{
                     body: {
-                        maxHeight: "calc(100vh - 314px)",
+                        maxHeight: "calc(100vh - 17.625rem)",
                         overflowY: "auto",
                     },
                 }}
