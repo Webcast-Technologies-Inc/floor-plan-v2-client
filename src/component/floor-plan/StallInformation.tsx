@@ -339,23 +339,23 @@ const StallInformation = ({
                     </div>,
                 ]}
             >
-                {modal.edit.visible && (
-                    <Form
-                        form={modal.form.dataSet}
-                        layout="vertical"
-                        autoComplete="off"
-                        onFinish={onSave}
+                <Form
+                    form={modal.form.dataSet}
+                    layout="vertical"
+                    autoComplete="off"
+                    onFinish={onSave}
+                >
+                    <Form.Item
+                        label="Dataset ID"
+                        name="dataSetInfoId"
+                        rules={[
+                            {
+                                required: modal.edit.visible,
+                                message: "Dataset ID is required",
+                            },
+                        ]}
                     >
-                        <Form.Item
-                            label="Dataset Id"
-                            name="dataSetInfoId"
-                            rules={[
-                                {
-                                    required: true,
-                                    message: "Dataset Id is required",
-                                },
-                            ]}
-                        >
+                        {modal.edit.visible || !modal.selectedArea.value ? (
                             <Select
                                 showSearch
                                 placeholder="Search to Select"
@@ -388,18 +388,20 @@ const StallInformation = ({
                                         <Empty image={Empty.PRESENTED_IMAGE_SIMPLE} />
                                     )
                                 }
-                                disabled={!modal.edit.visible || !modal.selectedArea.value}
+                                disabled={!modal.edit.visible}
                                 allowClear
                                 optionFilterProp="label"
                             />
-                        </Form.Item>
-                    </Form>
-                )}
+                        ) : (
+                            <Input readOnly />
+                        )}
+                    </Form.Item>
+                </Form>
 
                 {modal.dataSetInfo.value ? (
                     <Form form={modal.form.dataSetInfo} layout="vertical" autoComplete="off">
                         {Object.entries(modal.dataSetInfo.value || {})
-                            .filter(([key]) => !modal.edit.visible || key !== "id_primary")
+                            .filter(([key]) => key !== "id_primary")
                             .map(([key, value]) => (
                                 <Form.Item key={key} label={key} name={key}>
                                     <Input value={String(value)} readOnly />
