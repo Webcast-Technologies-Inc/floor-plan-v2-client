@@ -249,7 +249,7 @@ const FloorPlanModal = () => {
         <>
             {contextHolderMessage}
             {contextHolderModal}
-            <div className="min-h-screen !p-6 !space-y-6">
+            <div className="min-h-screen !p-6 !space-y-6 bg-slate-50">
                 <Row gutter={[16, 24]}>
                     <Col span={17}>
                         <div className="h-full flex items-center gap-x-6">
