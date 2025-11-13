@@ -60,13 +60,19 @@ const FloorPlandEditor = ({
         setIsFileLoaded(false);
     }, [modal.dataSet.value?.presignedUrl]);
 
-    const handleAddMarker = (marker: IFloorPlanArea) => {
+    const handleAddMarker = (
+        marker: IFloorPlanArea,
+        recentlyCreatedMarker: IFloorPlanArea | undefined | null
+    ) => {
         modal.dataSet.setValue((prev) => {
             if (!prev) return prev;
 
             return {
                 ...prev,
-                areas: [...(prev.areas ?? []), marker],
+                areas: [
+                    ...(prev.areas ?? []).filter((area) => area.id !== recentlyCreatedMarker?.id),
+                    marker,
+                ],
             };
         });
     };
@@ -113,10 +119,13 @@ const FloorPlandEditor = ({
                 dataSetInfoId: "",
             };
 
-            handleAddMarker(newMarker);
+            handleAddMarker(newMarker, modal.recentlyCreatedMarker.value);
+            modal.recentlyCreatedMarker.setValue(newMarker);
             modal.form.dataSet.resetFields();
+            modal.form.dataSetInfo.resetFields();
+            modal.dataSetInfo.setValue(null);
             modal.selectedArea.setValue(newMarker);
-            modal.selectedTool.setValue(TOOL.SELECT);
+            modal.edit.setVisible(true);
         } else {
             // Highlight all markers when clicking on open area
             setHighlightMarkers(true);
@@ -125,6 +134,7 @@ const FloorPlandEditor = ({
             modal.form.dataSetInfo.resetFields();
             modal.dataSetInfo.setValue(null);
             modal.edit.setVisible(false);
+            modal.dataSet.setValue(modal.originalDataSet.value);
 
             if (highlightTimeoutRef.current) {
                 clearTimeout(highlightTimeoutRef.current);
@@ -174,7 +184,6 @@ const FloorPlandEditor = ({
                                         : TOOL.MARKER
                                 );
                             }}
-                            disabled={modal.edit.visible}
                         >
                             {modal.selectedTool.value === TOOL.MARKER ? (
                                 <Pin size={18} />
@@ -290,6 +299,14 @@ const FloorPlandEditor = ({
                                                     modal.form.dataSet.setFieldsValue({
                                                         dataSetInfoId: area.dataSetInfoId,
                                                     });
+                                                    if (
+                                                        area.id !==
+                                                        modal.recentlyCreatedMarker.value?.id
+                                                    ) {
+                                                        modal.dataSet.setValue(
+                                                            modal.originalDataSet.value
+                                                        );
+                                                    }
                                                 }}
                                                 onDragEnd={(x, y) =>
                                                     handleMarkerDragEnd(area?.id ?? "", x, y)

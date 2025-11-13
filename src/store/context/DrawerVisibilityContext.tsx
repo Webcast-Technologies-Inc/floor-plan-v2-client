@@ -50,6 +50,10 @@ interface DrawerContextType {
             value: any | undefined | null;
             setValue: React.Dispatch<React.SetStateAction<any | undefined | null>>;
         };
+        recentlyCreatedMarker: {
+            value: IFloorPlanArea | undefined | null;
+            setValue: React.Dispatch<React.SetStateAction<IFloorPlanArea | undefined | null>>;
+        };
     };
     filterModal: IModalVisibility & {
         dataSet: {
@@ -119,6 +123,10 @@ const initialState: DrawerContextType = {
             dataSetInfo: {} as FormInstance,
         },
         dataSetInfo: {
+            value: undefined,
+            setValue: () => {},
+        },
+        recentlyCreatedMarker: {
             value: undefined,
             setValue: () => {},
         },

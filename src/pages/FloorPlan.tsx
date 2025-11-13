@@ -22,6 +22,9 @@ const FloorPlan = () => {
     const [isShowAllMarksVisible, setIsShowAllMarksVisible] = useState(true);
     const [dataSetInfo, setDataSetInfo] = useState<any>();
     const [dataSetFilter, setDataSetFilter] = useState<any[] | undefined | null>();
+    const [recentlyCreatedMarker, setRecentlyCreatedMarker] = useState<
+        IFloorPlanArea | undefined | null
+    >(undefined);
 
     return (
         <DrawerVisibilityProvider
@@ -53,6 +56,10 @@ const FloorPlan = () => {
                         dataSetInfo: Form.useForm()[0],
                     },
                     dataSetInfo: { value: dataSetInfo, setValue: setDataSetInfo },
+                    recentlyCreatedMarker: {
+                        value: recentlyCreatedMarker,
+                        setValue: setRecentlyCreatedMarker,
+                    },
                 },
                 drawer: {
                     ...drawer,
