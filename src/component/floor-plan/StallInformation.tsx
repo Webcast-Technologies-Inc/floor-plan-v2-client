@@ -398,7 +398,7 @@ const StallInformation = ({
                     </Form.Item>
                 </Form>
 
-                {modal.dataSetInfo.value ? (
+                {modal.dataSetInfo.value && (
                     <Form form={modal.form.dataSetInfo} layout="vertical" autoComplete="off">
                         {Object.entries(modal.dataSetInfo.value || {})
                             .filter(([key]) => key !== "id_primary")
@@ -408,8 +408,6 @@ const StallInformation = ({
                                 </Form.Item>
                             ))}
                     </Form>
-                ) : (
-                    <Empty image={Empty.PRESENTED_IMAGE_SIMPLE} />
                 )}
             </Card>
         </>
