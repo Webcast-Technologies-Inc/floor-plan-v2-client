@@ -1,5 +1,6 @@
 import { Button, Card, Empty, Form, Input, message, Modal, Select, Spin, Switch } from "antd";
 import { useContext, useEffect, useState } from "react";
+import { useDeleteMarkerById } from "../../api/hooks/useDeleteMarkerById";
 import { useGetDatasetInfo } from "../../api/hooks/useGetDatasetInfo";
 import { useUpsertMarkerById, type IUpsertMarkerById } from "../../api/hooks/useUpsertMarkerById";
 import { TEMP_ID_FORMAT, TOOL } from "../../constant";
@@ -19,6 +20,7 @@ const StallInformation = ({
     const [modalAntd, contextHolderModal] = Modal.useModal();
     const { handleUpsertMarkerById } = useUpsertMarkerById();
     const { handleGetDatasetInfo } = useGetDatasetInfo();
+    const { handleDeleteMarkerById } = useDeleteMarkerById();
     const { modal, drawer, filterModal } = useContext(DrawerVisibilityContext);
     const {
         options,
@@ -177,20 +179,31 @@ const StallInformation = ({
                         <p>This action cannot be undone.</p>
                     </>
                 ),
-                onOk: () => {
-                    modal.form.dataSet.resetFields();
-                    modal.selectedArea.setValue(null);
+                onOk: async () => {
+                    if (modal.dataSet.value?.id && modal.selectedArea.value?.id) {
+                        await handleDeleteMarkerById({
+                            floorId: modal.dataSet.value?.id,
+                            id: modal.selectedArea.value?.id,
+                        });
 
-                    modal.dataSet.setValue((prev) => {
-                        if (!prev) return prev;
+                        drawer.refetch.setValue((prev) => !prev);
+                        modal.form.dataSet.resetFields();
+                        modal.form.dataSetInfo.resetFields();
+                        modal.dataSetInfo.setValue(null);
+                        modal.selectedArea.setValue(null);
+                        modal.edit.setVisible(false);
 
-                        return {
-                            ...prev,
-                            areas: prev.areas?.filter(
-                                (area) => area.id !== modal.selectedArea.value?.id
-                            ) as IFloorPlanArea[],
-                        };
-                    });
+                        modal.dataSet.setValue((prev) => {
+                            if (!prev) return prev;
+
+                            return {
+                                ...prev,
+                                areas: prev.areas?.filter(
+                                    (area) => area.id !== modal.selectedArea.value?.id
+                                ) as IFloorPlanArea[],
+                            };
+                        });
+                    }
                 },
                 okText: "YES",
             });
@@ -310,7 +323,11 @@ const StallInformation = ({
                             actions={["delete"]}
                             handleDelete={handleDelete}
                             disabledActions={
-                                modal.edit.visible && modal.selectedArea.value ? [] : ["delete"]
+                                modal.edit.visible &&
+                                modal.selectedArea.value?.id !==
+                                    modal.recentlyCreatedMarker.value?.id
+                                    ? []
+                                    : ["delete"]
                             }
                         />
                     </div>
