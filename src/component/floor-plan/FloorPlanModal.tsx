@@ -56,6 +56,7 @@ const FloorPlanModal = () => {
             onClick: () => {
                 drawer.edit.setVisible(true);
             },
+            disabled: !modal.selectedFloorLevelId.value,
         },
         {
             key: "delete",
@@ -108,6 +109,7 @@ const FloorPlanModal = () => {
                     okType: "danger",
                 });
             },
+            disabled: !modal.selectedFloorLevelId.value,
         },
     ];
 
@@ -270,11 +272,7 @@ const FloorPlanModal = () => {
                                 options={floorOptions}
                             />
                             <Dropdown
-                                menu={{
-                                    items: modal.selectedFloorLevelId.value
-                                        ? items
-                                        : items.filter((item) => item?.key === "add"),
-                                }}
+                                menu={{ items }}
                                 placement="bottom"
                                 trigger={["click"]}
                                 overlayClassName="!min-w-40"

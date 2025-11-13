@@ -175,22 +175,24 @@ const FloorPlandEditor = ({
                                 <Funnel size={18} />
                             </Button>
                         )}
-                        <Button
-                            type="text"
-                            onClick={() => {
-                                modal.selectedTool.setValue(
-                                    modal.selectedTool.value === TOOL.MARKER
-                                        ? TOOL.SELECT
-                                        : TOOL.MARKER
-                                );
-                            }}
-                        >
-                            {modal.selectedTool.value === TOOL.MARKER ? (
-                                <Pin size={18} />
-                            ) : (
-                                <PinOff size={18} />
-                            )}
-                        </Button>
+                        {modal.selectedFloorLevelId.value && (
+                            <Button
+                                type="text"
+                                onClick={() => {
+                                    modal.selectedTool.setValue(
+                                        modal.selectedTool.value === TOOL.MARKER
+                                            ? TOOL.SELECT
+                                            : TOOL.MARKER
+                                    );
+                                }}
+                            >
+                                {modal.selectedTool.value === TOOL.MARKER ? (
+                                    <Pin size={18} />
+                                ) : (
+                                    <PinOff size={18} />
+                                )}
+                            </Button>
+                        )}
                     </div>
                 }
                 loading={loading}
