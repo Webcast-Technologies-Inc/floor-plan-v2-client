@@ -71,6 +71,7 @@ const StallInformation = ({
         if (modal.edit.visible) {
             setSearchInput(modal.form.dataSet.getFieldValue("dataSetInfoId"));
         }
+        return () => resetInfiniteScrollStates();
     }, [modal.edit.visible]);
 
     const fetchGetDatasetInfo = async (
