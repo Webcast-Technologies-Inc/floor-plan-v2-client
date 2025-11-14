@@ -97,6 +97,9 @@ const FloorPlanModal = () => {
                             modal.selectedArea.setValue(null);
                             modal.dataSet.setValue(null);
                             modal.originalDataSet.setValue(null);
+                            modal.form.dataSetInfo.resetFields();
+                            modal.form.dataSetInfo.resetFields();
+                            modal.dataSetInfo.setValue(null);
                             return;
                         } catch (error) {
                             messageApi.open({
