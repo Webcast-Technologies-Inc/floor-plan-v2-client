@@ -1,4 +1,4 @@
-import { Button, Card, Empty, Skeleton, Spin, Switch } from "antd";
+import { Button, Card, Empty, Skeleton, Spin } from "antd";
 import { Funnel, Pin, PinOff } from "lucide-react";
 import { useContext, useEffect, useRef, useState } from "react";
 import { Document, Page, pdfjs } from "react-pdf";
@@ -161,7 +161,7 @@ const FloorPlandEditor = ({
                 style={{ width: "100%" }}
                 extra={
                     <div className="flex items-center gap-x-4">
-                        {!modal.edit.visible && modal.selectedFloorLevelId.value && (
+                        {/* {!modal.edit.visible && modal.selectedFloorLevelId.value && (
                             <Switch
                                 value={modal.showAllMarks.visible}
                                 onChange={(checked: boolean) => {
@@ -169,30 +169,38 @@ const FloorPlandEditor = ({
                                     setHighlightMarkers(checked);
                                 }}
                             />
-                        )}
-                        {!modal.edit.visible && modal.selectedFloorLevelId.value && (
-                            <Button type="text" onClick={() => filterModal.view.setVisible(true)}>
-                                <Funnel size={18} />
-                            </Button>
-                        )}
-                        {modal.selectedFloorLevelId.value && (
-                            <Button
-                                type="text"
-                                onClick={() => {
-                                    modal.selectedTool.setValue(
-                                        modal.selectedTool.value === TOOL.MARKER
-                                            ? TOOL.SELECT
-                                            : TOOL.MARKER
-                                    );
-                                }}
-                            >
-                                {modal.selectedTool.value === TOOL.MARKER ? (
-                                    <Pin size={18} />
-                                ) : (
-                                    <PinOff size={18} />
-                                )}
-                            </Button>
-                        )}
+                        )} */}
+                        <Button
+                            type="text"
+                            onClick={() => filterModal.view.setVisible(true)}
+                            disabled={
+                                !modal.selectedFloorLevelId.value ||
+                                modal.edit.visible ||
+                                modal.selectedTool.value === TOOL.MARKER
+                            }
+                        >
+                            <Funnel size={18} />
+                        </Button>
+                        <Button
+                            type="text"
+                            onClick={() => {
+                                modal.selectedTool.setValue(
+                                    modal.selectedTool.value === TOOL.MARKER
+                                        ? TOOL.SELECT
+                                        : TOOL.MARKER
+                                );
+                                setHighlightMarkers(true);
+                                filterModal.dataSet.setValue(null);
+                                filterModal.form.resetFields();
+                            }}
+                            disabled={!modal.selectedFloorLevelId.value}
+                        >
+                            {modal.selectedTool.value === TOOL.MARKER ? (
+                                <Pin size={18} />
+                            ) : (
+                                <PinOff size={18} />
+                            )}
+                        </Button>
                     </div>
                 }
                 loading={loading}
