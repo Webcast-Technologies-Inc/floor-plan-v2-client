@@ -108,7 +108,7 @@ export const MarkerPoint = ({
     };
 
     const iconSrc = `/icons/marker-${isSelected ? "selected" : "unselected"}.svg`;
-    const icon = <img src={iconSrc} alt="Marker" className="h-7" />;
+    const icon = <img src={iconSrc} alt="Marker" className="h-6" />;
 
     return (
         <div
