@@ -289,17 +289,15 @@ const StallInformation = ({
                         <Switch
                             checked={modal.edit.visible}
                             onChange={(checked) => {
-                                modal.edit.setVisible(checked);
-
                                 if (checked) {
                                     // Switching to Edit mode
                                     setHighlightMarkers(true);
                                     filterModal.dataSet.setValue(null);
                                     filterModal.form.resetFields();
+                                    modal.edit.setVisible(checked);
                                 } else {
                                     // Returning to View mode
-                                    setHighlightMarkers(modal.showAllMarks.visible);
-                                    modal.dataSet.setValue(modal.originalDataSet.value);
+                                    onCancel();
                                 }
                             }}
                             disabled={
