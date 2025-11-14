@@ -1,5 +1,5 @@
-import { DeleteOutlined, FilterOutlined, PlusCircleFilled } from "@ant-design/icons";
-import { Button, Divider, Form, Modal, Select } from "antd";
+import { DeleteOutlined } from "@ant-design/icons";
+import { Button, Form, Modal, Select } from "antd";
 import React, { useContext, useEffect, useState } from "react";
 import { useGetDatasetAttributeOptions } from "../../api/hooks/useGetDatasetAttributeOptions";
 import { useGetDatasetHeaders } from "../../api/hooks/useGetDatasetHeaders";
@@ -171,25 +171,22 @@ const MarkerFilter = () => {
             title="Filter"
             onCancel={onClose}
             footer={[
-                <Button
-                    key="clear"
-                    onClick={() => {
-                        filterModal.dataSet.setValue(null);
-                        filterModal.form.resetFields();
-                        setSavedFormValues(filterModal.form.getFieldsValue());
-                        filterModal.view.setVisible(false);
-                    }}
-                >
-                    Clear
-                </Button>,
-                <Button
-                    key="apply"
-                    type="primary"
-                    icon={<FilterOutlined />}
-                    onClick={() => filterModal.form.submit()}
-                >
-                    Apply
-                </Button>,
+                <div className="flex flex-col gap-y-2">
+                    <Button key="apply" type="primary" onClick={() => filterModal.form.submit()}>
+                        Apply Filters
+                    </Button>
+                    <Button
+                        key="clear"
+                        onClick={() => {
+                            filterModal.dataSet.setValue(null);
+                            filterModal.form.resetFields();
+                            setSavedFormValues(filterModal.form.getFieldsValue());
+                            filterModal.view.setVisible(false);
+                        }}
+                    >
+                        Clear Fields
+                    </Button>
+                </div>,
             ]}
             afterClose={onAfterClose}
             loading={loadingGetDatasetHeaders}
@@ -204,10 +201,11 @@ const MarkerFilter = () => {
                     {(fields, { add, remove }) => (
                         <>
                             <div className="max-h-[50vh] overflow-y-auto !pr-2">
-                                {fields.map(({ key, name }) => (
+                                {fields.map(({ key, name }, index) => (
                                     <React.Fragment key={key}>
                                         {fields.length > 1 && (
-                                            <Divider orientation="right">
+                                            <div className="flex justify-between items-center !mb-2">
+                                                <p>Condition {index + 1}</p>
                                                 <Button
                                                     type="text"
                                                     icon={
@@ -215,7 +213,7 @@ const MarkerFilter = () => {
                                                     }
                                                     onClick={() => remove(name)}
                                                 />
-                                            </Divider>
+                                            </div>
                                         )}
                                         <div className="grid grid-cols-[2fr_1fr] gap-x-4">
                                             <Form.Item
@@ -311,14 +309,8 @@ const MarkerFilter = () => {
                                     </React.Fragment>
                                 ))}
                             </div>
-                            <Button
-                                className="!font-bold w-full !mt-3"
-                                type="link"
-                                icon={<PlusCircleFilled />}
-                                iconPosition="end"
-                                onClick={() => add()}
-                            >
-                                ADD CONDITION
+                            <Button type="link" onClick={() => add()}>
+                                Add Condition
                             </Button>
                         </>
                     )}
