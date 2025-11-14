@@ -147,6 +147,15 @@ const FloorPlandEditor = ({
         }
     };
 
+    const filters = filterModal.form.getFieldValue("filter") || [];
+    const hasFiltersWithValue =
+        Array.isArray(filters) &&
+        filters.some((f) => {
+            if (!f) return false;
+            // exclude "operator" field from the check
+            return Object.entries(f).some(([key, val]) => key !== "operator" && !!val);
+        });
+
     return (
         <>
             <Card
@@ -171,6 +180,7 @@ const FloorPlandEditor = ({
                             />
                         )} */}
                         <Button
+                            style={{ position: "relative" }}
                             type="text"
                             onClick={() => filterModal.view.setVisible(true)}
                             disabled={
@@ -179,6 +189,9 @@ const FloorPlandEditor = ({
                                 modal.selectedTool.value === TOOL.MARKER
                             }
                         >
+                            {hasFiltersWithValue && (
+                                <div className="absolute top-0 right-2 h-2 w-2 bg-red-600 rounded-full" />
+                            )}
                             <Funnel size={18} />
                         </Button>
                         <Button
