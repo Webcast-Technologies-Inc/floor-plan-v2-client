@@ -1,4 +1,3 @@
-import { PushpinFilled, PushpinTwoTone } from "@ant-design/icons";
 import { Tooltip } from "antd";
 import { useEffect, useRef, useState } from "react";
 import { TOOL } from "../../constant";
@@ -108,21 +107,8 @@ export const MarkerPoint = ({
         }
     };
 
-    let icon = isSelected ? (
-        <PushpinFilled
-            style={{ color: "#ff0000" }} // filled pin color
-            className="text-lg drop-shadow-[0_0_8px_hsl(200_95%_55%/0.6)] transition-all duration-500"
-        />
-    ) : (
-        <PushpinTwoTone
-            twoToneColor={"#ff0000"}
-            className={`text-lg transition-all duration-500 ${
-                isHighlighted
-                    ? "drop-shadow-[0_0_12px_rgba(59,130,246,0.8)]"
-                    : "drop-shadow-none opacity-0"
-            }`}
-        />
-    );
+    const iconSrc = `/icons/marker-${isSelected ? "selected" : "unselected"}.svg`;
+    const icon = <img src={iconSrc} alt="Marker" className="h-7" />;
 
     return (
         <div
