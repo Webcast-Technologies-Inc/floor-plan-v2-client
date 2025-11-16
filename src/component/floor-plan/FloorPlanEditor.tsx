@@ -2,7 +2,7 @@ import { Button, Card, Empty, Modal, Skeleton, Spin } from "antd";
 import { Funnel, Pin, PinOff } from "lucide-react";
 import { useContext, useEffect, useRef, useState } from "react";
 import { Document, Page, pdfjs } from "react-pdf";
-import { TEMP_ID_FORMAT, TOOL } from "../../constant";
+import { TEMP_ID_FORMAT, TOOL, type ITool } from "../../constant";
 import DrawerVisibilityContext from "../../store/context/DrawerVisibilityContext";
 import type { IFloorPlanArea } from "../../types/floorPlan";
 import { repositionOutOfBoundsMarkers } from "../../utils/repositionMarkers";
@@ -198,8 +198,25 @@ const FloorPlandEditor = ({
                         <Button
                             type="text"
                             onClick={() => {
-                                if (modal.selectedTool.value === TOOL.MARKER) {
-                                    // same on onCancel in StallInformation.tsx
+                                const isMarkerTool = modal.selectedTool.value === TOOL.MARKER;
+
+                                const resetModalState = (nextTool: ITool) => {
+                                    modal.dataSet.setValue(modal.originalDataSet.value);
+                                    modal.edit.setVisible(false);
+                                    modal.selectedArea.setValue(null);
+                                    modal.selectedTool.setValue(nextTool);
+                                    modal.form.dataSet.resetFields();
+                                    modal.form.dataSetInfo.resetFields();
+                                    modal.dataSetInfo.setValue(null);
+                                };
+
+                                const resetFilterModal = () => {
+                                    setHighlightMarkers(true);
+                                    filterModal.dataSet.setValue(null);
+                                    filterModal.form.resetFields();
+                                };
+
+                                if (isMarkerTool) {
                                     modalAntd.confirm({
                                         title: "Confirm Discard",
                                         content: (
@@ -209,33 +226,16 @@ const FloorPlandEditor = ({
                                             </>
                                         ),
                                         onOk: () => {
-                                            modal.selectedTool.setValue(
-                                                modal.selectedTool.value === TOOL.MARKER
-                                                    ? TOOL.SELECT
-                                                    : TOOL.MARKER
-                                            );
-                                            modal.dataSet.setValue(modal.originalDataSet.value);
-                                            modal.edit.setVisible(false);
-                                            modal.selectedArea.setValue(null);
-                                            modal.selectedTool.setValue(TOOL.SELECT);
-                                            modal.form.dataSet.resetFields();
-                                            modal.form.dataSetInfo.resetFields();
-                                            modal.dataSetInfo.setValue(null);
+                                            resetModalState(TOOL.SELECT);
                                             setHighlightMarkers(modal.showAllMarks.visible);
                                         },
                                         okText: "YES",
                                     });
                                 } else {
-                                    modal.selectedTool.setValue(
-                                        modal.selectedTool.value === TOOL.SELECT
-                                            ? TOOL.MARKER
-                                            : TOOL.SELECT
-                                    );
+                                    resetModalState(TOOL.MARKER);
                                 }
 
-                                setHighlightMarkers(true);
-                                filterModal.dataSet.setValue(null);
-                                filterModal.form.resetFields();
+                                resetFilterModal();
                             }}
                             disabled={!modal.selectedFloorLevelId.value}
                         >
@@ -349,17 +349,49 @@ const FloorPlandEditor = ({
                                                 selectedTool={modal.selectedTool.value}
                                                 isHighlighted={highlightMarkers}
                                                 onClick={() => {
-                                                    modal.selectedArea.setValue(area);
-                                                    modal.form.dataSet.setFieldsValue({
-                                                        dataSetInfoId: area.dataSetInfoId,
-                                                    });
-                                                    if (
-                                                        area.id !==
-                                                        modal.recentlyCreatedMarker.value?.id
-                                                    ) {
-                                                        modal.dataSet.setValue(
-                                                            modal.originalDataSet.value
+                                                    const isTempMarker =
+                                                        modal.recentlyCreatedMarker.value?.id?.includes(
+                                                            TEMP_ID_FORMAT
                                                         );
+                                                    const isDifferentArea =
+                                                        area.id !==
+                                                        modal.recentlyCreatedMarker.value?.id;
+
+                                                    const applyAreaSelection = () => {
+                                                        modal.selectedTool.setValue(TOOL.SELECT);
+                                                        modal.selectedArea.setValue(area);
+                                                        modal.form.dataSet.setFieldsValue({
+                                                            dataSetInfoId: area.dataSetInfoId,
+                                                        });
+
+                                                        if (isDifferentArea) {
+                                                            modal.dataSet.setValue(
+                                                                modal.originalDataSet.value
+                                                            );
+                                                        }
+                                                    };
+
+                                                    if (isTempMarker) {
+                                                        // If the user is currently adding a marker and then he/she clicks the existing marker
+                                                        modalAntd.confirm({
+                                                            title: "Confirm Discard",
+                                                            content: (
+                                                                <>
+                                                                    <p>
+                                                                        Are you sure you want to
+                                                                        discard changes?
+                                                                    </p>
+                                                                    <p>
+                                                                        This action cannot be
+                                                                        undone.
+                                                                    </p>
+                                                                </>
+                                                            ),
+                                                            onOk: applyAreaSelection,
+                                                            okText: "YES",
+                                                        });
+                                                    } else {
+                                                        applyAreaSelection();
                                                     }
                                                 }}
                                                 onDragEnd={(x, y) =>
