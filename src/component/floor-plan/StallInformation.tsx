@@ -1,22 +1,9 @@
-import {
-    Button,
-    Card,
-    Empty,
-    Form,
-    Image,
-    Input,
-    message,
-    Modal,
-    Select,
-    Spin,
-    Switch,
-} from "antd";
+import { Button, Card, Form, Image, Input, message, Modal, Select, Switch } from "antd";
 import { useContext, useEffect, useState } from "react";
 import { useDeleteMarkerById } from "../../api/hooks/useDeleteMarkerById";
 import { useGetDatasetInfo } from "../../api/hooks/useGetDatasetInfo";
 import { useUpsertMarkerById, type IUpsertMarkerById } from "../../api/hooks/useUpsertMarkerById";
 import { TEMP_ID_FORMAT, TOOL } from "../../constant";
-import useInfiniteScrollSelect from "../../hook/useInfiniteScrollSelect";
 import DrawerVisibilityContext from "../../store/context/DrawerVisibilityContext";
 import type { IFloorPlanArea } from "../../types/floorPlan";
 import CustomActionButtons from "../CustomActionButtons";
@@ -34,59 +21,34 @@ const StallInformation = ({
     const { handleGetDatasetInfo } = useGetDatasetInfo();
     const { handleDeleteMarkerById } = useDeleteMarkerById();
     const { modal, drawer, filterModal } = useContext(DrawerVisibilityContext);
-    const {
-        options,
-        loading: isSelectLoading,
-        typing,
-        handleScroll,
-        setSearchInput,
-        resetInfiniteScrollStates,
-    } = useInfiniteScrollSelect(mockFetch, 30);
     const [loadingDatasetInfoInput, setLoadingDatasetInfoInput] = useState(false);
-    const [loadingDatasetInfoDisplay, setLoadingDatasetInfoDisplay] = useState(false);
-
-    async function mockFetch(
-        page: number,
-        pageSize: number,
-        search?: string
-    ): Promise<{ label: string; value: string }[]> {
-        if (!modal.dataSet.value?.dataSetId) {
-            return [];
-        }
-
-        const dataSetInfo = await handleGetDatasetInfo({
-            getDatasetInfoId: modal.dataSet.value?.dataSetId,
-            args: {
-                offset: (page - 1) * pageSize,
-                limit: pageSize,
-                ...(search
-                    ? {
-                          orMatch: [
-                              {
-                                  field: "id_primary",
-                                  value: search,
-                              },
-                          ],
-                      }
-                    : {}),
-            },
-        });
-
-        const options =
-            dataSetInfo.data?.get_dataset_info.datasets.map((data) => ({
-                value: String(data.id_primary),
-                label: String(data.id_primary),
-            })) ?? [];
-
-        return options;
-    }
+    const [loadingGetDatasetInfoDisplay, setLoadingGetDatasetInfoDisplay] = useState(false);
+    const [options, setOptions] = useState<{ label: string; value: string }[]>([]);
+    const [loadingGetDatasetInfoFetch, setLoadingGetDatasetInfoFetch] = useState(false);
 
     useEffect(() => {
-        if (modal.edit.visible) {
-            setSearchInput(modal.form.dataSet.getFieldValue("dataSetInfoId"));
-        }
-        return () => resetInfiniteScrollStates();
-    }, [modal.edit.visible]);
+        const fetch = async () => {
+            if (!modal.dataSet.value?.dataSetId) {
+                return [];
+            }
+
+            setLoadingGetDatasetInfoFetch(true);
+            const dataSetInfo = await handleGetDatasetInfo({
+                getDatasetInfoId: modal.dataSet.value?.dataSetId,
+            });
+
+            const options =
+                dataSetInfo.data?.get_dataset_info.datasets.map((data) => ({
+                    value: String(data.id_primary),
+                    label: String(data.id_primary),
+                })) ?? [];
+
+            setOptions(options);
+            setLoadingGetDatasetInfoFetch(false);
+        };
+
+        fetch();
+    }, [modal.dataSet.value?.dataSetId]);
 
     const fetchGetDatasetInfo = async (
         mounted: boolean,
@@ -98,7 +60,7 @@ const StallInformation = ({
         }
 
         try {
-            setLoadingDatasetInfoDisplay(true);
+            setLoadingGetDatasetInfoDisplay(true);
 
             const dataSetInfo = await handleGetDatasetInfo({
                 getDatasetInfoId: dataSetId,
@@ -144,23 +106,23 @@ const StallInformation = ({
                 });
             }
         } finally {
-            if (mounted) setLoadingDatasetInfoDisplay(false);
+            if (mounted) setLoadingGetDatasetInfoDisplay(false);
         }
     };
 
-    useEffect(() => {
-        let mounted = true; // To avoid error when adding a new floor while modal.selectedArea.value?.dataSetInfoId has a value
-        fetchGetDatasetInfo(
-            mounted,
-            modal.dataSet.value?.dataSetId,
-            modal.selectedArea.value?.dataSetInfoId
-        );
+    // useEffect(() => {
+    //     let mounted = true; // To avoid error when adding a new floor while modal.selectedArea.value?.dataSetInfoId has a value
+    //     fetchGetDatasetInfo(
+    //         mounted,
+    //         modal.dataSet.value?.dataSetId,
+    //         modal.selectedArea.value?.dataSetInfoId
+    //     );
 
-        return () => {
-            // mark as unmounted for in-flight promises
-            mounted = false;
-        };
-    }, [modal.dataSet.value?.dataSetId, modal.selectedArea.value?.dataSetInfoId]);
+    //     return () => {
+    //         // mark as unmounted for in-flight promises
+    //         mounted = false;
+    //     };
+    // }, [modal.dataSet.value?.dataSetId, modal.selectedArea.value?.dataSetInfoId]);
 
     const onChange = (value: string, name: "dataSetInfoId") => {
         fetchGetDatasetInfo(true, modal.dataSet.value?.dataSetId, value);
@@ -267,7 +229,6 @@ const StallInformation = ({
             modal.form.dataSetInfo.resetFields();
             modal.dataSetInfo.setValue(null);
             setHighlightMarkers(modal.showAllMarks.visible);
-            resetInfiniteScrollStates();
         } catch (err) {
             messageApi.open({
                 type: "error",
@@ -277,12 +238,6 @@ const StallInformation = ({
             setLoadingDatasetInfoInput(false);
         }
     };
-
-    const renderSpinner = (
-        <div style={{ textAlign: "center", padding: 8 }}>
-            <Spin size="small" />
-        </div>
-    );
 
     const dataSetId = modal.form.dataSet.getFieldValue("dataSetInfoId"); // TEMPORARY ONLY
 
@@ -333,7 +288,7 @@ const StallInformation = ({
                         />
                     </div>
                 }
-                loading={loading || loadingDatasetInfoDisplay}
+                loading={loading || loadingGetDatasetInfoDisplay || loadingGetDatasetInfoFetch}
                 actions={[
                     <div className="flex flex-col !px-6 !py-2 gap-2">
                         <Button
@@ -343,14 +298,20 @@ const StallInformation = ({
                                 modal.form.dataSet.submit();
                             }}
                             loading={loadingDatasetInfoInput}
-                            disabled={!modal.edit.visible || !modal.selectedArea.value}
+                            disabled={
+                                modal.selectedTool.value === TOOL.SELECT ||
+                                !modal.selectedArea.value
+                            }
                         >
                             Save
                         </Button>
                         <Button
                             key="cancel"
                             onClick={onCancel}
-                            disabled={!modal.edit.visible || !modal.selectedArea.value}
+                            disabled={
+                                modal.selectedTool.value === TOOL.SELECT ||
+                                !modal.selectedArea.value
+                            }
                         >
                             Cancel
                         </Button>
@@ -368,12 +329,14 @@ const StallInformation = ({
                         name="dataSetInfoId"
                         rules={[
                             {
-                                required: modal.edit.visible,
+                                required:
+                                    modal.selectedTool.value === TOOL.MARKER &&
+                                    !!modal.selectedArea.value,
                                 message: "Dataset ID is required",
                             },
                         ]}
                     >
-                        {modal.edit.visible || !modal.selectedArea.value ? (
+                        {modal.selectedTool.value === TOOL.MARKER && !!modal.selectedArea.value ? (
                             <Select
                                 showSearch
                                 placeholder="Search to Select"
@@ -381,32 +344,10 @@ const StallInformation = ({
                                 onChange={(e) => {
                                     onChange(e, "dataSetInfoId");
                                 }}
-                                onSearch={(value) => {
-                                    setSearchInput(value); // triggers debounce
-                                }}
-                                onPopupScroll={handleScroll}
-                                popupRender={(menu) => {
-                                    if (typing) {
-                                        return renderSpinner;
-                                    }
-
-                                    return (
-                                        <>
-                                            {menu}
-                                            {isSelectLoading && renderSpinner}
-                                        </>
-                                    );
-                                }}
-                                notFoundContent={
-                                    typing ? (
-                                        <div style={{ textAlign: "center", padding: 8 }}>
-                                            <Spin size="small" />
-                                        </div>
-                                    ) : (
-                                        <Empty image={Empty.PRESENTED_IMAGE_SIMPLE} />
-                                    )
+                                disabled={
+                                    modal.selectedTool.value === TOOL.SELECT ||
+                                    !modal.selectedArea.value
                                 }
-                                disabled={!modal.edit.visible}
                                 allowClear
                                 optionFilterProp="label"
                             />

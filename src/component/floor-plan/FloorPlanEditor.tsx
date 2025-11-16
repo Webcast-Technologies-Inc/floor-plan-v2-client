@@ -125,7 +125,6 @@ const FloorPlandEditor = ({
             modal.form.dataSetInfo.resetFields();
             modal.dataSetInfo.setValue(null);
             modal.selectedArea.setValue(newMarker);
-            modal.edit.setVisible(true);
         } else {
             modal.selectedArea.setValue(null);
             modal.form.dataSet.resetFields();
