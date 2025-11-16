@@ -363,6 +363,7 @@ const FloorPlandEditor = ({
                                                         modal.form.dataSet.setFieldsValue({
                                                             dataSetInfoId: area.dataSetInfoId,
                                                         });
+                                                        modal.recentlyCreatedMarker.setValue(null);
 
                                                         if (isDifferentArea) {
                                                             modal.dataSet.setValue(

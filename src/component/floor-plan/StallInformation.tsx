@@ -190,6 +190,7 @@ const StallInformation = ({
                 modal.form.dataSet.resetFields();
                 modal.form.dataSetInfo.resetFields();
                 modal.dataSetInfo.setValue(null);
+                modal.recentlyCreatedMarker.setValue(null);
                 setHighlightMarkers(modal.showAllMarks.visible);
             },
             okText: "YES",
@@ -228,6 +229,7 @@ const StallInformation = ({
             modal.selectedTool.setValue(TOOL.SELECT);
             modal.form.dataSetInfo.resetFields();
             modal.dataSetInfo.setValue(null);
+            modal.recentlyCreatedMarker.setValue(null);
             setHighlightMarkers(modal.showAllMarks.visible);
         } catch (err) {
             messageApi.open({
