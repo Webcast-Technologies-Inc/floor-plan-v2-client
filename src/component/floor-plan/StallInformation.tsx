@@ -110,19 +110,19 @@ const StallInformation = ({
         }
     };
 
-    // useEffect(() => {
-    //     let mounted = true; // To avoid error when adding a new floor while modal.selectedArea.value?.dataSetInfoId has a value
-    //     fetchGetDatasetInfo(
-    //         mounted,
-    //         modal.dataSet.value?.dataSetId,
-    //         modal.selectedArea.value?.dataSetInfoId
-    //     );
+    useEffect(() => {
+        let mounted = true; // To avoid error when adding a new floor while modal.selectedArea.value?.dataSetInfoId has a value
+        fetchGetDatasetInfo(
+            mounted,
+            modal.dataSet.value?.dataSetId,
+            modal.selectedArea.value?.dataSetInfoId
+        );
 
-    //     return () => {
-    //         // mark as unmounted for in-flight promises
-    //         mounted = false;
-    //     };
-    // }, [modal.dataSet.value?.dataSetId, modal.selectedArea.value?.dataSetInfoId]);
+        return () => {
+            // mark as unmounted for in-flight promises
+            mounted = false;
+        };
+    }, [modal.dataSet.value?.dataSetId, modal.selectedArea.value?.dataSetInfoId]);
 
     const onChange = (value: string, name: "dataSetInfoId") => {
         fetchGetDatasetInfo(true, modal.dataSet.value?.dataSetId, value);

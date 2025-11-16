@@ -1,4 +1,4 @@
-import { Button, Card, Empty, Skeleton, Spin } from "antd";
+import { Button, Card, Empty, Modal, Skeleton, Spin } from "antd";
 import { Funnel, Pin, PinOff } from "lucide-react";
 import { useContext, useEffect, useRef, useState } from "react";
 import { Document, Page, pdfjs } from "react-pdf";
@@ -19,6 +19,7 @@ const FloorPlandEditor = ({
     highlightMarkers: boolean;
     setHighlightMarkers: React.Dispatch<React.SetStateAction<boolean>>;
 }) => {
+    const [modalAntd, contextHolderModal] = Modal.useModal();
     const { modal, filterModal } = useContext(DrawerVisibilityContext);
     const containerRef = useRef<any>(null);
     const highlightTimeoutRef = useRef<number | null>(null);
@@ -121,9 +122,9 @@ const FloorPlandEditor = ({
 
             handleAddMarker(newMarker, modal.recentlyCreatedMarker.value);
             modal.recentlyCreatedMarker.setValue(newMarker);
-            modal.form.dataSet.resetFields();
-            modal.form.dataSetInfo.resetFields();
-            modal.dataSetInfo.setValue(null);
+            // modal.form.dataSet.resetFields();
+            // modal.form.dataSetInfo.resetFields();
+            // modal.dataSetInfo.setValue(null);
             modal.selectedArea.setValue(newMarker);
         } else {
             modal.selectedArea.setValue(null);
@@ -157,6 +158,7 @@ const FloorPlandEditor = ({
 
     return (
         <>
+            {contextHolderModal}
             <Card
                 title={
                     loading ? (
@@ -196,11 +198,41 @@ const FloorPlandEditor = ({
                         <Button
                             type="text"
                             onClick={() => {
-                                modal.selectedTool.setValue(
-                                    modal.selectedTool.value === TOOL.MARKER
-                                        ? TOOL.SELECT
-                                        : TOOL.MARKER
-                                );
+                                if (modal.selectedTool.value === TOOL.MARKER) {
+                                    // same on onCancel in StallInformation.tsx
+                                    modalAntd.confirm({
+                                        title: "Confirm Discard",
+                                        content: (
+                                            <>
+                                                <p>Are you sure you want to discard changes?</p>
+                                                <p>This action cannot be undone.</p>
+                                            </>
+                                        ),
+                                        onOk: () => {
+                                            modal.selectedTool.setValue(
+                                                modal.selectedTool.value === TOOL.MARKER
+                                                    ? TOOL.SELECT
+                                                    : TOOL.MARKER
+                                            );
+                                            modal.dataSet.setValue(modal.originalDataSet.value);
+                                            modal.edit.setVisible(false);
+                                            modal.selectedArea.setValue(null);
+                                            modal.selectedTool.setValue(TOOL.SELECT);
+                                            modal.form.dataSet.resetFields();
+                                            modal.form.dataSetInfo.resetFields();
+                                            modal.dataSetInfo.setValue(null);
+                                            setHighlightMarkers(modal.showAllMarks.visible);
+                                        },
+                                        okText: "YES",
+                                    });
+                                } else {
+                                    modal.selectedTool.setValue(
+                                        modal.selectedTool.value === TOOL.SELECT
+                                            ? TOOL.MARKER
+                                            : TOOL.SELECT
+                                    );
+                                }
+
                                 setHighlightMarkers(true);
                                 filterModal.dataSet.setValue(null);
                                 filterModal.form.resetFields();
