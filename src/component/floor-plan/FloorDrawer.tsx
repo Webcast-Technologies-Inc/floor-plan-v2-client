@@ -1,4 +1,4 @@
-import { PlusOutlined, SaveOutlined, UploadOutlined } from "@ant-design/icons";
+import { SaveOutlined, UploadOutlined } from "@ant-design/icons";
 import {
     Button,
     Drawer,
@@ -255,18 +255,10 @@ const FloorDrawer = () => {
                             <Button
                                 onClick={onClickSubmit}
                                 type="primary"
-                                icon={
-                                    drawer.add.visible ? (
-                                        <PlusOutlined />
-                                    ) : drawer.edit.visible ? (
-                                        <SaveOutlined />
-                                    ) : (
-                                        ""
-                                    )
-                                }
+                                icon={<SaveOutlined />}
                                 loading={isSubmitting}
                             >
-                                {drawer.add.visible ? "Add" : drawer.edit.visible ? "Save" : ""}
+                                Save
                             </Button>
                         )}
                     </Space>
