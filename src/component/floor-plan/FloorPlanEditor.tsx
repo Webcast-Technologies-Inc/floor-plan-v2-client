@@ -349,56 +349,31 @@ const FloorPlandEditor = ({
                                                 selectedTool={modal.selectedTool.value}
                                                 isHighlighted={highlightMarkers}
                                                 onClick={() => {
-                                                    const isTempMarker =
-                                                        modal.recentlyCreatedMarker.value?.id?.includes(
-                                                            TEMP_ID_FORMAT
-                                                        );
-                                                    const isDifferentArea =
-                                                        area.id !==
+                                                    const recentlyCreatedId =
                                                         modal.recentlyCreatedMarker.value?.id;
 
-                                                    const applyAreaSelection = () => {
-                                                        modal.selectedTool.setValue(TOOL.SELECT);
-                                                        modal.selectedArea.setValue(area);
+                                                    if (
+                                                        recentlyCreatedId &&
+                                                        area.id !== recentlyCreatedId
+                                                    ) {
+                                                        return;
+                                                    }
+
+                                                    if (area.id !== recentlyCreatedId) {
                                                         modal.form.dataSet.setFieldsValue({
                                                             dataSetInfoId: area.dataSetInfoId,
                                                         });
-                                                        modal.recentlyCreatedMarker.setValue(null);
-
-                                                        if (isDifferentArea) {
-                                                            modal.dataSet.setValue(
-                                                                modal.originalDataSet.value
-                                                            );
-                                                        }
-                                                    };
-
-                                                    if (isTempMarker) {
-                                                        // If the user is currently adding a marker and then he/she clicks the existing marker
-                                                        modalAntd.confirm({
-                                                            title: "Confirm Discard",
-                                                            content: (
-                                                                <>
-                                                                    <p>
-                                                                        Are you sure you want to
-                                                                        discard changes?
-                                                                    </p>
-                                                                    <p>
-                                                                        This action cannot be
-                                                                        undone.
-                                                                    </p>
-                                                                </>
-                                                            ),
-                                                            onOk: applyAreaSelection,
-                                                            okText: "YES",
-                                                        });
-                                                    } else {
-                                                        applyAreaSelection();
                                                     }
+                                                    modal.selectedArea.setValue(area);
                                                 }}
                                                 onDragEnd={(x, y) =>
                                                     handleMarkerDragEnd(area?.id ?? "", x, y)
                                                 }
-                                                isEditable={modal.edit.visible}
+                                                isEditable={
+                                                    modal.selectedTool.value === TOOL.MARKER &&
+                                                    area.id ===
+                                                        modal.recentlyCreatedMarker.value?.id
+                                                }
                                                 containerRef={containerRef}
                                             />
                                         ) : null;

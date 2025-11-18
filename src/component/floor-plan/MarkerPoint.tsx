@@ -38,7 +38,7 @@ export const MarkerPoint = ({
     const handleMouseDown = (e: React.MouseEvent) => {
         // only start dragging with left mouse button
         if (!isEditable) return;
-        if (selectedTool !== TOOL.SELECT || (e as React.MouseEvent).button !== 0) return;
+        if (selectedTool !== TOOL.MARKER || (e as React.MouseEvent).button !== 0) return;
         e.stopPropagation();
         e.preventDefault();
 
@@ -55,7 +55,6 @@ export const MarkerPoint = ({
         const handleMouseMove = (e: MouseEvent) => {
             e.preventDefault();
             setHasMoved(true);
-            onClick();
 
             const deltaX = e.clientX - initialMousePos.current.x;
             const deltaY = e.clientY - initialMousePos.current.y;
@@ -83,6 +82,7 @@ export const MarkerPoint = ({
 
             if (position.x !== marker.x || position.y !== marker.y) {
                 onDragEnd(position.x, position.y);
+                onClick();
             }
         };
 
