@@ -37,8 +37,9 @@ export const MarkerPoint = ({
 
     const handleMouseDown = (e: React.MouseEvent) => {
         // only start dragging with left mouse button
-        if (!isEditable) return;
-        if (selectedTool !== TOOL.MARKER || (e as React.MouseEvent).button !== 0) return;
+        if (!isEditable || e.button !== 0) {
+            return;
+        }
         e.stopPropagation();
         e.preventDefault();
 

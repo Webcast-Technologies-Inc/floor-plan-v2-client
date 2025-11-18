@@ -371,9 +371,10 @@ const FloorPlandEditor = ({
                                                     handleMarkerDragEnd(area?.id ?? "", x, y)
                                                 }
                                                 isEditable={
-                                                    modal.selectedTool.value === TOOL.MARKER &&
-                                                    area.id ===
-                                                        modal.recentlyCreatedMarker.value?.id
+                                                    modal.edit.visible ||
+                                                    (modal.selectedTool.value === TOOL.MARKER &&
+                                                        area.id ===
+                                                            modal.recentlyCreatedMarker.value?.id)
                                                 }
                                                 containerRef={containerRef}
                                             />
