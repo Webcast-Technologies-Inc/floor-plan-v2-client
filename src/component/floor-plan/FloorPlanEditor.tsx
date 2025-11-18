@@ -187,7 +187,8 @@ const FloorPlandEditor = ({
                             disabled={
                                 !modal.selectedFloorLevelId.value ||
                                 modal.edit.visible ||
-                                modal.selectedTool.value === TOOL.MARKER
+                                modal.selectedTool.value === TOOL.MARKER ||
+                                modal.dataSet.value?.areas?.length === 0
                             }
                         >
                             {hasFiltersWithValue && (
