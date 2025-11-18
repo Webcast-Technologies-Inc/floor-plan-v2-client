@@ -358,7 +358,7 @@ const FloorPlandEditor = ({
                                                         (modal.edit.visible &&
                                                             area.id !==
                                                                 modal.selectedArea.value?.id) ||
-                                                        (recentlyCreatedId &&
+                                                        (modal.selectedTool.value === TOOL.MARKER &&
                                                             area.id !== recentlyCreatedId)
                                                     ) {
                                                         return;

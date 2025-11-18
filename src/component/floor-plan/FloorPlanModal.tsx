@@ -263,7 +263,9 @@ const FloorPlanModal = () => {
                             >
                                 <ArrowLeft strokeWidth={3} />
                             </Button>
-                            <p className="font-bold text-xl uppercase">Floor Plan</p>
+                            <p className="font-bold text-xl uppercase">
+                                Floor Plan : <span className="italic">{name}</span>
+                            </p>
                         </div>
                     </Col>
                     <Col span={7}>
