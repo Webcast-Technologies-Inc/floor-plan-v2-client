@@ -81,8 +81,8 @@ export const MarkerPoint = ({
             setHasMoved(false);
 
             if (position.x !== marker.x || position.y !== marker.y) {
-                onDragEnd(position.x, position.y);
                 onClick();
+                onDragEnd(position.x, position.y);
             }
         };
 
