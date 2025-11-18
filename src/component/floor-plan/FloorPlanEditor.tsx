@@ -127,23 +127,26 @@ const FloorPlandEditor = ({
             // modal.dataSetInfo.setValue(null);
             modal.selectedArea.setValue(newMarker);
         } else {
+            if (modal.edit.visible) {
+                return;
+            }
             modal.selectedArea.setValue(null);
             modal.form.dataSet.resetFields();
             modal.form.dataSetInfo.resetFields();
             modal.dataSetInfo.setValue(null);
-            modal.edit.setVisible(false);
-            modal.dataSet.setValue(modal.originalDataSet.value);
+            // modal.edit.setVisible(false);
+            // modal.dataSet.setValue(modal.originalDataSet.value);
 
             // Highlight all markers when clicking on open area
-            setHighlightMarkers(true);
-            if (highlightTimeoutRef.current) {
-                clearTimeout(highlightTimeoutRef.current);
-            }
-            highlightTimeoutRef.current = window.setTimeout(() => {
-                if (!modal.showAllMarks.visible && !modal.edit.visible) {
-                    setHighlightMarkers(false);
-                }
-            }, 2000);
+            // setHighlightMarkers(true);
+            // if (highlightTimeoutRef.current) {
+            //     clearTimeout(highlightTimeoutRef.current);
+            // }
+            // highlightTimeoutRef.current = window.setTimeout(() => {
+            //     if (!modal.showAllMarks.visible && !modal.edit.visible) {
+            //         setHighlightMarkers(false);
+            //     }
+            // }, 2000);
         }
     };
 
