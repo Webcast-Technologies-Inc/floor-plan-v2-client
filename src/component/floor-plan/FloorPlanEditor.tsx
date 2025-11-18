@@ -354,8 +354,11 @@ const FloorPlandEditor = ({
                                                         modal.recentlyCreatedMarker.value?.id;
 
                                                     if (
-                                                        recentlyCreatedId &&
-                                                        area.id !== recentlyCreatedId
+                                                        (modal.edit.visible &&
+                                                            area.id !==
+                                                                modal.selectedArea.value?.id) ||
+                                                        (recentlyCreatedId &&
+                                                            area.id !== recentlyCreatedId)
                                                     ) {
                                                         return;
                                                     }
@@ -371,7 +374,8 @@ const FloorPlandEditor = ({
                                                     handleMarkerDragEnd(area?.id ?? "", x, y)
                                                 }
                                                 isEditable={
-                                                    modal.edit.visible ||
+                                                    (modal.edit.visible &&
+                                                        area.id === modal.selectedArea.value?.id) ||
                                                     (modal.selectedTool.value === TOOL.MARKER &&
                                                         area.id ===
                                                             modal.recentlyCreatedMarker.value?.id)
