@@ -144,16 +144,18 @@ const StallInformation = ({
     };
 
     const handleDelete = () => {
-        if (modal.edit.visible) {
-            modalAntd.confirm({
-                title: "Confirm Discard",
-                content: (
-                    <>
-                        <p>Are you sure you want to delete the marker?</p>
-                        <p>This action cannot be undone.</p>
-                    </>
-                ),
-                onOk: async () => {
+        modalAntd.confirm({
+            title: "Confirm Discard",
+            content: (
+                <>
+                    <p>Are you sure you want to delete the marker?</p>
+                    <p>This action cannot be undone.</p>
+                </>
+            ),
+            onOk: async () => {
+                if (modal.recentlyCreatedMarker.value) {
+                    modal.dataSet.setValue(modal.originalDataSet.value);
+                } else {
                     if (modal.dataSet.value?.id && modal.selectedArea.value?.id) {
                         await handleDeleteMarkerById({
                             floorId: modal.dataSet.value?.id,
@@ -161,16 +163,16 @@ const StallInformation = ({
                         });
 
                         drawer.refetch.setValue((prev) => !prev);
-                        modal.form.dataSet.resetFields();
-                        modal.form.dataSetInfo.resetFields();
-                        modal.dataSetInfo.setValue(null);
-                        modal.selectedArea.setValue(null);
                         modal.edit.setVisible(false);
                     }
-                },
-                okText: "YES",
-            });
-        }
+                }
+                modal.form.dataSetInfo.resetFields();
+                modal.form.dataSet.resetFields();
+                modal.dataSetInfo.setValue(null);
+                modal.selectedArea.setValue(null);
+            },
+            okText: "YES",
+        });
     };
 
     const onCancel = () => {
@@ -272,7 +274,9 @@ const StallInformation = ({
                                 }
                             }}
                             disabled={
-                                !modal.selectedFloorLevelId.value || !modal.selectedArea.value
+                                !modal.selectedFloorLevelId.value ||
+                                !modal.selectedArea.value ||
+                                !!modal.recentlyCreatedMarker.value
                             }
                             checkedChildren="Edit"
                             unCheckedChildren="View"
@@ -280,13 +284,7 @@ const StallInformation = ({
                         <CustomActionButtons
                             actions={["delete"]}
                             handleDelete={handleDelete}
-                            disabledActions={
-                                modal.edit.visible &&
-                                modal.selectedArea.value?.id !==
-                                    modal.recentlyCreatedMarker.value?.id
-                                    ? []
-                                    : ["delete"]
-                            }
+                            disabledActions={modal.selectedArea.value ? [] : ["delete"]}
                         />
                     </div>
                 }
