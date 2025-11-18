@@ -1,13 +1,11 @@
 import { SaveOutlined, UploadOutlined } from "@ant-design/icons";
 import {
     Button,
-    Drawer,
     Form,
     Input,
     message,
     Modal,
     Select,
-    Space,
     Upload,
     type FormProps,
     type UploadFile,
@@ -235,7 +233,7 @@ const FloorDrawer = () => {
         <>
             {contextHolderModal}
             {contextHolderMessage}
-            <Drawer
+            <Modal
                 title={
                     drawer.add.visible
                         ? "Add Floor"
@@ -247,12 +245,13 @@ const FloorDrawer = () => {
                 }
                 width={600}
                 zIndex={1000}
-                onClose={onCloseForm}
+                onCancel={onCloseForm}
                 open={drawer.add.visible || drawer.view.visible || drawer.edit.visible}
-                extra={
-                    <Space>
+                footer={
+                    <>
                         {(drawer.add.visible || drawer.edit.visible) && (
                             <Button
+                                style={{ width: "100%" }}
                                 onClick={onClickSubmit}
                                 type="primary"
                                 icon={<SaveOutlined />}
@@ -261,7 +260,7 @@ const FloorDrawer = () => {
                                 Save
                             </Button>
                         )}
-                    </Space>
+                    </>
                 }
                 afterOpenChange={(open) => {
                     if (!open) {
@@ -335,7 +334,7 @@ const FloorDrawer = () => {
                         </Upload>
                     </Form.Item>
                 </Form>
-            </Drawer>
+            </Modal>
         </>
     );
 };
