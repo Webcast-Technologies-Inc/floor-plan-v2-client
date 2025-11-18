@@ -301,8 +301,9 @@ const StallInformation = ({
                             }}
                             loading={loadingDatasetInfoInput}
                             disabled={
-                                modal.selectedTool.value === TOOL.SELECT ||
-                                !modal.selectedArea.value
+                                !modal.edit.visible &&
+                                (modal.selectedTool.value === TOOL.SELECT ||
+                                    !modal.selectedArea.value)
                             }
                         >
                             Save
@@ -311,8 +312,9 @@ const StallInformation = ({
                             key="cancel"
                             onClick={onCancel}
                             disabled={
-                                modal.selectedTool.value === TOOL.SELECT ||
-                                !modal.selectedArea.value
+                                !modal.edit.visible &&
+                                (modal.selectedTool.value === TOOL.SELECT ||
+                                    !modal.selectedArea.value)
                             }
                         >
                             Cancel
@@ -332,13 +334,16 @@ const StallInformation = ({
                         rules={[
                             {
                                 required:
-                                    modal.selectedTool.value === TOOL.MARKER &&
-                                    !!modal.selectedArea.value,
+                                    modal.edit.visible ||
+                                    (modal.selectedTool.value !== TOOL.SELECT &&
+                                        !!modal.selectedArea.value),
                                 message: "Dataset ID is required",
                             },
                         ]}
                     >
-                        {modal.selectedTool.value === TOOL.MARKER && !!modal.selectedArea.value ? (
+                        {!modal.selectedArea.value ||
+                        modal.selectedTool.value === TOOL.MARKER ||
+                        modal.edit.visible ? (
                             <Select
                                 showSearch
                                 placeholder="Search to Select"
@@ -347,8 +352,9 @@ const StallInformation = ({
                                     onChange(e, "dataSetInfoId");
                                 }}
                                 disabled={
-                                    modal.selectedTool.value === TOOL.SELECT ||
-                                    !modal.selectedArea.value
+                                    !modal.edit.visible &&
+                                    (modal.selectedTool.value === TOOL.SELECT ||
+                                        !modal.selectedArea.value)
                                 }
                                 allowClear
                                 optionFilterProp="label"

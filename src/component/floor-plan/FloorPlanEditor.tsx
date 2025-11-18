@@ -208,6 +208,7 @@ const FloorPlandEditor = ({
                                     modal.form.dataSet.resetFields();
                                     modal.form.dataSetInfo.resetFields();
                                     modal.dataSetInfo.setValue(null);
+                                    modal.recentlyCreatedMarker.setValue(null);
                                 };
 
                                 const resetFilterModal = () => {
@@ -237,7 +238,7 @@ const FloorPlandEditor = ({
 
                                 resetFilterModal();
                             }}
-                            disabled={!modal.selectedFloorLevelId.value}
+                            disabled={!modal.selectedFloorLevelId.value || modal.edit.visible}
                         >
                             {modal.selectedTool.value === TOOL.MARKER ? (
                                 <Pin size={18} />
