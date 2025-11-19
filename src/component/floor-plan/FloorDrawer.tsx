@@ -186,7 +186,7 @@ const FloorDrawer = () => {
                         }
                         drawer.refetch.setValue((prev) => !prev);
                         drawer.edit.setVisible(false);
-                        floorPlanPage.selectedArea.setValue(null);
+                        floorPlanPage.selectedMarker.setValue(null);
                         floorPlanPage.form.dataSetInfo.resetFields();
                         floorPlanPage.stallInfoDataset.setValue(null);
                     }

@@ -94,7 +94,7 @@ const FloorPlanModal = () => {
                             floorPlanPage.edit.setVisible(false);
                             floorPlanPage.selectedTool.setValue(TOOL.SELECT);
                             floorPlanPage.form.dataSet.resetFields();
-                            floorPlanPage.selectedArea.setValue(null);
+                            floorPlanPage.selectedMarker.setValue(null);
                             floorPlanPage.dataset.setValue(null);
                             floorPlanPage.originalDataset.setValue(null);
                             floorPlanPage.form.dataSetInfo.resetFields();
@@ -206,7 +206,7 @@ const FloorPlanModal = () => {
             }
 
             floorPlanPage.edit.setVisible(false);
-            floorPlanPage.selectedArea.setValue(null);
+            floorPlanPage.selectedMarker.setValue(null);
             floorPlanPage.form.dataSet.resetFields();
             floorPlanPage.form.dataSetInfo.resetFields();
             floorPlanPage.stallInfoDataset.setValue(null);

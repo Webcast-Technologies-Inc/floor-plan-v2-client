@@ -152,12 +152,12 @@ const MarkerFilter = () => {
         filterModal.dataSet.setValue(filteredDataSet);
         if (
             !filteredDataSet?.some(
-                (data) => data.id_primary == floorPlanPage.selectedArea.value?.dataSetInfoId
+                (data) => data.id_primary == floorPlanPage.selectedMarker.value?.dataSetInfoId
             )
         ) {
             floorPlanPage.form.dataSetInfo.resetFields();
             floorPlanPage.stallInfoDataset.setValue(null);
-            floorPlanPage.selectedArea.setValue(null);
+            floorPlanPage.selectedMarker.setValue(null);
         }
 
         // Update saved values after successful apply

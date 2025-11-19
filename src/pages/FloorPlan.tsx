@@ -13,7 +13,9 @@ const FloorPlan = () => {
     const filterModal = useDrawerVisibility();
     const drawer = useDrawerVisibility();
     const [selectedTool, setSelectedTool] = useState<ITool>(TOOL.SELECT);
-    const [selectedArea, setSelectedArea] = useState<IFloorPlanArea | undefined | null>(undefined);
+    const [selectedMarker, setSelectedMarker] = useState<IFloorPlanArea | undefined | null>(
+        undefined
+    );
     const [selectedFloorLevelId, setSelectedFloorLevelId] = useState<string | undefined>(undefined);
     const [refetch, setRefetch] = useState(false);
     const [originalDataset, setOriginalDataset] = useState<any>(null);
@@ -40,9 +42,9 @@ const FloorPlan = () => {
                     originalDataset: { value: originalDataset, setValue: setOriginalDataset },
                     stallInfoDataset: { value: stallInfoDataset, setValue: setStallInfoDataset },
                     selectedTool: { value: selectedTool, setValue: setSelectedTool },
-                    selectedArea: {
-                        value: selectedArea,
-                        setValue: setSelectedArea,
+                    selectedMarker: {
+                        value: selectedMarker,
+                        setValue: setSelectedMarker,
                     },
                     selectedFloorLevelId: {
                         value: selectedFloorLevelId,

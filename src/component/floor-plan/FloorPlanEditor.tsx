@@ -87,7 +87,7 @@ const FloorPlandEditor = ({
                 areas: prev.areas?.map((m) => (m.id === updatedMarker.id ? updatedMarker : m)),
             };
         });
-        floorPlanPage.selectedArea.setValue(updatedMarker);
+        floorPlanPage.selectedMarker.setValue(updatedMarker);
     };
 
     const handleMarkerDragEnd = (markerId: string, x: number, y: number) => {
@@ -125,12 +125,12 @@ const FloorPlandEditor = ({
             // floorPlanPage.form.dataSet.resetFields();
             // floorPlanPage.form.dataSetInfo.resetFields();
             // floorPlanPage.stallInfoDataset.setValue(null);
-            floorPlanPage.selectedArea.setValue(newMarker);
+            floorPlanPage.selectedMarker.setValue(newMarker);
         } else {
             if (floorPlanPage.edit.visible) {
                 return;
             }
-            floorPlanPage.selectedArea.setValue(null);
+            floorPlanPage.selectedMarker.setValue(null);
             floorPlanPage.form.dataSet.resetFields();
             floorPlanPage.form.dataSetInfo.resetFields();
             floorPlanPage.stallInfoDataset.setValue(null);
@@ -210,7 +210,7 @@ const FloorPlandEditor = ({
                                         floorPlanPage.originalDataset.value
                                     );
                                     floorPlanPage.edit.setVisible(false);
-                                    floorPlanPage.selectedArea.setValue(null);
+                                    floorPlanPage.selectedMarker.setValue(null);
                                     floorPlanPage.selectedTool.setValue(nextTool);
                                     floorPlanPage.form.dataSet.resetFields();
                                     floorPlanPage.form.dataSetInfo.resetFields();
@@ -359,7 +359,8 @@ const FloorPlandEditor = ({
                                                 key={area.id}
                                                 marker={area}
                                                 isSelected={
-                                                    floorPlanPage.selectedArea.value?.id === area.id
+                                                    floorPlanPage.selectedMarker.value?.id ===
+                                                    area.id
                                                 }
                                                 selectedTool={floorPlanPage.selectedTool.value}
                                                 isHighlighted={highlightMarkers}
@@ -371,7 +372,7 @@ const FloorPlandEditor = ({
                                                     if (
                                                         (floorPlanPage.edit.visible &&
                                                             area.id !==
-                                                                floorPlanPage.selectedArea.value
+                                                                floorPlanPage.selectedMarker.value
                                                                     ?.id) ||
                                                         (floorPlanPage.selectedTool.value ===
                                                             TOOL.MARKER &&
@@ -385,7 +386,7 @@ const FloorPlandEditor = ({
                                                             dataSetInfoId: area.dataSetInfoId,
                                                         });
                                                     }
-                                                    floorPlanPage.selectedArea.setValue(area);
+                                                    floorPlanPage.selectedMarker.setValue(area);
                                                 }}
                                                 onDragEnd={(x, y) =>
                                                     handleMarkerDragEnd(area?.id ?? "", x, y)
@@ -393,7 +394,8 @@ const FloorPlandEditor = ({
                                                 isEditable={
                                                     (floorPlanPage.edit.visible &&
                                                         area.id ===
-                                                            floorPlanPage.selectedArea.value?.id) ||
+                                                            floorPlanPage.selectedMarker.value
+                                                                ?.id) ||
                                                     (floorPlanPage.selectedTool.value ===
                                                         TOOL.MARKER &&
                                                         area.id ===

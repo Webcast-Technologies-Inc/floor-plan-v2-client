@@ -40,7 +40,7 @@ interface DrawerContextType {
             setValue: React.Dispatch<React.SetStateAction<any | undefined | null>>;
         };
         selectedTool: DataState;
-        selectedArea: {
+        selectedMarker: {
             value: IFloorPlanArea | undefined | null;
             setValue: React.Dispatch<React.SetStateAction<IFloorPlanArea | undefined | null>>;
         };
@@ -109,7 +109,7 @@ const initialState: DrawerContextType = {
             value: undefined,
             setValue: () => {},
         },
-        selectedArea: {
+        selectedMarker: {
             value: undefined,
             setValue: () => {},
         },

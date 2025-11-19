@@ -111,18 +111,18 @@ const StallInformation = ({
     };
 
     useEffect(() => {
-        let mounted = true; // To avoid error when adding a new floor while floorPlanPage.selectedArea.value?.dataSetInfoId has a value
+        let mounted = true; // To avoid error when adding a new floor while floorPlanPage.selectedMarker.value?.dataSetInfoId has a value
         fetchGetDatasetInfo(
             mounted,
             floorPlanPage.dataset.value?.dataSetId,
-            floorPlanPage.selectedArea.value?.dataSetInfoId
+            floorPlanPage.selectedMarker.value?.dataSetInfoId
         );
 
         return () => {
             // mark as unmounted for in-flight promises
             mounted = false;
         };
-    }, [floorPlanPage.dataset.value?.dataSetId, floorPlanPage.selectedArea.value?.dataSetInfoId]);
+    }, [floorPlanPage.dataset.value?.dataSetId, floorPlanPage.selectedMarker.value?.dataSetInfoId]);
 
     const onChange = (value: string, name: "dataSetInfoId") => {
         fetchGetDatasetInfo(true, floorPlanPage.dataset.value?.dataSetId, value);
@@ -132,7 +132,7 @@ const StallInformation = ({
             return {
                 ...prev,
                 areas: prev.areas?.map((area) =>
-                    area.id === floorPlanPage.selectedArea.value?.id
+                    area.id === floorPlanPage.selectedMarker.value?.id
                         ? {
                               ...area,
                               [name]: value ?? "",
@@ -156,10 +156,10 @@ const StallInformation = ({
                 if (floorPlanPage.recentlyCreatedMarker.value) {
                     floorPlanPage.dataset.setValue(floorPlanPage.originalDataset.value);
                 } else {
-                    if (floorPlanPage.dataset.value?.id && floorPlanPage.selectedArea.value?.id) {
+                    if (floorPlanPage.dataset.value?.id && floorPlanPage.selectedMarker.value?.id) {
                         await handleDeleteMarkerById({
                             floorId: floorPlanPage.dataset.value?.id,
-                            id: floorPlanPage.selectedArea.value?.id,
+                            id: floorPlanPage.selectedMarker.value?.id,
                         });
 
                         drawer.refetch.setValue((prev) => !prev);
@@ -169,7 +169,7 @@ const StallInformation = ({
                 floorPlanPage.form.dataSetInfo.resetFields();
                 floorPlanPage.form.dataSet.resetFields();
                 floorPlanPage.stallInfoDataset.setValue(null);
-                floorPlanPage.selectedArea.setValue(null);
+                floorPlanPage.selectedMarker.setValue(null);
             },
             okText: "YES",
         });
@@ -187,7 +187,7 @@ const StallInformation = ({
             onOk: () => {
                 floorPlanPage.dataset.setValue(floorPlanPage.originalDataset.value);
                 floorPlanPage.edit.setVisible(false);
-                floorPlanPage.selectedArea.setValue(null);
+                floorPlanPage.selectedMarker.setValue(null);
                 floorPlanPage.selectedTool.setValue(TOOL.SELECT);
                 floorPlanPage.form.dataSet.resetFields();
                 floorPlanPage.form.dataSetInfo.resetFields();
@@ -209,10 +209,10 @@ const StallInformation = ({
         try {
             const payload = {
                 floorId: floorPlanPage.dataset.value?.id,
-                ...floorPlanPage.selectedArea.value,
-                id: floorPlanPage.selectedArea.value?.id?.startsWith(TEMP_ID_FORMAT)
+                ...floorPlanPage.selectedMarker.value,
+                id: floorPlanPage.selectedMarker.value?.id?.startsWith(TEMP_ID_FORMAT)
                     ? undefined
-                    : floorPlanPage.selectedArea.value?.id,
+                    : floorPlanPage.selectedMarker.value?.id,
                 dataSetInfoId: values.dataSetInfoId,
             };
 
@@ -225,7 +225,7 @@ const StallInformation = ({
 
             drawer.refetch.setValue((prev) => !prev);
             floorPlanPage.form.dataSet.resetFields();
-            floorPlanPage.selectedArea.setValue(null);
+            floorPlanPage.selectedMarker.setValue(null);
             floorPlanPage.originalDataset.setValue(floorPlanPage.dataset.value);
             floorPlanPage.edit.setVisible(false);
             floorPlanPage.selectedTool.setValue(TOOL.SELECT);
@@ -275,7 +275,7 @@ const StallInformation = ({
                             }}
                             disabled={
                                 !floorPlanPage.selectedFloorLevelId.value ||
-                                !floorPlanPage.selectedArea.value ||
+                                !floorPlanPage.selectedMarker.value ||
                                 !!floorPlanPage.recentlyCreatedMarker.value
                             }
                             checkedChildren="Edit"
@@ -284,7 +284,7 @@ const StallInformation = ({
                         <CustomActionButtons
                             actions={["delete"]}
                             handleDelete={handleDelete}
-                            disabledActions={floorPlanPage.selectedArea.value ? [] : ["delete"]}
+                            disabledActions={floorPlanPage.selectedMarker.value ? [] : ["delete"]}
                         />
                     </div>
                 }
@@ -301,7 +301,7 @@ const StallInformation = ({
                             disabled={
                                 !floorPlanPage.edit.visible &&
                                 (floorPlanPage.selectedTool.value === TOOL.SELECT ||
-                                    !floorPlanPage.selectedArea.value)
+                                    !floorPlanPage.selectedMarker.value)
                             }
                         >
                             Save
@@ -312,7 +312,7 @@ const StallInformation = ({
                             disabled={
                                 !floorPlanPage.edit.visible &&
                                 (floorPlanPage.selectedTool.value === TOOL.SELECT ||
-                                    !floorPlanPage.selectedArea.value)
+                                    !floorPlanPage.selectedMarker.value)
                             }
                         >
                             Cancel
@@ -334,12 +334,12 @@ const StallInformation = ({
                                 required:
                                     floorPlanPage.edit.visible ||
                                     (floorPlanPage.selectedTool.value !== TOOL.SELECT &&
-                                        !!floorPlanPage.selectedArea.value),
+                                        !!floorPlanPage.selectedMarker.value),
                                 message: "Dataset ID is required",
                             },
                         ]}
                     >
-                        {!floorPlanPage.selectedArea.value ||
+                        {!floorPlanPage.selectedMarker.value ||
                         floorPlanPage.selectedTool.value === TOOL.MARKER ||
                         floorPlanPage.edit.visible ? (
                             <Select
@@ -352,7 +352,7 @@ const StallInformation = ({
                                 disabled={
                                     !floorPlanPage.edit.visible &&
                                     (floorPlanPage.selectedTool.value === TOOL.SELECT ||
-                                        !floorPlanPage.selectedArea.value)
+                                        !floorPlanPage.selectedMarker.value)
                                 }
                                 allowClear
                                 optionFilterProp="label"
