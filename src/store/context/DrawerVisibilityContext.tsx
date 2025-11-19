@@ -53,7 +53,7 @@ interface DrawerContextType {
             datasetId: FormInstance;
             stallInfo: FormInstance;
         };
-        recentlyCreatedMarker: {
+        newlyAddedMarker: {
             value: IFloorPlanArea | undefined | null;
             setValue: React.Dispatch<React.SetStateAction<IFloorPlanArea | undefined | null>>;
         };
@@ -129,7 +129,7 @@ const initialState: DrawerContextType = {
             value: undefined,
             setValue: () => {},
         },
-        recentlyCreatedMarker: {
+        newlyAddedMarker: {
             value: undefined,
             setValue: () => {},
         },

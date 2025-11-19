@@ -120,8 +120,8 @@ const FloorPlandEditor = ({
                 dataSetInfoId: "",
             };
 
-            handleAddMarker(newMarker, floorPlanPage.recentlyCreatedMarker.value);
-            floorPlanPage.recentlyCreatedMarker.setValue(newMarker);
+            handleAddMarker(newMarker, floorPlanPage.newlyAddedMarker.value);
+            floorPlanPage.newlyAddedMarker.setValue(newMarker);
             // floorPlanPage.form.datasetId.resetFields();
             // floorPlanPage.form.stallInfo.resetFields();
             // floorPlanPage.stallInfoDataset.setValue(null);
@@ -215,7 +215,7 @@ const FloorPlandEditor = ({
                                     floorPlanPage.form.datasetId.resetFields();
                                     floorPlanPage.form.stallInfo.resetFields();
                                     floorPlanPage.stallInfoDataset.setValue(null);
-                                    floorPlanPage.recentlyCreatedMarker.setValue(null);
+                                    floorPlanPage.newlyAddedMarker.setValue(null);
                                 };
 
                                 const resetFilterModal = () => {
@@ -366,8 +366,7 @@ const FloorPlandEditor = ({
                                                 isHighlighted={highlightMarkers}
                                                 onClick={() => {
                                                     const recentlyCreatedId =
-                                                        floorPlanPage.recentlyCreatedMarker.value
-                                                            ?.id;
+                                                        floorPlanPage.newlyAddedMarker.value?.id;
 
                                                     if (
                                                         (floorPlanPage.edit.visible &&
@@ -401,8 +400,8 @@ const FloorPlandEditor = ({
                                                     (floorPlanPage.selectedTool.value ===
                                                         TOOL.MARKER &&
                                                         area.id ===
-                                                            floorPlanPage.recentlyCreatedMarker
-                                                                .value?.id)
+                                                            floorPlanPage.newlyAddedMarker.value
+                                                                ?.id)
                                                 }
                                                 containerRef={containerRef}
                                             />

@@ -153,7 +153,7 @@ const StallInformation = ({
                 </>
             ),
             onOk: async () => {
-                if (floorPlanPage.recentlyCreatedMarker.value) {
+                if (floorPlanPage.newlyAddedMarker.value) {
                     floorPlanPage.dataset.setValue(floorPlanPage.originalDataset.value);
                 } else {
                     if (floorPlanPage.dataset.value?.id && floorPlanPage.selectedMarker.value?.id) {
@@ -192,7 +192,7 @@ const StallInformation = ({
                 floorPlanPage.form.datasetId.resetFields();
                 floorPlanPage.form.stallInfo.resetFields();
                 floorPlanPage.stallInfoDataset.setValue(null);
-                floorPlanPage.recentlyCreatedMarker.setValue(null);
+                floorPlanPage.newlyAddedMarker.setValue(null);
                 setHighlightMarkers(floorPlanPage.showAllMarks.visible);
             },
             okText: "YES",
@@ -231,7 +231,7 @@ const StallInformation = ({
             floorPlanPage.selectedTool.setValue(TOOL.SELECT);
             floorPlanPage.form.stallInfo.resetFields();
             floorPlanPage.stallInfoDataset.setValue(null);
-            floorPlanPage.recentlyCreatedMarker.setValue(null);
+            floorPlanPage.newlyAddedMarker.setValue(null);
             setHighlightMarkers(floorPlanPage.showAllMarks.visible);
         } catch (err) {
             messageApi.open({
@@ -276,7 +276,7 @@ const StallInformation = ({
                             disabled={
                                 !floorPlanPage.selectedFloorLevelId.value ||
                                 !floorPlanPage.selectedMarker.value ||
-                                !!floorPlanPage.recentlyCreatedMarker.value
+                                !!floorPlanPage.newlyAddedMarker.value
                             }
                             checkedChildren="Edit"
                             unCheckedChildren="View"
