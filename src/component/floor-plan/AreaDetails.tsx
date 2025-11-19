@@ -19,7 +19,7 @@ const AreaDetails = ({
     const [modalAntd, contextHolderModal] = Modal.useModal();
     const { handleUpsertMarkerById } = useUpsertMarkerById();
     const { handleGetDatasetInfo } = useGetDatasetInfo();
-    const { modal, drawer } = useContext(DrawerVisibilityContext);
+    const { floorPlanModal, drawer } = useContext(DrawerVisibilityContext);
     const {
         options,
         loading: isSelectLoading,
@@ -34,12 +34,12 @@ const AreaDetails = ({
         pageSize: number,
         search?: string
     ): Promise<{ label: string; value: string }[]> {
-        if (!modal.dataSet.value?.dataSetId) {
+        if (!floorPlanModal.dataSet.value?.dataSetId) {
             return [];
         }
 
         const dataSetInfo = await handleGetDatasetInfo({
-            getDatasetInfoId: modal.dataSet.value?.dataSetId,
+            getDatasetInfoId: floorPlanModal.dataSet.value?.dataSetId,
             args: {
                 offset: (page - 1) * pageSize,
                 limit: pageSize,
@@ -66,13 +66,13 @@ const AreaDetails = ({
     }
 
     const onChange = (value: string, name: "dataSetInfoId") => {
-        modal.dataSet.setValue((prev) => {
+        floorPlanModal.dataSet.setValue((prev) => {
             if (!prev) return prev;
 
             return {
                 ...prev,
                 areas: prev.areas?.map((area) =>
-                    area.id === modal.selectedArea.value?.id
+                    area.id === floorPlanModal.selectedArea.value?.id
                         ? {
                               ...area,
                               [name]: value ?? "",
@@ -84,7 +84,7 @@ const AreaDetails = ({
     };
 
     const handleDelete = () => {
-        if (modal.edit.visible) {
+        if (floorPlanModal.edit.visible) {
             modalAntd.confirm({
                 title: "Confirm Discard",
                 content: (
@@ -94,16 +94,16 @@ const AreaDetails = ({
                     </>
                 ),
                 onOk: () => {
-                    modal.form.dataSet.resetFields();
-                    modal.selectedArea.setValue(null);
+                    floorPlanModal.form.dataSet.resetFields();
+                    floorPlanModal.selectedArea.setValue(null);
 
-                    modal.dataSet.setValue((prev) => {
+                    floorPlanModal.dataSet.setValue((prev) => {
                         if (!prev) return prev;
 
                         return {
                             ...prev,
                             areas: prev.areas?.filter(
-                                (area) => area.id !== modal.selectedArea.value?.id
+                                (area) => area.id !== floorPlanModal.selectedArea.value?.id
                             ) as IFloorPlanArea[],
                         };
                     });
@@ -123,21 +123,21 @@ const AreaDetails = ({
                 </>
             ),
             onOk: () => {
-                modal.dataSet.setValue(modal.originalDataSet.value);
-                modal.edit.setVisible(false);
-                modal.selectedArea.setValue(null);
-                modal.selectedTool.setValue(TOOL.SELECT);
-                modal.form.dataSet.resetFields();
-                modal.form.dataSetInfo.resetFields();
-                modal.dataSetInfo.setValue(null);
-                setHighlightMarkers(modal.showAllMarks.visible);
+                floorPlanModal.dataSet.setValue(floorPlanModal.originalDataSet.value);
+                floorPlanModal.edit.setVisible(false);
+                floorPlanModal.selectedArea.setValue(null);
+                floorPlanModal.selectedTool.setValue(TOOL.SELECT);
+                floorPlanModal.form.dataSet.resetFields();
+                floorPlanModal.form.dataSetInfo.resetFields();
+                floorPlanModal.dataSetInfo.setValue(null);
+                setHighlightMarkers(floorPlanModal.showAllMarks.visible);
             },
             okText: "YES",
         });
     };
 
     const onSave = async (values: { dataSetInfoId: string }) => {
-        if (!modal.dataSet.value?.id) {
+        if (!floorPlanModal.dataSet.value?.id) {
             return;
         }
 
@@ -145,11 +145,11 @@ const AreaDetails = ({
 
         try {
             const payload = {
-                floorId: modal.dataSet.value?.id,
-                ...modal.selectedArea.value,
-                id: modal.selectedArea.value?.id?.startsWith(TEMP_ID_FORMAT)
+                floorId: floorPlanModal.dataSet.value?.id,
+                ...floorPlanModal.selectedArea.value,
+                id: floorPlanModal.selectedArea.value?.id?.startsWith(TEMP_ID_FORMAT)
                     ? undefined
-                    : modal.selectedArea.value?.id,
+                    : floorPlanModal.selectedArea.value?.id,
                 dataSetInfoId: values.dataSetInfoId,
             };
 
@@ -161,14 +161,14 @@ const AreaDetails = ({
             });
 
             drawer.refetch.setValue((prev) => !prev);
-            modal.form.dataSet.resetFields();
-            modal.selectedArea.setValue(null);
-            modal.originalDataSet.setValue(modal.dataSet.value);
-            modal.edit.setVisible(false);
-            modal.selectedTool.setValue(TOOL.SELECT);
-            modal.form.dataSetInfo.resetFields();
-            modal.dataSetInfo.setValue(null);
-            setHighlightMarkers(modal.showAllMarks.visible);
+            floorPlanModal.form.dataSet.resetFields();
+            floorPlanModal.selectedArea.setValue(null);
+            floorPlanModal.originalDataSet.setValue(floorPlanModal.dataSet.value);
+            floorPlanModal.edit.setVisible(false);
+            floorPlanModal.selectedTool.setValue(TOOL.SELECT);
+            floorPlanModal.form.dataSetInfo.resetFields();
+            floorPlanModal.dataSetInfo.setValue(null);
+            setHighlightMarkers(floorPlanModal.showAllMarks.visible);
         } catch (err) {
             messageApi.open({
                 type: "error",
@@ -193,30 +193,40 @@ const AreaDetails = ({
                 title="Dataset Details"
                 extra={
                     <CustomActionButtons
-                        actions={modal.edit.visible && modal.selectedArea.value ? ["delete"] : []}
+                        actions={
+                            floorPlanModal.edit.visible && floorPlanModal.selectedArea.value
+                                ? ["delete"]
+                                : []
+                        }
                         handleDelete={handleDelete}
                     />
                 }
                 loading={loading}
                 actions={
-                    modal.edit.visible && modal.selectedFloorLevelId.value
+                    floorPlanModal.edit.visible && floorPlanModal.selectedFloorLevelId.value
                         ? [
                               <div className="flex flex-col !px-6 !py-2 gap-2">
                                   <Button
                                       key="save"
                                       type="primary"
                                       onClick={() => {
-                                          modal.form.dataSet.submit();
+                                          floorPlanModal.form.dataSet.submit();
                                       }}
                                       loading={loadingSave}
-                                      disabled={!modal.edit.visible || !modal.selectedArea.value}
+                                      disabled={
+                                          !floorPlanModal.edit.visible ||
+                                          !floorPlanModal.selectedArea.value
+                                      }
                                   >
                                       Save
                                   </Button>
                                   <Button
                                       key="cancel"
                                       onClick={onCancel}
-                                      disabled={!modal.edit.visible || !modal.selectedArea.value}
+                                      disabled={
+                                          !floorPlanModal.edit.visible ||
+                                          !floorPlanModal.selectedArea.value
+                                      }
                                   >
                                       Cancel
                                   </Button>
@@ -226,7 +236,7 @@ const AreaDetails = ({
                 }
             >
                 <Form
-                    form={modal.form.dataSet}
+                    form={floorPlanModal.form.dataSet}
                     layout="vertical"
                     autoComplete="off"
                     onFinish={onSave}
@@ -273,7 +283,9 @@ const AreaDetails = ({
                                     <Empty image={Empty.PRESENTED_IMAGE_SIMPLE} />
                                 )
                             }
-                            disabled={!modal.edit.visible || !modal.selectedArea.value}
+                            disabled={
+                                !floorPlanModal.edit.visible || !floorPlanModal.selectedArea.value
+                            }
                             allowClear
                             optionFilterProp="label"
                         />

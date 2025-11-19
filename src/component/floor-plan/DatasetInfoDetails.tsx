@@ -5,14 +5,19 @@ import DrawerVisibilityContext from "../../store/context/DrawerVisibilityContext
 
 const DatasetInfoDetails = () => {
     const [messageApi, contextHolderMessage] = message.useMessage();
-    const { modal } = useContext(DrawerVisibilityContext);
+    const { floorPlanModal } = useContext(DrawerVisibilityContext);
     const { handleGetDatasetInfo } = useGetDatasetInfo();
     const [loading, setLoading] = useState(false);
 
     useEffect(() => {
-        let mounted = true; // To avoid error when adding a new floor while modal.selectedArea.value?.dataSetInfoId has a value
+        let mounted = true; // To avoid error when adding a new floor while floorPlanModal.selectedArea.value?.dataSetInfoId has a value
         const fetch = async () => {
-            if (!(modal.dataSet.value?.dataSetId && modal.selectedArea.value?.dataSetInfoId)) {
+            if (
+                !(
+                    floorPlanModal.dataSet.value?.dataSetId &&
+                    floorPlanModal.selectedArea.value?.dataSetInfoId
+                )
+            ) {
                 return;
             }
 
@@ -20,12 +25,12 @@ const DatasetInfoDetails = () => {
                 setLoading(true);
 
                 const dataSetInfo = await handleGetDatasetInfo({
-                    getDatasetInfoId: modal.dataSet.value?.dataSetId,
+                    getDatasetInfoId: floorPlanModal.dataSet.value?.dataSetId,
                     args: {
                         andConditions: [
                             {
                                 field: "id_primary",
-                                values: modal.selectedArea.value?.dataSetInfoId,
+                                values: floorPlanModal.selectedArea.value?.dataSetInfoId,
                             },
                         ],
                     },
@@ -39,23 +44,23 @@ const DatasetInfoDetails = () => {
                         type: "info",
                         content: "Dataset info does not exist!",
                     });
-                    modal.form.dataSetInfo.resetFields();
-                    modal.dataSetInfo.setValue(null);
+                    floorPlanModal.form.dataSetInfo.resetFields();
+                    floorPlanModal.dataSetInfo.setValue(null);
                     return;
                 }
 
                 // Step 3: Save info and update form fields
                 if (!mounted) return;
-                modal.form.dataSetInfo.setFieldsValue(info);
-                modal.dataSetInfo.setValue(info);
+                floorPlanModal.form.dataSetInfo.setFieldsValue(info);
+                floorPlanModal.dataSetInfo.setValue(info);
             } catch (err: any) {
                 // Ignore AbortError which occurs when a previous request is cancelled by
                 // the network layer (e.g. a subsequent query launched). This is not a
                 // user-facing failure and pollutes logs/UI.
                 const isAbort =
                     err && (err.name === "AbortError" || /aborted/i.test(err.message ?? ""));
-                modal.form.dataSetInfo.resetFields();
-                modal.dataSetInfo.setValue(null);
+                floorPlanModal.form.dataSetInfo.resetFields();
+                floorPlanModal.dataSetInfo.setValue(null);
                 if (!isAbort) {
                     messageApi.open({
                         type: "error",
@@ -72,7 +77,7 @@ const DatasetInfoDetails = () => {
             // mark as unmounted for in-flight promises
             mounted = false;
         };
-    }, [modal.dataSet.value?.dataSetId, modal.selectedArea.value?.dataSetInfoId]);
+    }, [floorPlanModal.dataSet.value?.dataSetId, floorPlanModal.selectedArea.value?.dataSetInfoId]);
 
     return (
         <>
@@ -87,13 +92,19 @@ const DatasetInfoDetails = () => {
                     },
                 }}
             >
-                {modal.dataSetInfo.value ? (
-                    <Form form={modal.form.dataSetInfo} layout="vertical" autoComplete="off">
-                        {Object.entries(modal.dataSetInfo.value || {}).map(([key, value]) => (
-                            <Form.Item key={key} label={key} name={key}>
-                                <Input value={String(value)} readOnly />
-                            </Form.Item>
-                        ))}
+                {floorPlanModal.dataSetInfo.value ? (
+                    <Form
+                        form={floorPlanModal.form.dataSetInfo}
+                        layout="vertical"
+                        autoComplete="off"
+                    >
+                        {Object.entries(floorPlanModal.dataSetInfo.value || {}).map(
+                            ([key, value]) => (
+                                <Form.Item key={key} label={key} name={key}>
+                                    <Input value={String(value)} readOnly />
+                                </Form.Item>
+                            )
+                        )}
                     </Form>
                 ) : (
                     <Empty image={Empty.PRESENTED_IMAGE_SIMPLE} />

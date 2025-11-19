@@ -36,10 +36,10 @@ const FloorPlanModal = () => {
     const { handleGetLandmarkById, loading: loadingGetLandmarkById } = useGetLandmarkById();
     const { handleGetFloorByLevelId, loading: loadingGetFloorByLevelId } = useGetFloorByLevelId();
     const { handleDeleteFloor } = useDeleteFloor();
-    const { modal, drawer } = useContext(DrawerVisibilityContext);
+    const { floorPlanModal, drawer } = useContext(DrawerVisibilityContext);
     const [floorOptions, setFloorOptions] = useState<FloorOption[]>([]);
     const [modalLoading, setModalLoading] = useState(false);
-    const [highlightMarkers, setHighlightMarkers] = useState(modal.showAllMarks.visible);
+    const [highlightMarkers, setHighlightMarkers] = useState(floorPlanModal.showAllMarks.visible);
     const loading = loadingGetLandmarkById || loadingGetFloorByLevelId;
 
     const items: MenuProps["items"] = [
@@ -56,7 +56,7 @@ const FloorPlanModal = () => {
             onClick: () => {
                 drawer.edit.setVisible(true);
             },
-            disabled: !modal.selectedFloorLevelId.value,
+            disabled: !floorPlanModal.selectedFloorLevelId.value,
         },
         {
             key: "delete",
@@ -72,13 +72,13 @@ const FloorPlanModal = () => {
                     ),
                     onOk: async () => {
                         try {
-                            if (!id || !modal.dataSet.value?.id) {
+                            if (!id || !floorPlanModal.dataSet.value?.id) {
                                 return;
                             }
 
                             const resp = await handleDeleteFloor({
                                 landmarkId: id,
-                                id: modal.dataSet.value?.id,
+                                id: floorPlanModal.dataSet.value?.id,
                             });
 
                             if (!resp) {
@@ -91,15 +91,15 @@ const FloorPlanModal = () => {
                                 content: "Floor was deleted successfully!",
                             });
                             drawer.refetch.setValue((prev) => !prev);
-                            modal.edit.setVisible(false);
-                            modal.selectedTool.setValue(TOOL.SELECT);
-                            modal.form.dataSet.resetFields();
-                            modal.selectedArea.setValue(null);
-                            modal.dataSet.setValue(null);
-                            modal.originalDataSet.setValue(null);
-                            modal.form.dataSetInfo.resetFields();
-                            modal.form.dataSetInfo.resetFields();
-                            modal.dataSetInfo.setValue(null);
+                            floorPlanModal.edit.setVisible(false);
+                            floorPlanModal.selectedTool.setValue(TOOL.SELECT);
+                            floorPlanModal.form.dataSet.resetFields();
+                            floorPlanModal.selectedArea.setValue(null);
+                            floorPlanModal.dataSet.setValue(null);
+                            floorPlanModal.originalDataSet.setValue(null);
+                            floorPlanModal.form.dataSetInfo.resetFields();
+                            floorPlanModal.form.dataSetInfo.resetFields();
+                            floorPlanModal.dataSetInfo.setValue(null);
                             return;
                         } catch (error) {
                             messageApi.open({
@@ -112,7 +112,7 @@ const FloorPlanModal = () => {
                     okType: "danger",
                 });
             },
-            disabled: !modal.selectedFloorLevelId.value,
+            disabled: !floorPlanModal.selectedFloorLevelId.value,
         },
     ];
 
@@ -149,7 +149,7 @@ const FloorPlanModal = () => {
                     const firstFloorId = options[0].value;
 
                     if (isMounted) {
-                        modal.selectedFloorLevelId.setValue(firstFloorId);
+                        floorPlanModal.selectedFloorLevelId.setValue(firstFloorId);
                     }
 
                     const resp = await handleGetFloorByLevelId({
@@ -161,13 +161,13 @@ const FloorPlanModal = () => {
                     }
 
                     if (isMounted) {
-                        modal.dataSet.setValue(resp.data.getFloorByLevelId);
-                        modal.originalDataSet.setValue(resp.data.getFloorByLevelId);
+                        floorPlanModal.dataSet.setValue(resp.data.getFloorByLevelId);
+                        floorPlanModal.originalDataSet.setValue(resp.data.getFloorByLevelId);
                     }
                 } else {
                     if (isMounted) {
-                        modal.selectedFloorLevelId.setValue(undefined);
-                        modal.dataSet.setValue(null);
+                        floorPlanModal.selectedFloorLevelId.setValue(undefined);
+                        floorPlanModal.dataSet.setValue(null);
                     }
                 }
             } catch (err: any) {
@@ -205,13 +205,13 @@ const FloorPlanModal = () => {
                 return;
             }
 
-            modal.edit.setVisible(false);
-            modal.selectedArea.setValue(null);
-            modal.form.dataSet.resetFields();
-            modal.form.dataSetInfo.resetFields();
-            modal.dataSetInfo.setValue(null);
+            floorPlanModal.edit.setVisible(false);
+            floorPlanModal.selectedArea.setValue(null);
+            floorPlanModal.form.dataSet.resetFields();
+            floorPlanModal.form.dataSetInfo.resetFields();
+            floorPlanModal.dataSetInfo.setValue(null);
 
-            modal.selectedFloorLevelId.setValue(val);
+            floorPlanModal.selectedFloorLevelId.setValue(val);
 
             if (id) {
                 const resp = await handleGetFloorByLevelId({
@@ -219,8 +219,8 @@ const FloorPlanModal = () => {
                 });
 
                 if (resp) {
-                    modal.dataSet.setValue(resp.data.getFloorByLevelId);
-                    modal.originalDataSet.setValue(resp.data.getFloorByLevelId);
+                    floorPlanModal.dataSet.setValue(resp.data.getFloorByLevelId);
+                    floorPlanModal.originalDataSet.setValue(resp.data.getFloorByLevelId);
                 }
             }
         },
@@ -228,7 +228,7 @@ const FloorPlanModal = () => {
     );
 
     const onClose = () => {
-        if (!modal.selectedFloorLevelId.value || !modal.edit.visible) {
+        if (!floorPlanModal.selectedFloorLevelId.value || !floorPlanModal.edit.visible) {
             navigate("/");
             return;
         }
@@ -272,7 +272,7 @@ const FloorPlanModal = () => {
                         <div className="h-full flex items-center gap-x-4">
                             <Select
                                 placeholder="Select Floor Level"
-                                value={modal.selectedFloorLevelId.value}
+                                value={floorPlanModal.selectedFloorLevelId.value}
                                 onChange={onChangeSelect}
                                 options={floorOptions}
                             />

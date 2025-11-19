@@ -26,7 +26,7 @@ interface IModalVisibility {
 }
 
 interface DrawerContextType {
-    modal: IModalVisibility & {
+    floorPlanModal: IModalVisibility & {
         dataSet: {
             value: IFloor | undefined | null;
             setValue: React.Dispatch<React.SetStateAction<IFloor | undefined | null>>;
@@ -92,7 +92,7 @@ const modalVisibility: IModalVisibility = {
 };
 
 const initialState: DrawerContextType = {
-    modal: {
+    floorPlanModal: {
         ...modalVisibility,
         dataSet: {
             value: undefined,
