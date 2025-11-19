@@ -20,7 +20,7 @@ const StallInformation = ({
     const { handleUpsertMarkerById } = useUpsertMarkerById();
     const { handleGetDatasetInfo } = useGetDatasetInfo();
     const { handleDeleteMarkerById } = useDeleteMarkerById();
-    const { floorPlanPage, drawer, filterModal } = useContext(DrawerVisibilityContext);
+    const { floorPlanPage, floorModal, filterModal } = useContext(DrawerVisibilityContext);
     const [loadingDatasetInfoInput, setLoadingDatasetInfoInput] = useState(false);
     const [loadingGetDatasetInfoDisplay, setLoadingGetDatasetInfoDisplay] = useState(false);
     const [options, setOptions] = useState<{ label: string; value: string }[]>([]);
@@ -162,7 +162,7 @@ const StallInformation = ({
                             id: floorPlanPage.selectedMarker.value?.id,
                         });
 
-                        drawer.refetch.setValue((prev) => !prev);
+                        floorModal.refetch.setValue((prev) => !prev);
                         floorPlanPage.edit.setVisible(false);
                     }
                 }
@@ -223,7 +223,7 @@ const StallInformation = ({
                 content: "Floor plan update successfully!",
             });
 
-            drawer.refetch.setValue((prev) => !prev);
+            floorModal.refetch.setValue((prev) => !prev);
             floorPlanPage.form.datasetId.resetFields();
             floorPlanPage.selectedMarker.setValue(null);
             floorPlanPage.originalDataset.setValue(floorPlanPage.dataset.value);

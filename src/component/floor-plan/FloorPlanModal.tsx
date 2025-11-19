@@ -36,7 +36,7 @@ const FloorPlanModal = () => {
     const { handleGetLandmarkById, loading: loadingGetLandmarkById } = useGetLandmarkById();
     const { handleGetFloorByLevelId, loading: loadingGetFloorByLevelId } = useGetFloorByLevelId();
     const { handleDeleteFloor } = useDeleteFloor();
-    const { floorPlanPage, drawer } = useContext(DrawerVisibilityContext);
+    const { floorPlanPage, floorModal } = useContext(DrawerVisibilityContext);
     const [floorOptions, setFloorOptions] = useState<FloorOption[]>([]);
     const [modalLoading, setModalLoading] = useState(false);
     const [highlightMarkers, setHighlightMarkers] = useState(floorPlanPage.showAllMarks.visible);
@@ -47,14 +47,14 @@ const FloorPlanModal = () => {
             key: "add",
             label: "Add",
             onClick: () => {
-                drawer.add.setVisible(true);
+                floorModal.add.setVisible(true);
             },
         },
         {
             key: "edit",
             label: "Edit",
             onClick: () => {
-                drawer.edit.setVisible(true);
+                floorModal.edit.setVisible(true);
             },
             disabled: !floorPlanPage.selectedFloorLevelId.value,
         },
@@ -90,7 +90,7 @@ const FloorPlanModal = () => {
                                 icon: <CheckCircleFilled />,
                                 content: "Floor was deleted successfully!",
                             });
-                            drawer.refetch.setValue((prev) => !prev);
+                            floorModal.refetch.setValue((prev) => !prev);
                             floorPlanPage.edit.setVisible(false);
                             floorPlanPage.selectedTool.setValue(TOOL.SELECT);
                             floorPlanPage.form.datasetId.resetFields();
@@ -197,7 +197,7 @@ const FloorPlanModal = () => {
             // prevent state updates after unmount
             isMounted = false;
         };
-    }, [id, drawer.refetch.value]);
+    }, [id, floorModal.refetch.value]);
 
     const onChangeSelect = useCallback(
         async (val: any) => {

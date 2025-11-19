@@ -11,7 +11,7 @@ import type { IFloor, IFloorPlanArea, ITool } from "../types/floorPlan";
 const FloorPlan = () => {
     const modal = useDrawerVisibility();
     const filterModal = useDrawerVisibility();
-    const drawer = useDrawerVisibility();
+    const floorModal = useDrawerVisibility();
     const [selectedTool, setSelectedTool] = useState<ITool>(TOOL.SELECT);
     const [selectedMarker, setSelectedMarker] = useState<IFloorPlanArea | undefined | null>(
         undefined
@@ -63,8 +63,8 @@ const FloorPlan = () => {
                         setValue: setNewlyAddedMarker,
                     },
                 },
-                drawer: {
-                    ...drawer,
+                floorModal: {
+                    ...floorModal,
                     dataSet: { value: drawerDataset, setValue: setDrawerDataset },
                     refetch: { value: refetch, setValue: setRefetch },
                 },

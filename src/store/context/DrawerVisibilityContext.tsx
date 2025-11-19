@@ -65,7 +65,7 @@ interface DrawerContextType {
         };
         form: FormInstance;
     };
-    drawer: IModalVisibility & {
+    floorModal: IModalVisibility & {
         dataSet: DataState;
         refetch: { value: boolean; setValue: React.Dispatch<React.SetStateAction<boolean>> };
     };
@@ -142,7 +142,7 @@ const initialState: DrawerContextType = {
         },
         form: {} as FormInstance,
     },
-    drawer: {
+    floorModal: {
         ...modalVisibility,
         dataSet: {
             value: undefined,

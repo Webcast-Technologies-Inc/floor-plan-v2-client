@@ -35,7 +35,7 @@ const FloorDrawer = () => {
     const [modalAntd, contextHolderModal] = Modal.useModal();
     const [messageApi, contextHolderMessage] = message.useMessage();
     const [form] = Form.useForm();
-    const { floorPlanPage, filterModal, drawer } = useContext(DrawerVisibilityContext);
+    const { floorPlanPage, filterModal, floorModal } = useContext(DrawerVisibilityContext);
     const { handleGetDatasets, loading: loadingGetDatasets } = useGetDatasets();
     const { handleCreateFloor } = useCreateFloor();
     const { handleGetFloorByLevelId, loading: loadingGetFloorByLevelId } = useGetFloorByLevelId();
@@ -45,7 +45,7 @@ const FloorDrawer = () => {
 
     useEffect(() => {
         const fetch = async () => {
-            if (id && drawer.edit.visible && floorPlanPage.selectedFloorLevelId.value) {
+            if (id && floorModal.edit.visible && floorPlanPage.selectedFloorLevelId.value) {
                 try {
                     const resp = await handleGetFloorByLevelId({
                         floorId: floorPlanPage.selectedFloorLevelId.value,
@@ -76,7 +76,7 @@ const FloorDrawer = () => {
                 }
             }
 
-            if (drawer.add.visible || drawer.edit.visible) {
+            if (floorModal.add.visible || floorModal.edit.visible) {
                 const datasets = await handleGetDatasets({
                     args: {},
                 });
@@ -90,7 +90,12 @@ const FloorDrawer = () => {
             }
         };
         fetch();
-    }, [id, drawer.add.visible, drawer.edit.visible, floorPlanPage.selectedFloorLevelId.value]);
+    }, [
+        id,
+        floorModal.add.visible,
+        floorModal.edit.visible,
+        floorPlanPage.selectedFloorLevelId.value,
+    ]);
 
     const onClickSubmit = useCallback(() => {
         form.submit();
@@ -135,7 +140,7 @@ const FloorDrawer = () => {
                 };
             }
 
-            if (id && drawer.add.visible && file) {
+            if (id && floorModal.add.visible && file) {
                 try {
                     const resp = await handleCreateFloor({
                         ...payload,
@@ -148,8 +153,8 @@ const FloorDrawer = () => {
                             type: "success",
                             content: "Floor added successfully!",
                         });
-                        drawer.refetch.setValue((prev) => !prev);
-                        drawer.add.setVisible(false);
+                        floorModal.refetch.setValue((prev) => !prev);
+                        floorModal.add.setVisible(false);
                     }
                 } catch (err) {
                     messageApi.open({
@@ -161,7 +166,7 @@ const FloorDrawer = () => {
                 }
             }
 
-            if (id && drawer.edit.visible && file) {
+            if (id && floorModal.edit.visible && file) {
                 try {
                     if (!floorPlanPage.selectedFloorLevelId.value) {
                         return;
@@ -184,8 +189,8 @@ const FloorDrawer = () => {
                             filterModal.dataSet.setValue(null);
                             filterModal.form.resetFields();
                         }
-                        drawer.refetch.setValue((prev) => !prev);
-                        drawer.edit.setVisible(false);
+                        floorModal.refetch.setValue((prev) => !prev);
+                        floorModal.edit.setVisible(false);
                         floorPlanPage.selectedMarker.setValue(null);
                         floorPlanPage.form.stallInfo.resetFields();
                         floorPlanPage.stallInfoDataset.setValue(null);
@@ -200,13 +205,18 @@ const FloorDrawer = () => {
                 }
             }
         },
-        [id, drawer.add.visible, drawer.edit.visible, floorPlanPage.selectedFloorLevelId.value]
+        [
+            id,
+            floorModal.add.visible,
+            floorModal.edit.visible,
+            floorPlanPage.selectedFloorLevelId.value,
+        ]
     );
 
     const onClose = useCallback(() => {
-        drawer.view.setVisible(false);
-        drawer.add.setVisible(false);
-        drawer.edit.setVisible(false);
+        floorModal.view.setVisible(false);
+        floorModal.add.setVisible(false);
+        floorModal.edit.setVisible(false);
     }, []);
 
     const onCloseForm = useCallback(() => {
@@ -235,21 +245,21 @@ const FloorDrawer = () => {
             {contextHolderMessage}
             <Modal
                 title={
-                    drawer.add.visible
+                    floorModal.add.visible
                         ? "Add Floor"
-                        : drawer.view.visible
+                        : floorModal.view.visible
                         ? "View Floor"
-                        : drawer.edit.visible
+                        : floorModal.edit.visible
                         ? "Edit Floor"
                         : ""
                 }
                 width={600}
                 zIndex={1000}
                 onCancel={onCloseForm}
-                open={drawer.add.visible || drawer.view.visible || drawer.edit.visible}
+                open={floorModal.add.visible || floorModal.view.visible || floorModal.edit.visible}
                 footer={
                     <>
-                        {(drawer.add.visible || drawer.edit.visible) && (
+                        {(floorModal.add.visible || floorModal.edit.visible) && (
                             <Button
                                 style={{ width: "100%" }}
                                 onClick={onClickSubmit}
@@ -324,9 +334,9 @@ const FloorDrawer = () => {
                             maxCount={1}
                             multiple
                             style={{ width: "100%" }}
-                            disabled={drawer.view.visible}
+                            disabled={floorModal.view.visible}
                         >
-                            {(drawer.add.visible || drawer.edit.visible) && (
+                            {(floorModal.add.visible || floorModal.edit.visible) && (
                                 <Button icon={<UploadOutlined />} style={{ width: "100%" }}>
                                     Upload
                                 </Button>
