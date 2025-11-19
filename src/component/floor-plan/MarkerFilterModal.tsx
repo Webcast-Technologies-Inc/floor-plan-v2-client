@@ -155,7 +155,7 @@ const MarkerFilter = () => {
                 (data) => data.id_primary == floorPlanPage.selectedMarker.value?.dataSetInfoId
             )
         ) {
-            floorPlanPage.form.dataSetInfo.resetFields();
+            floorPlanPage.form.stallInfo.resetFields();
             floorPlanPage.stallInfoDataset.setValue(null);
             floorPlanPage.selectedMarker.setValue(null);
         }

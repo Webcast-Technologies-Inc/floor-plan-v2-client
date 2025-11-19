@@ -97,8 +97,8 @@ const FloorPlanModal = () => {
                             floorPlanPage.selectedMarker.setValue(null);
                             floorPlanPage.dataset.setValue(null);
                             floorPlanPage.originalDataset.setValue(null);
-                            floorPlanPage.form.dataSetInfo.resetFields();
-                            floorPlanPage.form.dataSetInfo.resetFields();
+                            floorPlanPage.form.stallInfo.resetFields();
+                            floorPlanPage.form.stallInfo.resetFields();
                             floorPlanPage.stallInfoDataset.setValue(null);
                             return;
                         } catch (error) {
@@ -208,7 +208,7 @@ const FloorPlanModal = () => {
             floorPlanPage.edit.setVisible(false);
             floorPlanPage.selectedMarker.setValue(null);
             floorPlanPage.form.datasetId.resetFields();
-            floorPlanPage.form.dataSetInfo.resetFields();
+            floorPlanPage.form.stallInfo.resetFields();
             floorPlanPage.stallInfoDataset.setValue(null);
 
             floorPlanPage.selectedFloorLevelId.setValue(val);

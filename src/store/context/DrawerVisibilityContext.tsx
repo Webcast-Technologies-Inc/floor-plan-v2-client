@@ -51,7 +51,7 @@ interface DrawerContextType {
         showAllMarks: DrawerState;
         form: {
             datasetId: FormInstance;
-            dataSetInfo: FormInstance;
+            stallInfo: FormInstance;
         };
         recentlyCreatedMarker: {
             value: IFloorPlanArea | undefined | null;
@@ -123,7 +123,7 @@ const initialState: DrawerContextType = {
         },
         form: {
             datasetId: {} as FormInstance,
-            dataSetInfo: {} as FormInstance,
+            stallInfo: {} as FormInstance,
         },
         stallInfoDataset: {
             value: undefined,
