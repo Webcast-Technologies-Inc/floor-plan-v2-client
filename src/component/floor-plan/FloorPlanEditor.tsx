@@ -24,11 +24,11 @@ const FloorPlandEditor = ({
     const containerRef = useRef<any>(null);
     const highlightTimeoutRef = useRef<number | null>(null);
     const [isFileLoaded, setIsFileLoaded] = useState(false);
-    const isPdf = floorPlanPage.dataSet.value?.fileType === "application/pdf";
+    const isPdf = floorPlanPage.dataset.value?.fileType === "application/pdf";
 
     useEffect(() => {
-        const presignedUrl = floorPlanPage.dataSet.value?.presignedUrl;
-        if (!presignedUrl || !floorPlanPage.dataSet.value?.fileType?.startsWith("image/")) {
+        const presignedUrl = floorPlanPage.dataset.value?.presignedUrl;
+        if (!presignedUrl || !floorPlanPage.dataset.value?.fileType?.startsWith("image/")) {
             return;
         }
 
@@ -49,8 +49,8 @@ const FloorPlandEditor = ({
                 };
             };
 
-            floorPlanPage.dataSet.setValue(reposition);
-            floorPlanPage.originalDataSet.setValue(reposition);
+            floorPlanPage.dataset.setValue(reposition);
+            floorPlanPage.originalDataset.setValue(reposition);
         };
 
         img.onerror = (err) => {
@@ -59,13 +59,13 @@ const FloorPlandEditor = ({
 
         img.src = presignedUrl;
         setIsFileLoaded(false);
-    }, [floorPlanPage.dataSet.value?.presignedUrl]);
+    }, [floorPlanPage.dataset.value?.presignedUrl]);
 
     const handleAddMarker = (
         marker: IFloorPlanArea,
         recentlyCreatedMarker: IFloorPlanArea | undefined | null
     ) => {
-        floorPlanPage.dataSet.setValue((prev) => {
+        floorPlanPage.dataset.setValue((prev) => {
             if (!prev) return prev;
 
             return {
@@ -79,7 +79,7 @@ const FloorPlandEditor = ({
     };
 
     const handleUpdateMarker = (updatedMarker: IFloorPlanArea) => {
-        floorPlanPage.dataSet.setValue((prev) => {
+        floorPlanPage.dataset.setValue((prev) => {
             if (!prev) return prev;
 
             return {
@@ -91,7 +91,7 @@ const FloorPlandEditor = ({
     };
 
     const handleMarkerDragEnd = (markerId: string, x: number, y: number) => {
-        const marker = floorPlanPage.dataSet.value?.areas?.find((m) => m.id === markerId);
+        const marker = floorPlanPage.dataset.value?.areas?.find((m) => m.id === markerId);
 
         if (marker) {
             handleUpdateMarker({ ...marker, x, y });
@@ -135,7 +135,7 @@ const FloorPlandEditor = ({
             floorPlanPage.form.dataSetInfo.resetFields();
             floorPlanPage.stallInfoDataset.setValue(null);
             // floorPlanPage.edit.setVisible(false);
-            // floorPlanPage.dataSet.setValue(floorPlanPage.originalDataSet.value);
+            // floorPlanPage.dataset.setValue(floorPlanPage.originalDataset.value);
 
             // Highlight all markers when clicking on open area
             // setHighlightMarkers(true);
@@ -167,7 +167,7 @@ const FloorPlandEditor = ({
                     loading ? (
                         <Skeleton.Input active size="small" style={{ width: 200 }} />
                     ) : (
-                        floorPlanPage.dataSet.value?.name ?? ""
+                        floorPlanPage.dataset.value?.name ?? ""
                     )
                 }
                 variant="outlined"
@@ -191,7 +191,7 @@ const FloorPlandEditor = ({
                                 !floorPlanPage.selectedFloorLevelId.value ||
                                 floorPlanPage.edit.visible ||
                                 floorPlanPage.selectedTool.value === TOOL.MARKER ||
-                                floorPlanPage.dataSet.value?.areas?.length === 0
+                                floorPlanPage.dataset.value?.areas?.length === 0
                             }
                         >
                             {hasFiltersWithValue && (
@@ -206,8 +206,8 @@ const FloorPlandEditor = ({
                                     floorPlanPage.selectedTool.value === TOOL.MARKER;
 
                                 const resetModalState = (nextTool: ITool) => {
-                                    floorPlanPage.dataSet.setValue(
-                                        floorPlanPage.originalDataSet.value
+                                    floorPlanPage.dataset.setValue(
+                                        floorPlanPage.originalDataset.value
                                     );
                                     floorPlanPage.edit.setVisible(false);
                                     floorPlanPage.selectedArea.setValue(null);
@@ -271,16 +271,16 @@ const FloorPlandEditor = ({
                                     : "default",
                         }}
                     >
-                        {!floorPlanPage.dataSet.value?.presignedUrl ? (
+                        {!floorPlanPage.dataset.value?.presignedUrl ? (
                             <Empty image={Empty.PRESENTED_IMAGE_SIMPLE} />
                         ) : (
                             <>
                                 {isPdf ? (
                                     <div ref={containerRef}>
                                         <Document
-                                            key={floorPlanPage.dataSet.value?.presignedUrl}
+                                            key={floorPlanPage.dataset.value?.presignedUrl}
                                             loading={<Spin />}
-                                            file={floorPlanPage.dataSet.value?.presignedUrl}
+                                            file={floorPlanPage.dataset.value?.presignedUrl}
                                             onLoadSuccess={() => {
                                                 setIsFileLoaded(true);
                                             }}
@@ -317,8 +317,8 @@ const FloorPlandEditor = ({
                                                         };
                                                     };
 
-                                                    floorPlanPage.dataSet.setValue(reposition);
-                                                    floorPlanPage.originalDataSet.setValue(
+                                                    floorPlanPage.dataset.setValue(reposition);
+                                                    floorPlanPage.originalDataset.setValue(
                                                         reposition
                                                     );
                                                 }}
@@ -328,7 +328,7 @@ const FloorPlandEditor = ({
                                 ) : (
                                     <img
                                         ref={containerRef}
-                                        src={floorPlanPage.dataSet.value?.presignedUrl || undefined}
+                                        src={floorPlanPage.dataset.value?.presignedUrl || undefined}
                                         alt="Floor plan"
                                         style={{
                                             display: isFileLoaded ? "block" : "none",
@@ -346,7 +346,7 @@ const FloorPlandEditor = ({
                                 {!isPdf && !isFileLoaded && <Spin />}
 
                                 {isFileLoaded &&
-                                    floorPlanPage.dataSet.value?.areas?.map((area) => {
+                                    floorPlanPage.dataset.value?.areas?.map((area) => {
                                         const isVisible = filterModal.dataSet.value
                                             ? filterModal.dataSet.value.some(
                                                   (item: any) =>

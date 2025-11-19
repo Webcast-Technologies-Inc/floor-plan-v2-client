@@ -36,8 +36,9 @@ const FloorPlan = () => {
                 },
                 floorPlanPage: {
                     ...modal,
-                    dataSet: { value: modalDataSet, setValue: setModalDataSet },
+                    dataset: { value: modalDataSet, setValue: setModalDataSet },
                     originalDataSet: { value: originalDataSet, setValue: setOriginalDataSet },
+                    stallInfoDataset: { value: dataSetInfo, setValue: setDataSetInfo },
                     selectedTool: { value: selectedTool, setValue: setSelectedTool },
                     selectedArea: {
                         value: selectedArea,
@@ -55,7 +56,6 @@ const FloorPlan = () => {
                         dataSet: Form.useForm()[0],
                         dataSetInfo: Form.useForm()[0],
                     },
-                    stallInfoDataset: { value: dataSetInfo, setValue: setDataSetInfo },
                     recentlyCreatedMarker: {
                         value: recentlyCreatedMarker,
                         setValue: setRecentlyCreatedMarker,

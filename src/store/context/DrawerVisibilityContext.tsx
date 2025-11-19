@@ -27,11 +27,18 @@ interface IModalVisibility {
 
 interface DrawerContextType {
     floorPlanPage: IModalVisibility & {
-        dataSet: {
+        dataset: {
             value: IFloor | undefined | null;
             setValue: React.Dispatch<React.SetStateAction<IFloor | undefined | null>>;
         };
-        originalDataSet: DataState;
+        originalDataset: {
+            value: IFloor | undefined | null;
+            setValue: React.Dispatch<React.SetStateAction<IFloor | undefined | null>>;
+        };
+        stallInfoDataset: {
+            value: any | undefined | null;
+            setValue: React.Dispatch<React.SetStateAction<any | undefined | null>>;
+        };
         selectedTool: DataState;
         selectedArea: {
             value: IFloorPlanArea | undefined | null;
@@ -45,10 +52,6 @@ interface DrawerContextType {
         form: {
             dataSet: FormInstance;
             dataSetInfo: FormInstance;
-        };
-        stallInfoDataset: {
-            value: any | undefined | null;
-            setValue: React.Dispatch<React.SetStateAction<any | undefined | null>>;
         };
         recentlyCreatedMarker: {
             value: IFloorPlanArea | undefined | null;
@@ -94,11 +97,11 @@ const modalVisibility: IModalVisibility = {
 const initialState: DrawerContextType = {
     floorPlanPage: {
         ...modalVisibility,
-        dataSet: {
+        dataset: {
             value: undefined,
             setValue: () => {},
         },
-        originalDataSet: {
+        originalDataset: {
             value: undefined,
             setValue: () => {},
         },
