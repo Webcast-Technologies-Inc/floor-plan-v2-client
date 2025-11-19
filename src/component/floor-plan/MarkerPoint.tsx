@@ -108,12 +108,12 @@ export const MarkerPoint = ({
     };
 
     const iconSrc = `/icons/marker-${isSelected ? "selected" : "unselected"}.svg`;
-    const icon = <img src={iconSrc} alt="Marker" className="h-6" />;
+    const icon = <img src={iconSrc} alt="Marker" className="" />;
 
     return (
         <div
             ref={markerRef}
-            className={`absolute transition-transform duration-200 leading-none ${
+            className={`absolute h-6 w-6 transition-transform duration-200 leading-none ${
                 isDragging ? "scale-110 z-50" : isSelected ? "scale-105 z-40" : "z-30"
             } ${isEditable ? "hover:scale-110" : ""}`}
             style={{
