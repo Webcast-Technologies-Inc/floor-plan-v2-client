@@ -122,7 +122,7 @@ const FloorPlandEditor = ({
 
             handleAddMarker(newMarker, floorPlanPage.recentlyCreatedMarker.value);
             floorPlanPage.recentlyCreatedMarker.setValue(newMarker);
-            // floorPlanPage.form.dataSet.resetFields();
+            // floorPlanPage.form.datasetId.resetFields();
             // floorPlanPage.form.dataSetInfo.resetFields();
             // floorPlanPage.stallInfoDataset.setValue(null);
             floorPlanPage.selectedMarker.setValue(newMarker);
@@ -131,7 +131,7 @@ const FloorPlandEditor = ({
                 return;
             }
             floorPlanPage.selectedMarker.setValue(null);
-            floorPlanPage.form.dataSet.resetFields();
+            floorPlanPage.form.datasetId.resetFields();
             floorPlanPage.form.dataSetInfo.resetFields();
             floorPlanPage.stallInfoDataset.setValue(null);
             // floorPlanPage.edit.setVisible(false);
@@ -212,7 +212,7 @@ const FloorPlandEditor = ({
                                     floorPlanPage.edit.setVisible(false);
                                     floorPlanPage.selectedMarker.setValue(null);
                                     floorPlanPage.selectedTool.setValue(nextTool);
-                                    floorPlanPage.form.dataSet.resetFields();
+                                    floorPlanPage.form.datasetId.resetFields();
                                     floorPlanPage.form.dataSetInfo.resetFields();
                                     floorPlanPage.stallInfoDataset.setValue(null);
                                     floorPlanPage.recentlyCreatedMarker.setValue(null);
@@ -382,9 +382,11 @@ const FloorPlandEditor = ({
                                                     }
 
                                                     if (area.id !== recentlyCreatedId) {
-                                                        floorPlanPage.form.dataSet.setFieldsValue({
-                                                            dataSetInfoId: area.dataSetInfoId,
-                                                        });
+                                                        floorPlanPage.form.datasetId.setFieldsValue(
+                                                            {
+                                                                dataSetInfoId: area.dataSetInfoId,
+                                                            }
+                                                        );
                                                     }
                                                     floorPlanPage.selectedMarker.setValue(area);
                                                 }}

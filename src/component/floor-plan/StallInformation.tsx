@@ -167,7 +167,7 @@ const StallInformation = ({
                     }
                 }
                 floorPlanPage.form.dataSetInfo.resetFields();
-                floorPlanPage.form.dataSet.resetFields();
+                floorPlanPage.form.datasetId.resetFields();
                 floorPlanPage.stallInfoDataset.setValue(null);
                 floorPlanPage.selectedMarker.setValue(null);
             },
@@ -189,7 +189,7 @@ const StallInformation = ({
                 floorPlanPage.edit.setVisible(false);
                 floorPlanPage.selectedMarker.setValue(null);
                 floorPlanPage.selectedTool.setValue(TOOL.SELECT);
-                floorPlanPage.form.dataSet.resetFields();
+                floorPlanPage.form.datasetId.resetFields();
                 floorPlanPage.form.dataSetInfo.resetFields();
                 floorPlanPage.stallInfoDataset.setValue(null);
                 floorPlanPage.recentlyCreatedMarker.setValue(null);
@@ -224,7 +224,7 @@ const StallInformation = ({
             });
 
             drawer.refetch.setValue((prev) => !prev);
-            floorPlanPage.form.dataSet.resetFields();
+            floorPlanPage.form.datasetId.resetFields();
             floorPlanPage.selectedMarker.setValue(null);
             floorPlanPage.originalDataset.setValue(floorPlanPage.dataset.value);
             floorPlanPage.edit.setVisible(false);
@@ -243,7 +243,7 @@ const StallInformation = ({
         }
     };
 
-    const dataSetId = floorPlanPage.form.dataSet.getFieldValue("dataSetInfoId"); // TEMPORARY ONLY
+    const dataSetId = floorPlanPage.form.datasetId.getFieldValue("dataSetInfoId"); // TEMPORARY ONLY
 
     return (
         <>
@@ -295,7 +295,7 @@ const StallInformation = ({
                             key="save"
                             type="primary"
                             onClick={() => {
-                                floorPlanPage.form.dataSet.submit();
+                                floorPlanPage.form.datasetId.submit();
                             }}
                             loading={loadingDatasetInfoInput}
                             disabled={
@@ -321,7 +321,7 @@ const StallInformation = ({
                 ]}
             >
                 <Form
-                    form={floorPlanPage.form.dataSet}
+                    form={floorPlanPage.form.datasetId}
                     layout="vertical"
                     autoComplete="off"
                     onFinish={onSave}

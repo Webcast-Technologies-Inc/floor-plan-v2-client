@@ -93,7 +93,7 @@ const FloorPlanModal = () => {
                             drawer.refetch.setValue((prev) => !prev);
                             floorPlanPage.edit.setVisible(false);
                             floorPlanPage.selectedTool.setValue(TOOL.SELECT);
-                            floorPlanPage.form.dataSet.resetFields();
+                            floorPlanPage.form.datasetId.resetFields();
                             floorPlanPage.selectedMarker.setValue(null);
                             floorPlanPage.dataset.setValue(null);
                             floorPlanPage.originalDataset.setValue(null);
@@ -207,7 +207,7 @@ const FloorPlanModal = () => {
 
             floorPlanPage.edit.setVisible(false);
             floorPlanPage.selectedMarker.setValue(null);
-            floorPlanPage.form.dataSet.resetFields();
+            floorPlanPage.form.datasetId.resetFields();
             floorPlanPage.form.dataSetInfo.resetFields();
             floorPlanPage.stallInfoDataset.setValue(null);
 

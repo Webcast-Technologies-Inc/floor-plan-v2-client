@@ -55,7 +55,7 @@ const FloorPlan = () => {
                         setVisible: setIsShowAllMarksVisible,
                     },
                     form: {
-                        dataSet: Form.useForm()[0],
+                        datasetId: Form.useForm()[0],
                         dataSetInfo: Form.useForm()[0],
                     },
                     recentlyCreatedMarker: {

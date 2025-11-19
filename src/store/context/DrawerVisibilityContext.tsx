@@ -50,7 +50,7 @@ interface DrawerContextType {
         };
         showAllMarks: DrawerState;
         form: {
-            dataSet: FormInstance;
+            datasetId: FormInstance;
             dataSetInfo: FormInstance;
         };
         recentlyCreatedMarker: {
@@ -122,7 +122,7 @@ const initialState: DrawerContextType = {
             setVisible: () => {},
         },
         form: {
-            dataSet: {} as FormInstance,
+            datasetId: {} as FormInstance,
             dataSetInfo: {} as FormInstance,
         },
         stallInfoDataset: {
