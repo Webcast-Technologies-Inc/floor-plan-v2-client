@@ -16,12 +16,12 @@ const FloorPlan = () => {
     const [selectedArea, setSelectedArea] = useState<IFloorPlanArea | undefined | null>(undefined);
     const [selectedFloorLevelId, setSelectedFloorLevelId] = useState<string | undefined>(undefined);
     const [refetch, setRefetch] = useState(false);
-    const [originalDataSet, setOriginalDataSet] = useState<any>(null);
-    const [modalDataSet, setModalDataSet] = useState<IFloor | undefined | null>(undefined);
-    const [drawerDataSet, setDrawerDataSet] = useState<any>(undefined);
+    const [originalDataset, setOriginalDataset] = useState<any>(null);
+    const [modalDataset, setModalDataset] = useState<IFloor | undefined | null>(undefined);
+    const [drawerDataset, setDrawerDataset] = useState<any>(undefined);
     const [isShowAllMarksVisible, setIsShowAllMarksVisible] = useState(true);
-    const [dataSetInfo, setDataSetInfo] = useState<any>();
-    const [dataSetFilter, setDataSetFilter] = useState<any[] | undefined | null>();
+    const [stallInfoDataset, setStallInfoDataset] = useState<any>();
+    const [datasetFilter, setDatasetFilter] = useState<any[] | undefined | null>();
     const [recentlyCreatedMarker, setRecentlyCreatedMarker] = useState<
         IFloorPlanArea | undefined | null
     >(undefined);
@@ -31,14 +31,14 @@ const FloorPlan = () => {
             value={{
                 filterModal: {
                     ...filterModal,
-                    dataSet: { value: dataSetFilter, setValue: setDataSetFilter },
+                    dataSet: { value: datasetFilter, setValue: setDatasetFilter },
                     form: Form.useForm()[0],
                 },
                 floorPlanPage: {
                     ...modal,
-                    dataset: { value: modalDataSet, setValue: setModalDataSet },
-                    originalDataSet: { value: originalDataSet, setValue: setOriginalDataSet },
-                    stallInfoDataset: { value: dataSetInfo, setValue: setDataSetInfo },
+                    dataset: { value: modalDataset, setValue: setModalDataset },
+                    originalDataset: { value: originalDataset, setValue: setOriginalDataset },
+                    stallInfoDataset: { value: stallInfoDataset, setValue: setStallInfoDataset },
                     selectedTool: { value: selectedTool, setValue: setSelectedTool },
                     selectedArea: {
                         value: selectedArea,
@@ -63,7 +63,7 @@ const FloorPlan = () => {
                 },
                 drawer: {
                     ...drawer,
-                    dataSet: { value: drawerDataSet, setValue: setDrawerDataSet },
+                    dataSet: { value: drawerDataset, setValue: setDrawerDataset },
                     refetch: { value: refetch, setValue: setRefetch },
                 },
             }}
