@@ -35,7 +35,7 @@ const FloorDrawer = () => {
     const [modalAntd, contextHolderModal] = Modal.useModal();
     const [messageApi, contextHolderMessage] = message.useMessage();
     const [form] = Form.useForm();
-    const { floorPlanModal, filterModal, drawer } = useContext(DrawerVisibilityContext);
+    const { floorPlanPage, filterModal, drawer } = useContext(DrawerVisibilityContext);
     const { handleGetDatasets, loading: loadingGetDatasets } = useGetDatasets();
     const { handleCreateFloor } = useCreateFloor();
     const { handleGetFloorByLevelId, loading: loadingGetFloorByLevelId } = useGetFloorByLevelId();
@@ -45,10 +45,10 @@ const FloorDrawer = () => {
 
     useEffect(() => {
         const fetch = async () => {
-            if (id && drawer.edit.visible && floorPlanModal.selectedFloorLevelId.value) {
+            if (id && drawer.edit.visible && floorPlanPage.selectedFloorLevelId.value) {
                 try {
                     const resp = await handleGetFloorByLevelId({
-                        floorId: floorPlanModal.selectedFloorLevelId.value,
+                        floorId: floorPlanPage.selectedFloorLevelId.value,
                     });
 
                     if (!resp) {
@@ -90,7 +90,7 @@ const FloorDrawer = () => {
             }
         };
         fetch();
-    }, [id, drawer.add.visible, drawer.edit.visible, floorPlanModal.selectedFloorLevelId.value]);
+    }, [id, drawer.add.visible, drawer.edit.visible, floorPlanPage.selectedFloorLevelId.value]);
 
     const onClickSubmit = useCallback(() => {
         form.submit();
@@ -163,14 +163,14 @@ const FloorDrawer = () => {
 
             if (id && drawer.edit.visible && file) {
                 try {
-                    if (!floorPlanModal.selectedFloorLevelId.value) {
+                    if (!floorPlanPage.selectedFloorLevelId.value) {
                         return;
                     }
 
                     const resp = await handleUpdateFloor({
                         ...payload,
                         landmarkId: id,
-                        id: floorPlanModal.selectedFloorLevelId.value,
+                        id: floorPlanPage.selectedFloorLevelId.value,
                         ...(modifiedFile as any),
                     });
 
@@ -179,16 +179,16 @@ const FloorDrawer = () => {
                             type: "success",
                             content: "Floor updated successfully!",
                         });
-                        if (floorPlanModal.dataSet.value?.dataSetId !== payload.dataSetId) {
+                        if (floorPlanPage.dataSet.value?.dataSetId !== payload.dataSetId) {
                             /* Clear filter if the dataset was changed */
                             filterModal.dataSet.setValue(null);
                             filterModal.form.resetFields();
                         }
                         drawer.refetch.setValue((prev) => !prev);
                         drawer.edit.setVisible(false);
-                        floorPlanModal.selectedArea.setValue(null);
-                        floorPlanModal.form.dataSetInfo.resetFields();
-                        floorPlanModal.dataSetInfo.setValue(null);
+                        floorPlanPage.selectedArea.setValue(null);
+                        floorPlanPage.form.dataSetInfo.resetFields();
+                        floorPlanPage.dataSetInfo.setValue(null);
                     }
                 } catch (err) {
                     messageApi.open({
@@ -200,7 +200,7 @@ const FloorDrawer = () => {
                 }
             }
         },
-        [id, drawer.add.visible, drawer.edit.visible, floorPlanModal.selectedFloorLevelId.value]
+        [id, drawer.add.visible, drawer.edit.visible, floorPlanPage.selectedFloorLevelId.value]
     );
 
     const onClose = useCallback(() => {

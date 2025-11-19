@@ -34,7 +34,7 @@ const FloorPlan = () => {
                     dataSet: { value: dataSetFilter, setValue: setDataSetFilter },
                     form: Form.useForm()[0],
                 },
-                floorPlanModal: {
+                floorPlanPage: {
                     ...modal,
                     dataSet: { value: modalDataSet, setValue: setModalDataSet },
                     originalDataSet: { value: originalDataSet, setValue: setOriginalDataSet },

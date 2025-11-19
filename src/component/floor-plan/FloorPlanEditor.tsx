@@ -20,15 +20,15 @@ const FloorPlandEditor = ({
     setHighlightMarkers: React.Dispatch<React.SetStateAction<boolean>>;
 }) => {
     const [modalAntd, contextHolderModal] = Modal.useModal();
-    const { floorPlanModal, filterModal } = useContext(DrawerVisibilityContext);
+    const { floorPlanPage, filterModal } = useContext(DrawerVisibilityContext);
     const containerRef = useRef<any>(null);
     const highlightTimeoutRef = useRef<number | null>(null);
     const [isFileLoaded, setIsFileLoaded] = useState(false);
-    const isPdf = floorPlanModal.dataSet.value?.fileType === "application/pdf";
+    const isPdf = floorPlanPage.dataSet.value?.fileType === "application/pdf";
 
     useEffect(() => {
-        const presignedUrl = floorPlanModal.dataSet.value?.presignedUrl;
-        if (!presignedUrl || !floorPlanModal.dataSet.value?.fileType?.startsWith("image/")) {
+        const presignedUrl = floorPlanPage.dataSet.value?.presignedUrl;
+        if (!presignedUrl || !floorPlanPage.dataSet.value?.fileType?.startsWith("image/")) {
             return;
         }
 
@@ -49,8 +49,8 @@ const FloorPlandEditor = ({
                 };
             };
 
-            floorPlanModal.dataSet.setValue(reposition);
-            floorPlanModal.originalDataSet.setValue(reposition);
+            floorPlanPage.dataSet.setValue(reposition);
+            floorPlanPage.originalDataSet.setValue(reposition);
         };
 
         img.onerror = (err) => {
@@ -59,13 +59,13 @@ const FloorPlandEditor = ({
 
         img.src = presignedUrl;
         setIsFileLoaded(false);
-    }, [floorPlanModal.dataSet.value?.presignedUrl]);
+    }, [floorPlanPage.dataSet.value?.presignedUrl]);
 
     const handleAddMarker = (
         marker: IFloorPlanArea,
         recentlyCreatedMarker: IFloorPlanArea | undefined | null
     ) => {
-        floorPlanModal.dataSet.setValue((prev) => {
+        floorPlanPage.dataSet.setValue((prev) => {
             if (!prev) return prev;
 
             return {
@@ -79,7 +79,7 @@ const FloorPlandEditor = ({
     };
 
     const handleUpdateMarker = (updatedMarker: IFloorPlanArea) => {
-        floorPlanModal.dataSet.setValue((prev) => {
+        floorPlanPage.dataSet.setValue((prev) => {
             if (!prev) return prev;
 
             return {
@@ -87,11 +87,11 @@ const FloorPlandEditor = ({
                 areas: prev.areas?.map((m) => (m.id === updatedMarker.id ? updatedMarker : m)),
             };
         });
-        floorPlanModal.selectedArea.setValue(updatedMarker);
+        floorPlanPage.selectedArea.setValue(updatedMarker);
     };
 
     const handleMarkerDragEnd = (markerId: string, x: number, y: number) => {
-        const marker = floorPlanModal.dataSet.value?.areas?.find((m) => m.id === markerId);
+        const marker = floorPlanPage.dataSet.value?.areas?.find((m) => m.id === markerId);
 
         if (marker) {
             handleUpdateMarker({ ...marker, x, y });
@@ -102,7 +102,7 @@ const FloorPlandEditor = ({
         const rect = containerRef.current?.getBoundingClientRect();
         if (!rect) return;
 
-        if (floorPlanModal.selectedTool.value === TOOL.MARKER) {
+        if (floorPlanPage.selectedTool.value === TOOL.MARKER) {
             const markerSize = 24; // approximate size of your marker icon
 
             // Get click position relative to container
@@ -120,22 +120,22 @@ const FloorPlandEditor = ({
                 dataSetInfoId: "",
             };
 
-            handleAddMarker(newMarker, floorPlanModal.recentlyCreatedMarker.value);
-            floorPlanModal.recentlyCreatedMarker.setValue(newMarker);
-            // floorPlanModal.form.dataSet.resetFields();
-            // floorPlanModal.form.dataSetInfo.resetFields();
-            // floorPlanModal.dataSetInfo.setValue(null);
-            floorPlanModal.selectedArea.setValue(newMarker);
+            handleAddMarker(newMarker, floorPlanPage.recentlyCreatedMarker.value);
+            floorPlanPage.recentlyCreatedMarker.setValue(newMarker);
+            // floorPlanPage.form.dataSet.resetFields();
+            // floorPlanPage.form.dataSetInfo.resetFields();
+            // floorPlanPage.dataSetInfo.setValue(null);
+            floorPlanPage.selectedArea.setValue(newMarker);
         } else {
-            if (floorPlanModal.edit.visible) {
+            if (floorPlanPage.edit.visible) {
                 return;
             }
-            floorPlanModal.selectedArea.setValue(null);
-            floorPlanModal.form.dataSet.resetFields();
-            floorPlanModal.form.dataSetInfo.resetFields();
-            floorPlanModal.dataSetInfo.setValue(null);
-            // floorPlanModal.edit.setVisible(false);
-            // floorPlanModal.dataSet.setValue(floorPlanModal.originalDataSet.value);
+            floorPlanPage.selectedArea.setValue(null);
+            floorPlanPage.form.dataSet.resetFields();
+            floorPlanPage.form.dataSetInfo.resetFields();
+            floorPlanPage.dataSetInfo.setValue(null);
+            // floorPlanPage.edit.setVisible(false);
+            // floorPlanPage.dataSet.setValue(floorPlanPage.originalDataSet.value);
 
             // Highlight all markers when clicking on open area
             // setHighlightMarkers(true);
@@ -143,7 +143,7 @@ const FloorPlandEditor = ({
             //     clearTimeout(highlightTimeoutRef.current);
             // }
             // highlightTimeoutRef.current = window.setTimeout(() => {
-            //     if (!floorPlanModal.showAllMarks.visible && !floorPlanModal.edit.visible) {
+            //     if (!floorPlanPage.showAllMarks.visible && !floorPlanPage.edit.visible) {
             //         setHighlightMarkers(false);
             //     }
             // }, 2000);
@@ -167,18 +167,18 @@ const FloorPlandEditor = ({
                     loading ? (
                         <Skeleton.Input active size="small" style={{ width: 200 }} />
                     ) : (
-                        floorPlanModal.dataSet.value?.name ?? ""
+                        floorPlanPage.dataSet.value?.name ?? ""
                     )
                 }
                 variant="outlined"
                 style={{ width: "100%" }}
                 extra={
                     <div className="flex items-center gap-x-4">
-                        {/* {!floorPlanModal.edit.visible && floorPlanModal.selectedFloorLevelId.value && (
+                        {/* {!floorPlanPage.edit.visible && floorPlanPage.selectedFloorLevelId.value && (
                             <Switch
-                                value={floorPlanModal.showAllMarks.visible}
+                                value={floorPlanPage.showAllMarks.visible}
                                 onChange={(checked: boolean) => {
-                                    floorPlanModal.showAllMarks.setVisible(checked);
+                                    floorPlanPage.showAllMarks.setVisible(checked);
                                     setHighlightMarkers(checked);
                                 }}
                             />
@@ -188,10 +188,10 @@ const FloorPlandEditor = ({
                             type="text"
                             onClick={() => filterModal.view.setVisible(true)}
                             disabled={
-                                !floorPlanModal.selectedFloorLevelId.value ||
-                                floorPlanModal.edit.visible ||
-                                floorPlanModal.selectedTool.value === TOOL.MARKER ||
-                                floorPlanModal.dataSet.value?.areas?.length === 0
+                                !floorPlanPage.selectedFloorLevelId.value ||
+                                floorPlanPage.edit.visible ||
+                                floorPlanPage.selectedTool.value === TOOL.MARKER ||
+                                floorPlanPage.dataSet.value?.areas?.length === 0
                             }
                         >
                             {hasFiltersWithValue && (
@@ -203,19 +203,19 @@ const FloorPlandEditor = ({
                             type="text"
                             onClick={() => {
                                 const isMarkerTool =
-                                    floorPlanModal.selectedTool.value === TOOL.MARKER;
+                                    floorPlanPage.selectedTool.value === TOOL.MARKER;
 
                                 const resetModalState = (nextTool: ITool) => {
-                                    floorPlanModal.dataSet.setValue(
-                                        floorPlanModal.originalDataSet.value
+                                    floorPlanPage.dataSet.setValue(
+                                        floorPlanPage.originalDataSet.value
                                     );
-                                    floorPlanModal.edit.setVisible(false);
-                                    floorPlanModal.selectedArea.setValue(null);
-                                    floorPlanModal.selectedTool.setValue(nextTool);
-                                    floorPlanModal.form.dataSet.resetFields();
-                                    floorPlanModal.form.dataSetInfo.resetFields();
-                                    floorPlanModal.dataSetInfo.setValue(null);
-                                    floorPlanModal.recentlyCreatedMarker.setValue(null);
+                                    floorPlanPage.edit.setVisible(false);
+                                    floorPlanPage.selectedArea.setValue(null);
+                                    floorPlanPage.selectedTool.setValue(nextTool);
+                                    floorPlanPage.form.dataSet.resetFields();
+                                    floorPlanPage.form.dataSetInfo.resetFields();
+                                    floorPlanPage.dataSetInfo.setValue(null);
+                                    floorPlanPage.recentlyCreatedMarker.setValue(null);
                                 };
 
                                 const resetFilterModal = () => {
@@ -235,9 +235,7 @@ const FloorPlandEditor = ({
                                         ),
                                         onOk: () => {
                                             resetModalState(TOOL.SELECT);
-                                            setHighlightMarkers(
-                                                floorPlanModal.showAllMarks.visible
-                                            );
+                                            setHighlightMarkers(floorPlanPage.showAllMarks.visible);
                                         },
                                         okText: "YES",
                                     });
@@ -248,11 +246,11 @@ const FloorPlandEditor = ({
                                 resetFilterModal();
                             }}
                             disabled={
-                                !floorPlanModal.selectedFloorLevelId.value ||
-                                floorPlanModal.edit.visible
+                                !floorPlanPage.selectedFloorLevelId.value ||
+                                floorPlanPage.edit.visible
                             }
                         >
-                            {floorPlanModal.selectedTool.value === TOOL.MARKER ? (
+                            {floorPlanPage.selectedTool.value === TOOL.MARKER ? (
                                 <Pin size={18} />
                             ) : (
                                 <PinOff size={18} />
@@ -268,21 +266,21 @@ const FloorPlandEditor = ({
                         onClick={handleCanvasClick}
                         style={{
                             cursor:
-                                floorPlanModal.selectedTool.value === TOOL.MARKER
+                                floorPlanPage.selectedTool.value === TOOL.MARKER
                                     ? "crosshair"
                                     : "default",
                         }}
                     >
-                        {!floorPlanModal.dataSet.value?.presignedUrl ? (
+                        {!floorPlanPage.dataSet.value?.presignedUrl ? (
                             <Empty image={Empty.PRESENTED_IMAGE_SIMPLE} />
                         ) : (
                             <>
                                 {isPdf ? (
                                     <div ref={containerRef}>
                                         <Document
-                                            key={floorPlanModal.dataSet.value?.presignedUrl}
+                                            key={floorPlanPage.dataSet.value?.presignedUrl}
                                             loading={<Spin />}
-                                            file={floorPlanModal.dataSet.value?.presignedUrl}
+                                            file={floorPlanPage.dataSet.value?.presignedUrl}
                                             onLoadSuccess={() => {
                                                 setIsFileLoaded(true);
                                             }}
@@ -319,8 +317,8 @@ const FloorPlandEditor = ({
                                                         };
                                                     };
 
-                                                    floorPlanModal.dataSet.setValue(reposition);
-                                                    floorPlanModal.originalDataSet.setValue(
+                                                    floorPlanPage.dataSet.setValue(reposition);
+                                                    floorPlanPage.originalDataSet.setValue(
                                                         reposition
                                                     );
                                                 }}
@@ -330,9 +328,7 @@ const FloorPlandEditor = ({
                                 ) : (
                                     <img
                                         ref={containerRef}
-                                        src={
-                                            floorPlanModal.dataSet.value?.presignedUrl || undefined
-                                        }
+                                        src={floorPlanPage.dataSet.value?.presignedUrl || undefined}
                                         alt="Floor plan"
                                         style={{
                                             display: isFileLoaded ? "block" : "none",
@@ -350,7 +346,7 @@ const FloorPlandEditor = ({
                                 {!isPdf && !isFileLoaded && <Spin />}
 
                                 {isFileLoaded &&
-                                    floorPlanModal.dataSet.value?.areas?.map((area) => {
+                                    floorPlanPage.dataSet.value?.areas?.map((area) => {
                                         const isVisible = filterModal.dataSet.value
                                             ? filterModal.dataSet.value.some(
                                                   (item: any) =>
@@ -363,22 +359,21 @@ const FloorPlandEditor = ({
                                                 key={area.id}
                                                 marker={area}
                                                 isSelected={
-                                                    floorPlanModal.selectedArea.value?.id ===
-                                                    area.id
+                                                    floorPlanPage.selectedArea.value?.id === area.id
                                                 }
-                                                selectedTool={floorPlanModal.selectedTool.value}
+                                                selectedTool={floorPlanPage.selectedTool.value}
                                                 isHighlighted={highlightMarkers}
                                                 onClick={() => {
                                                     const recentlyCreatedId =
-                                                        floorPlanModal.recentlyCreatedMarker.value
+                                                        floorPlanPage.recentlyCreatedMarker.value
                                                             ?.id;
 
                                                     if (
-                                                        (floorPlanModal.edit.visible &&
+                                                        (floorPlanPage.edit.visible &&
                                                             area.id !==
-                                                                floorPlanModal.selectedArea.value
+                                                                floorPlanPage.selectedArea.value
                                                                     ?.id) ||
-                                                        (floorPlanModal.selectedTool.value ===
+                                                        (floorPlanPage.selectedTool.value ===
                                                             TOOL.MARKER &&
                                                             area.id !== recentlyCreatedId)
                                                     ) {
@@ -386,24 +381,23 @@ const FloorPlandEditor = ({
                                                     }
 
                                                     if (area.id !== recentlyCreatedId) {
-                                                        floorPlanModal.form.dataSet.setFieldsValue({
+                                                        floorPlanPage.form.dataSet.setFieldsValue({
                                                             dataSetInfoId: area.dataSetInfoId,
                                                         });
                                                     }
-                                                    floorPlanModal.selectedArea.setValue(area);
+                                                    floorPlanPage.selectedArea.setValue(area);
                                                 }}
                                                 onDragEnd={(x, y) =>
                                                     handleMarkerDragEnd(area?.id ?? "", x, y)
                                                 }
                                                 isEditable={
-                                                    (floorPlanModal.edit.visible &&
+                                                    (floorPlanPage.edit.visible &&
                                                         area.id ===
-                                                            floorPlanModal.selectedArea.value
-                                                                ?.id) ||
-                                                    (floorPlanModal.selectedTool.value ===
+                                                            floorPlanPage.selectedArea.value?.id) ||
+                                                    (floorPlanPage.selectedTool.value ===
                                                         TOOL.MARKER &&
                                                         area.id ===
-                                                            floorPlanModal.recentlyCreatedMarker
+                                                            floorPlanPage.recentlyCreatedMarker
                                                                 .value?.id)
                                                 }
                                                 containerRef={containerRef}

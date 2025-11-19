@@ -8,7 +8,7 @@ import DrawerVisibilityContext from "../../store/context/DrawerVisibilityContext
 import type { IFloorPlanArea, IMarkerFilter } from "../../types/floorPlan";
 
 const MarkerFilter = () => {
-    const { filterModal, floorPlanModal } = useContext(DrawerVisibilityContext);
+    const { filterModal, floorPlanPage } = useContext(DrawerVisibilityContext);
     const { handleGetDatasetInfo } = useGetDatasetInfo();
     const { handleGetDatasetHeaders, loading: loadingGetDatasetHeaders } = useGetDatasetHeaders();
     const { handleGetAttributeOptions, loading: loadingGetAttributeOptions } =
@@ -21,7 +21,7 @@ const MarkerFilter = () => {
 
     useEffect(() => {
         const fetch = async () => {
-            if (!(floorPlanModal.dataSet.value?.dataSetId && filterModal.view.visible)) {
+            if (!(floorPlanPage.dataSet.value?.dataSetId && filterModal.view.visible)) {
                 return;
             }
 
@@ -29,7 +29,7 @@ const MarkerFilter = () => {
             setSavedFormValues(filterModal.form.getFieldsValue());
 
             const respHeaders = await handleGetDatasetHeaders({
-                getDatasetInfoHeadersId: floorPlanModal.dataSet.value?.dataSetId,
+                getDatasetInfoHeadersId: floorPlanPage.dataSet.value?.dataSetId,
             });
 
             const options =
@@ -42,7 +42,7 @@ const MarkerFilter = () => {
         };
 
         fetch();
-    }, [filterModal.view.visible, floorPlanModal.dataSet.value?.dataSetId]);
+    }, [filterModal.view.visible, floorPlanPage.dataSet.value?.dataSetId]);
 
     useEffect(() => {
         /* Preloads attribute options for already-selected filters (e.g. restoring state) */
@@ -55,12 +55,12 @@ const MarkerFilter = () => {
             const updatedMap: Record<number, { value: string; label: string }[]> = {};
 
             for (const [index, filter] of filters.entries()) {
-                if (!(filter?.attribute && floorPlanModal.dataSet.value?.dataSetId)) continue;
+                if (!(filter?.attribute && floorPlanPage.dataSet.value?.dataSetId)) continue;
 
                 try {
                     const respAttribute = await handleGetAttributeOptions({
                         attributeName: filter.attribute,
-                        getDatasetAttributeOptionsId: floorPlanModal.dataSet.value?.dataSetId,
+                        getDatasetAttributeOptionsId: floorPlanPage.dataSet.value?.dataSetId,
                     });
 
                     const attributeOptions = (
@@ -83,7 +83,7 @@ const MarkerFilter = () => {
         };
 
         fetchAttributeOptions();
-    }, [filterModal.view.visible, floorPlanModal.dataSet.value?.dataSetId]);
+    }, [filterModal.view.visible, floorPlanPage.dataSet.value?.dataSetId]);
 
     const onClose = () => {
         // Restore saved form values when closing without applying
@@ -99,7 +99,7 @@ const MarkerFilter = () => {
     };
 
     const onFinish = async (values: { filter: IMarkerFilter[] }) => {
-        if (!(floorPlanModal.dataSet.value?.dataSetId && floorPlanModal.dataSet.value?.areas)) {
+        if (!(floorPlanPage.dataSet.value?.dataSetId && floorPlanPage.dataSet.value?.areas)) {
             return;
         }
 
@@ -134,13 +134,13 @@ const MarkerFilter = () => {
             .filter(Boolean);
 
         const dataSetInfo = await handleGetDatasetInfo({
-            getDatasetInfoId: floorPlanModal.dataSet.value?.dataSetId,
+            getDatasetInfoId: floorPlanPage.dataSet.value?.dataSetId,
             args: {
                 advanced: filter,
                 andConditions: [
                     {
                         field: "id_primary",
-                        values: floorPlanModal.dataSet.value?.areas.map(
+                        values: floorPlanPage.dataSet.value?.areas.map(
                             (area: IFloorPlanArea) => area.dataSetInfoId
                         ),
                     },
@@ -152,12 +152,12 @@ const MarkerFilter = () => {
         filterModal.dataSet.setValue(filteredDataSet);
         if (
             !filteredDataSet?.some(
-                (data) => data.id_primary == floorPlanModal.selectedArea.value?.dataSetInfoId
+                (data) => data.id_primary == floorPlanPage.selectedArea.value?.dataSetInfoId
             )
         ) {
-            floorPlanModal.form.dataSetInfo.resetFields();
-            floorPlanModal.dataSetInfo.setValue(null);
-            floorPlanModal.selectedArea.setValue(null);
+            floorPlanPage.form.dataSetInfo.resetFields();
+            floorPlanPage.dataSetInfo.setValue(null);
+            floorPlanPage.selectedArea.setValue(null);
         }
 
         // Update saved values after successful apply
@@ -231,7 +231,7 @@ const MarkerFilter = () => {
                                                     onChange={async (value) => {
                                                         /* Fetches attribute options when user selects a new attribute */
                                                         if (
-                                                            !floorPlanModal.dataSet.value?.dataSetId
+                                                            !floorPlanPage.dataSet.value?.dataSetId
                                                         ) {
                                                             return;
                                                         }
@@ -240,7 +240,7 @@ const MarkerFilter = () => {
                                                             await handleGetAttributeOptions({
                                                                 attributeName: value,
                                                                 getDatasetAttributeOptionsId:
-                                                                    floorPlanModal.dataSet.value
+                                                                    floorPlanPage.dataSet.value
                                                                         ?.dataSetId,
                                                             });
 
