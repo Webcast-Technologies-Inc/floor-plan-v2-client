@@ -46,7 +46,7 @@ interface DrawerContextType {
             dataSet: FormInstance;
             dataSetInfo: FormInstance;
         };
-        dataSetInfo: {
+        stallInfoDataset: {
             value: any | undefined | null;
             setValue: React.Dispatch<React.SetStateAction<any | undefined | null>>;
         };
@@ -122,7 +122,7 @@ const initialState: DrawerContextType = {
             dataSet: {} as FormInstance,
             dataSetInfo: {} as FormInstance,
         },
-        dataSetInfo: {
+        stallInfoDataset: {
             value: undefined,
             setValue: () => {},
         },

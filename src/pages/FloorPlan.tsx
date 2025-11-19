@@ -55,7 +55,7 @@ const FloorPlan = () => {
                         dataSet: Form.useForm()[0],
                         dataSetInfo: Form.useForm()[0],
                     },
-                    dataSetInfo: { value: dataSetInfo, setValue: setDataSetInfo },
+                    stallInfoDataset: { value: dataSetInfo, setValue: setDataSetInfo },
                     recentlyCreatedMarker: {
                         value: recentlyCreatedMarker,
                         setValue: setRecentlyCreatedMarker,

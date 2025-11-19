@@ -83,14 +83,14 @@ const StallInformation = ({
                     content: "Dataset info does not exist!",
                 });
                 floorPlanPage.form.dataSetInfo.resetFields();
-                floorPlanPage.dataSetInfo.setValue(null);
+                floorPlanPage.stallInfoDataset.setValue(null);
                 return;
             }
 
             // Step 3: Save info and update form fields
             if (!mounted) return;
             floorPlanPage.form.dataSetInfo.setFieldsValue(info);
-            floorPlanPage.dataSetInfo.setValue(info);
+            floorPlanPage.stallInfoDataset.setValue(info);
         } catch (err: any) {
             // Ignore AbortError which occurs when a previous request is cancelled by
             // the network layer (e.g. a subsequent query launched). This is not a
@@ -98,7 +98,7 @@ const StallInformation = ({
             const isAbort =
                 err && (err.name === "AbortError" || /aborted/i.test(err.message ?? ""));
             floorPlanPage.form.dataSetInfo.resetFields();
-            floorPlanPage.dataSetInfo.setValue(null);
+            floorPlanPage.stallInfoDataset.setValue(null);
             if (!isAbort) {
                 messageApi.open({
                     type: "error",
@@ -168,7 +168,7 @@ const StallInformation = ({
                 }
                 floorPlanPage.form.dataSetInfo.resetFields();
                 floorPlanPage.form.dataSet.resetFields();
-                floorPlanPage.dataSetInfo.setValue(null);
+                floorPlanPage.stallInfoDataset.setValue(null);
                 floorPlanPage.selectedArea.setValue(null);
             },
             okText: "YES",
@@ -191,7 +191,7 @@ const StallInformation = ({
                 floorPlanPage.selectedTool.setValue(TOOL.SELECT);
                 floorPlanPage.form.dataSet.resetFields();
                 floorPlanPage.form.dataSetInfo.resetFields();
-                floorPlanPage.dataSetInfo.setValue(null);
+                floorPlanPage.stallInfoDataset.setValue(null);
                 floorPlanPage.recentlyCreatedMarker.setValue(null);
                 setHighlightMarkers(floorPlanPage.showAllMarks.visible);
             },
@@ -230,7 +230,7 @@ const StallInformation = ({
             floorPlanPage.edit.setVisible(false);
             floorPlanPage.selectedTool.setValue(TOOL.SELECT);
             floorPlanPage.form.dataSetInfo.resetFields();
-            floorPlanPage.dataSetInfo.setValue(null);
+            floorPlanPage.stallInfoDataset.setValue(null);
             floorPlanPage.recentlyCreatedMarker.setValue(null);
             setHighlightMarkers(floorPlanPage.showAllMarks.visible);
         } catch (err) {
@@ -363,13 +363,13 @@ const StallInformation = ({
                     </Form.Item>
                 </Form>
 
-                {floorPlanPage.dataSetInfo.value && (
+                {floorPlanPage.stallInfoDataset.value && (
                     <Form
                         form={floorPlanPage.form.dataSetInfo}
                         layout="vertical"
                         autoComplete="off"
                     >
-                        {Object.entries(floorPlanPage.dataSetInfo.value || {})
+                        {Object.entries(floorPlanPage.stallInfoDataset.value || {})
                             .filter(([key]) => key !== "id_primary")
                             .map(([key, value]) => (
                                 <Form.Item

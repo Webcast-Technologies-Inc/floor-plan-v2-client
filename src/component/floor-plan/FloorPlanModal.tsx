@@ -99,7 +99,7 @@ const FloorPlanModal = () => {
                             floorPlanPage.originalDataSet.setValue(null);
                             floorPlanPage.form.dataSetInfo.resetFields();
                             floorPlanPage.form.dataSetInfo.resetFields();
-                            floorPlanPage.dataSetInfo.setValue(null);
+                            floorPlanPage.stallInfoDataset.setValue(null);
                             return;
                         } catch (error) {
                             messageApi.open({
@@ -209,7 +209,7 @@ const FloorPlanModal = () => {
             floorPlanPage.selectedArea.setValue(null);
             floorPlanPage.form.dataSet.resetFields();
             floorPlanPage.form.dataSetInfo.resetFields();
-            floorPlanPage.dataSetInfo.setValue(null);
+            floorPlanPage.stallInfoDataset.setValue(null);
 
             floorPlanPage.selectedFloorLevelId.setValue(val);
 

@@ -156,7 +156,7 @@ const MarkerFilter = () => {
             )
         ) {
             floorPlanPage.form.dataSetInfo.resetFields();
-            floorPlanPage.dataSetInfo.setValue(null);
+            floorPlanPage.stallInfoDataset.setValue(null);
             floorPlanPage.selectedArea.setValue(null);
         }
 

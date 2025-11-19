@@ -188,7 +188,7 @@ const FloorDrawer = () => {
                         drawer.edit.setVisible(false);
                         floorPlanPage.selectedArea.setValue(null);
                         floorPlanPage.form.dataSetInfo.resetFields();
-                        floorPlanPage.dataSetInfo.setValue(null);
+                        floorPlanPage.stallInfoDataset.setValue(null);
                     }
                 } catch (err) {
                     messageApi.open({
