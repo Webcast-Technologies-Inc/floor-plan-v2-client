@@ -341,7 +341,6 @@ const FloorPlandEditor = ({ loading }: { loading: boolean }) => {
                                                     floorPlanPage.selectedMarker.value?.id ===
                                                     area.id
                                                 }
-                                                selectedTool={floorPlanPage.selectedTool.value}
                                                 onClick={() => {
                                                     const recentlyCreatedId =
                                                         floorPlanPage.newlyAddedMarker.value?.id;
@@ -370,7 +369,7 @@ const FloorPlandEditor = ({ loading }: { loading: boolean }) => {
                                                 onDragEnd={(x, y) =>
                                                     handleMarkerDragEnd(area?.id ?? "", x, y)
                                                 }
-                                                isEditable={
+                                                isDraggable={
                                                     (floorPlanPage.edit.visible &&
                                                         area.id ===
                                                             floorPlanPage.selectedMarker.value

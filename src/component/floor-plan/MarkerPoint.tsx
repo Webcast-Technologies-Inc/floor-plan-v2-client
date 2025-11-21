@@ -1,24 +1,22 @@
 import { Tooltip } from "antd";
 import { useEffect, useRef, useState } from "react";
-import type { IFloorPlanArea, ITool } from "../../types/floorPlan";
+import type { IFloorPlanArea } from "../../types/floorPlan";
 
 interface MarkerPointProps {
     marker: IFloorPlanArea;
     isSelected: boolean;
-    selectedTool: ITool;
     onClick: () => void;
     onDragEnd: (x: number, y: number) => void;
-    isEditable: boolean;
+    isDraggable: boolean;
     containerRef: React.RefObject<HTMLDivElement | null>;
 }
 
 export const MarkerPoint = ({
     marker,
     isSelected,
-    selectedTool,
     onClick,
     onDragEnd,
-    isEditable,
+    isDraggable,
     containerRef,
 }: MarkerPointProps) => {
     const [isDragging, setIsDragging] = useState(false);
@@ -34,7 +32,7 @@ export const MarkerPoint = ({
 
     const handleMouseDown = (e: React.MouseEvent) => {
         // only start dragging with left mouse button
-        if (!isEditable || e.button !== 0) {
+        if (!isDraggable || e.button !== 0) {
             return;
         }
         e.stopPropagation();
@@ -113,7 +111,7 @@ export const MarkerPoint = ({
             ref={markerRef}
             className={`absolute h-6 w-6 transition-transform duration-200 leading-none ${
                 isDragging ? "scale-110 z-50" : isSelected ? "scale-105 z-40" : "z-30"
-            } ${isEditable ? "hover:scale-110" : ""}`}
+            } ${isDraggable ? "hover:scale-110" : ""}`}
             style={{
                 left: `${position.x}px`,
                 top: `${position.y}px`,
