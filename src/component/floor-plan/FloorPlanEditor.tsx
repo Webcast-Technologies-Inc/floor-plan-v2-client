@@ -10,19 +10,10 @@ import { MarkerPoint } from "./MarkerPoint";
 
 pdfjs.GlobalWorkerOptions.workerSrc = `//unpkg.com/pdfjs-dist@${pdfjs.version}/build/pdf.worker.min.mjs`;
 
-const FloorPlandEditor = ({
-    loading,
-    highlightMarkers,
-    setHighlightMarkers,
-}: {
-    loading: boolean;
-    highlightMarkers: boolean;
-    setHighlightMarkers: React.Dispatch<React.SetStateAction<boolean>>;
-}) => {
+const FloorPlandEditor = ({ loading }: { loading: boolean }) => {
     const [modalAntd, contextHolderModal] = Modal.useModal();
     const { floorPlanPage, filterModal } = useContext(DrawerVisibilityContext);
     const containerRef = useRef<any>(null);
-    const highlightTimeoutRef = useRef<number | null>(null);
     const [isFileLoaded, setIsFileLoaded] = useState(false);
     const isPdf = floorPlanPage.dataset.floorPlan.value?.fileType === "application/pdf";
 
@@ -137,19 +128,6 @@ const FloorPlandEditor = ({
             floorPlanPage.form.datasetId.resetFields();
             floorPlanPage.form.stallInfo.resetFields();
             floorPlanPage.dataset.stallInfo.setValue(null);
-            // floorPlanPage.edit.setVisible(false);
-            // floorPlanPage.dataset.floorPlan.setValue(floorPlanPage.dataset.floorPlanUnmodifiedCopy.value);
-
-            // Highlight all markers when clicking on open area
-            // setHighlightMarkers(true);
-            // if (highlightTimeoutRef.current) {
-            //     clearTimeout(highlightTimeoutRef.current);
-            // }
-            // highlightTimeoutRef.current = window.setTimeout(() => {
-            //     if (!floorPlanPage.showAllMarks.visible && !floorPlanPage.edit.visible) {
-            //         setHighlightMarkers(false);
-            //     }
-            // }, 2000);
         }
     };
 
@@ -177,15 +155,6 @@ const FloorPlandEditor = ({
                 style={{ width: "100%" }}
                 extra={
                     <div className="flex items-center gap-x-4">
-                        {/* {!floorPlanPage.edit.visible && floorPlanPage.selectedFloorLevelId.value && (
-                            <Switch
-                                value={floorPlanPage.showAllMarks.visible}
-                                onChange={(checked: boolean) => {
-                                    floorPlanPage.showAllMarks.setVisible(checked);
-                                    setHighlightMarkers(checked);
-                                }}
-                            />
-                        )} */}
                         <Button
                             style={{ position: "relative" }}
                             type="text"
@@ -222,7 +191,6 @@ const FloorPlandEditor = ({
                                 };
 
                                 const resetFilterModal = () => {
-                                    setHighlightMarkers(true);
                                     filterModal.dataSet.setValue(null);
                                     filterModal.form.resetFields();
                                 };
@@ -238,7 +206,6 @@ const FloorPlandEditor = ({
                                         ),
                                         onOk: () => {
                                             resetModalState(TOOL.SELECT);
-                                            setHighlightMarkers(floorPlanPage.showAllMarks.visible);
                                         },
                                         okText: "YES",
                                     });
@@ -375,7 +342,6 @@ const FloorPlandEditor = ({
                                                     area.id
                                                 }
                                                 selectedTool={floorPlanPage.selectedTool.value}
-                                                isHighlighted={highlightMarkers}
                                                 onClick={() => {
                                                     const recentlyCreatedId =
                                                         floorPlanPage.newlyAddedMarker.value?.id;

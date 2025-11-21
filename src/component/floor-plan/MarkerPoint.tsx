@@ -6,7 +6,6 @@ interface MarkerPointProps {
     marker: IFloorPlanArea;
     isSelected: boolean;
     selectedTool: ITool;
-    isHighlighted: boolean;
     onClick: () => void;
     onDragEnd: (x: number, y: number) => void;
     isEditable: boolean;
@@ -17,7 +16,6 @@ export const MarkerPoint = ({
     marker,
     isSelected,
     selectedTool,
-    isHighlighted,
     onClick,
     onDragEnd,
     isEditable,

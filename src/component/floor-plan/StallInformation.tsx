@@ -8,13 +8,7 @@ import DrawerVisibilityContext from "../../store/context/DrawerVisibilityContext
 import type { IFloorPlanArea } from "../../types/floorPlan";
 import CustomActionButtons from "../CustomActionButtons";
 
-const StallInformation = ({
-    loading,
-    setHighlightMarkers,
-}: {
-    loading: boolean;
-    setHighlightMarkers: React.Dispatch<React.SetStateAction<boolean>>;
-}) => {
+const StallInformation = ({ loading }: { loading: boolean }) => {
     const [messageApi, contextHolderMessage] = message.useMessage();
     const [modalAntd, contextHolderModal] = Modal.useModal();
     const { handleUpsertMarkerById } = useUpsertMarkerById();
@@ -203,7 +197,6 @@ const StallInformation = ({
                 floorPlanPage.form.stallInfo.resetFields();
                 floorPlanPage.dataset.stallInfo.setValue(null);
                 floorPlanPage.newlyAddedMarker.setValue(null);
-                setHighlightMarkers(floorPlanPage.showAllMarks.visible);
             },
             okText: "YES",
         });
@@ -244,7 +237,6 @@ const StallInformation = ({
             floorPlanPage.form.stallInfo.resetFields();
             floorPlanPage.dataset.stallInfo.setValue(null);
             floorPlanPage.newlyAddedMarker.setValue(null);
-            setHighlightMarkers(floorPlanPage.showAllMarks.visible);
         } catch (err) {
             messageApi.open({
                 type: "error",
@@ -276,7 +268,6 @@ const StallInformation = ({
                             onChange={(checked) => {
                                 if (checked) {
                                     // Switching to Edit mode
-                                    setHighlightMarkers(true);
                                     filterModal.dataSet.setValue(null);
                                     filterModal.form.resetFields();
                                     floorPlanPage.edit.setVisible(checked);

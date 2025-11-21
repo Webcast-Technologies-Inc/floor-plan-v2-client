@@ -58,10 +58,6 @@ const FloorPlan = () => {
                         value: selectedFloorLevelId,
                         setValue: setSelectedFloorLevelId,
                     },
-                    showAllMarks: {
-                        visible: isShowAllMarksVisible,
-                        setVisible: setIsShowAllMarksVisible,
-                    },
                     form: {
                         datasetId: Form.useForm()[0],
                         stallInfo: Form.useForm()[0],

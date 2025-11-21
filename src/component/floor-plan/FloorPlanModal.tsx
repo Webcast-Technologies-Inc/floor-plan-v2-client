@@ -39,7 +39,6 @@ const FloorPlanModal = () => {
     const { floorPlanPage, floorModal } = useContext(DrawerVisibilityContext);
     const [floorOptions, setFloorOptions] = useState<FloorOption[]>([]);
     const [modalLoading, setModalLoading] = useState(false);
-    const [highlightMarkers, setHighlightMarkers] = useState(floorPlanPage.showAllMarks.visible);
     const loading = loadingGetLandmarkById || loadingGetFloorByLevelId;
 
     const items: MenuProps["items"] = [

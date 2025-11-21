@@ -50,7 +50,6 @@ interface DrawerContextType {
             value: string | undefined;
             setValue: React.Dispatch<React.SetStateAction<string | undefined>>;
         };
-        showAllMarks: DrawerState;
         form: {
             datasetId: FormInstance;
             stallInfo: FormInstance;
@@ -124,10 +123,6 @@ const initialState: DrawerContextType = {
         selectedFloorLevelId: {
             value: undefined,
             setValue: () => {},
-        },
-        showAllMarks: {
-            visible: false,
-            setVisible: () => {},
         },
         form: {
             datasetId: {} as FormInstance,
