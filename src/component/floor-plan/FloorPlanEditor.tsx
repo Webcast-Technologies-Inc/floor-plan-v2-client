@@ -127,7 +127,7 @@ const FloorPlandEditor = ({
             floorPlanPage.newlyAddedMarker.setValue(newMarker);
             // floorPlanPage.form.datasetId.resetFields();
             // floorPlanPage.form.stallInfo.resetFields();
-            // floorPlanPage.stallInfoDataset.setValue(null);
+            // floorPlanPage.dataset.stallInfo.setValue(null);
             floorPlanPage.selectedMarker.setValue(newMarker);
         } else {
             if (floorPlanPage.edit.visible) {
@@ -136,7 +136,7 @@ const FloorPlandEditor = ({
             floorPlanPage.selectedMarker.setValue(null);
             floorPlanPage.form.datasetId.resetFields();
             floorPlanPage.form.stallInfo.resetFields();
-            floorPlanPage.stallInfoDataset.setValue(null);
+            floorPlanPage.dataset.stallInfo.setValue(null);
             // floorPlanPage.edit.setVisible(false);
             // floorPlanPage.dataset.floorPlan.setValue(floorPlanPage.dataset.floorPlanUnmodifiedCopy.value);
 
@@ -217,7 +217,7 @@ const FloorPlandEditor = ({
                                     floorPlanPage.selectedTool.setValue(nextTool);
                                     floorPlanPage.form.datasetId.resetFields();
                                     floorPlanPage.form.stallInfo.resetFields();
-                                    floorPlanPage.stallInfoDataset.setValue(null);
+                                    floorPlanPage.dataset.stallInfo.setValue(null);
                                     floorPlanPage.newlyAddedMarker.setValue(null);
                                 };
 

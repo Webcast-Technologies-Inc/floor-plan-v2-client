@@ -195,7 +195,7 @@ const FloorDrawer = () => {
                         floorModal.edit.setVisible(false);
                         floorPlanPage.selectedMarker.setValue(null);
                         floorPlanPage.form.stallInfo.resetFields();
-                        floorPlanPage.stallInfoDataset.setValue(null);
+                        floorPlanPage.dataset.stallInfo.setValue(null);
                     }
                 } catch (err) {
                     messageApi.open({

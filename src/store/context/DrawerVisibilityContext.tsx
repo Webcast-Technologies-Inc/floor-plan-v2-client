@@ -36,10 +36,10 @@ interface DrawerContextType {
                 value: IFloor | undefined | null;
                 setValue: React.Dispatch<React.SetStateAction<IFloor | undefined | null>>;
             };
-        };
-        stallInfoDataset: {
-            value: any | undefined | null;
-            setValue: React.Dispatch<React.SetStateAction<any | undefined | null>>;
+            stallInfo: {
+                value: any | undefined | null;
+                setValue: React.Dispatch<React.SetStateAction<any | undefined | null>>;
+            };
         };
         selectedTool: DataState;
         selectedMarker: {
@@ -108,6 +108,10 @@ const initialState: DrawerContextType = {
                 value: undefined,
                 setValue: () => {},
             },
+            stallInfo: {
+                value: undefined,
+                setValue: () => {},
+            },
         },
         selectedTool: {
             value: undefined,
@@ -128,10 +132,6 @@ const initialState: DrawerContextType = {
         form: {
             datasetId: {} as FormInstance,
             stallInfo: {} as FormInstance,
-        },
-        stallInfoDataset: {
-            value: undefined,
-            setValue: () => {},
         },
         newlyAddedMarker: {
             value: undefined,
