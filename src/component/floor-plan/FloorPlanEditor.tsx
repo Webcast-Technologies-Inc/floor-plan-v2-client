@@ -53,7 +53,7 @@ const FloorPlandEditor = ({
             };
 
             floorPlanPage.dataset.floorPlan.setValue(reposition);
-            floorPlanPage.dataset.floorPlanUnmodifiedCopy.setValue(reposition);
+            // floorPlanPage.dataset.floorPlanUnmodifiedCopy.setValue(reposition);
         };
 
         img.onerror = (err) => {
@@ -327,9 +327,9 @@ const FloorPlandEditor = ({
                                                     floorPlanPage.dataset.floorPlan.setValue(
                                                         reposition
                                                     );
-                                                    floorPlanPage.dataset.floorPlanUnmodifiedCopy.setValue(
-                                                        reposition
-                                                    );
+                                                    // floorPlanPage.dataset.floorPlanUnmodifiedCopy.setValue(
+                                                    //     reposition
+                                                    // );
                                                 }}
                                             />
                                         </Document>
