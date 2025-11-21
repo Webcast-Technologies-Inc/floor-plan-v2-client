@@ -2,7 +2,7 @@ import { Button, Card, Empty, Modal, Skeleton, Spin } from "antd";
 import { Funnel, Pin, PinOff } from "lucide-react";
 import { useContext, useEffect, useRef, useState } from "react";
 import { Document, Page, pdfjs } from "react-pdf";
-import { TEMP_ID_FORMAT, TOOL, type ITool } from "../../constant";
+import { MIME_TYPE, TEMP_ID_FORMAT, TOOL, type ITool } from "../../constant";
 import DrawerVisibilityContext from "../../store/context/DrawerVisibilityContext";
 import type { IFloorPlanArea } from "../../types/floorPlan";
 import { repositionOutOfBoundsMarkers } from "../../utils/repositionMarkers";
@@ -15,7 +15,7 @@ const FloorPlandEditor = ({ loading }: { loading: boolean }) => {
     const { floorPlanPage, filterModal } = useContext(DrawerVisibilityContext);
     const containerRef = useRef<any>(null);
     const [isFileLoaded, setIsFileLoaded] = useState(false);
-    const isPdf = floorPlanPage.dataset.floorPlan.value?.fileType === "application/pdf";
+    const isPdf = floorPlanPage.dataset.floorPlan.value?.fileType === MIME_TYPE.PDF;
 
     useEffect(() => {
         const presignedUrl = floorPlanPage.dataset.floorPlan.value?.presignedUrl;
