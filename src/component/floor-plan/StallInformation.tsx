@@ -28,13 +28,13 @@ const StallInformation = ({
 
     useEffect(() => {
         const fetch = async () => {
-            if (!floorPlanPage.dataset.value?.dataSetId) {
+            if (!floorPlanPage.dataset.floorPlan.value?.dataSetId) {
                 return [];
             }
 
             setLoadingGetDatasetInfoFetch(true);
             const dataSetInfo = await handleGetDatasetInfo({
-                getDatasetInfoId: floorPlanPage.dataset.value?.dataSetId,
+                getDatasetInfoId: floorPlanPage.dataset.floorPlan.value?.dataSetId,
             });
 
             const options =
@@ -48,7 +48,7 @@ const StallInformation = ({
         };
 
         fetch();
-    }, [floorPlanPage.dataset.value?.dataSetId]);
+    }, [floorPlanPage.dataset.floorPlan.value?.dataSetId]);
 
     const fetchGetDatasetInfo = async (
         mounted: boolean,
@@ -114,7 +114,7 @@ const StallInformation = ({
         let mounted = true; // To avoid error when adding a new floor while floorPlanPage.selectedMarker.value?.dataSetInfoId has a value
         fetchGetDatasetInfo(
             mounted,
-            floorPlanPage.dataset.value?.dataSetId,
+            floorPlanPage.dataset.floorPlan.value?.dataSetId,
             floorPlanPage.selectedMarker.value?.dataSetInfoId
         );
 
@@ -122,11 +122,14 @@ const StallInformation = ({
             // mark as unmounted for in-flight promises
             mounted = false;
         };
-    }, [floorPlanPage.dataset.value?.dataSetId, floorPlanPage.selectedMarker.value?.dataSetInfoId]);
+    }, [
+        floorPlanPage.dataset.floorPlan.value?.dataSetId,
+        floorPlanPage.selectedMarker.value?.dataSetInfoId,
+    ]);
 
     const onChange = (value: string, name: "dataSetInfoId") => {
-        fetchGetDatasetInfo(true, floorPlanPage.dataset.value?.dataSetId, value);
-        floorPlanPage.dataset.setValue((prev) => {
+        fetchGetDatasetInfo(true, floorPlanPage.dataset.floorPlan.value?.dataSetId, value);
+        floorPlanPage.dataset.floorPlan.setValue((prev) => {
             if (!prev) return prev;
 
             return {
@@ -154,11 +157,14 @@ const StallInformation = ({
             ),
             onOk: async () => {
                 if (floorPlanPage.newlyAddedMarker.value) {
-                    floorPlanPage.dataset.setValue(floorPlanPage.originalDataset.value);
+                    floorPlanPage.dataset.floorPlan.setValue(floorPlanPage.originalDataset.value);
                 } else {
-                    if (floorPlanPage.dataset.value?.id && floorPlanPage.selectedMarker.value?.id) {
+                    if (
+                        floorPlanPage.dataset.floorPlan.value?.id &&
+                        floorPlanPage.selectedMarker.value?.id
+                    ) {
                         await handleDeleteMarkerById({
-                            floorId: floorPlanPage.dataset.value?.id,
+                            floorId: floorPlanPage.dataset.floorPlan.value?.id,
                             id: floorPlanPage.selectedMarker.value?.id,
                         });
 
@@ -185,7 +191,7 @@ const StallInformation = ({
                 </>
             ),
             onOk: () => {
-                floorPlanPage.dataset.setValue(floorPlanPage.originalDataset.value);
+                floorPlanPage.dataset.floorPlan.setValue(floorPlanPage.originalDataset.value);
                 floorPlanPage.edit.setVisible(false);
                 floorPlanPage.selectedMarker.setValue(null);
                 floorPlanPage.selectedTool.setValue(TOOL.SELECT);
@@ -200,7 +206,7 @@ const StallInformation = ({
     };
 
     const onSave = async (values: { dataSetInfoId: string }) => {
-        if (!floorPlanPage.dataset.value?.id) {
+        if (!floorPlanPage.dataset.floorPlan.value?.id) {
             return;
         }
 
@@ -208,7 +214,7 @@ const StallInformation = ({
 
         try {
             const payload = {
-                floorId: floorPlanPage.dataset.value?.id,
+                floorId: floorPlanPage.dataset.floorPlan.value?.id,
                 ...floorPlanPage.selectedMarker.value,
                 id: floorPlanPage.selectedMarker.value?.id?.startsWith(TEMP_ID_FORMAT)
                     ? undefined
@@ -226,7 +232,7 @@ const StallInformation = ({
             floorModal.refetch.setValue((prev) => !prev);
             floorPlanPage.form.datasetId.resetFields();
             floorPlanPage.selectedMarker.setValue(null);
-            floorPlanPage.originalDataset.setValue(floorPlanPage.dataset.value);
+            floorPlanPage.originalDataset.setValue(floorPlanPage.dataset.floorPlan.value);
             floorPlanPage.edit.setVisible(false);
             floorPlanPage.selectedTool.setValue(TOOL.SELECT);
             floorPlanPage.form.stallInfo.resetFields();

@@ -72,13 +72,13 @@ const FloorPlanModal = () => {
                     ),
                     onOk: async () => {
                         try {
-                            if (!id || !floorPlanPage.dataset.value?.id) {
+                            if (!id || !floorPlanPage.dataset.floorPlan.value?.id) {
                                 return;
                             }
 
                             const resp = await handleDeleteFloor({
                                 landmarkId: id,
-                                id: floorPlanPage.dataset.value?.id,
+                                id: floorPlanPage.dataset.floorPlan.value?.id,
                             });
 
                             if (!resp) {
@@ -95,7 +95,7 @@ const FloorPlanModal = () => {
                             floorPlanPage.selectedTool.setValue(TOOL.SELECT);
                             floorPlanPage.form.datasetId.resetFields();
                             floorPlanPage.selectedMarker.setValue(null);
-                            floorPlanPage.dataset.setValue(null);
+                            floorPlanPage.dataset.floorPlan.setValue(null);
                             floorPlanPage.originalDataset.setValue(null);
                             floorPlanPage.form.stallInfo.resetFields();
                             floorPlanPage.form.stallInfo.resetFields();
@@ -161,13 +161,13 @@ const FloorPlanModal = () => {
                     }
 
                     if (isMounted) {
-                        floorPlanPage.dataset.setValue(resp.data.getFloorByLevelId);
+                        floorPlanPage.dataset.floorPlan.setValue(resp.data.getFloorByLevelId);
                         floorPlanPage.originalDataset.setValue(resp.data.getFloorByLevelId);
                     }
                 } else {
                     if (isMounted) {
                         floorPlanPage.selectedFloorLevelId.setValue(undefined);
-                        floorPlanPage.dataset.setValue(null);
+                        floorPlanPage.dataset.floorPlan.setValue(null);
                     }
                 }
             } catch (err: any) {
@@ -219,7 +219,7 @@ const FloorPlanModal = () => {
                 });
 
                 if (resp) {
-                    floorPlanPage.dataset.setValue(resp.data.getFloorByLevelId);
+                    floorPlanPage.dataset.floorPlan.setValue(resp.data.getFloorByLevelId);
                     floorPlanPage.originalDataset.setValue(resp.data.getFloorByLevelId);
                 }
             }

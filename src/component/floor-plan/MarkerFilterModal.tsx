@@ -21,7 +21,7 @@ const MarkerFilter = () => {
 
     useEffect(() => {
         const fetch = async () => {
-            if (!(floorPlanPage.dataset.value?.dataSetId && filterModal.view.visible)) {
+            if (!(floorPlanPage.dataset.floorPlan.value?.dataSetId && filterModal.view.visible)) {
                 return;
             }
 
@@ -29,7 +29,7 @@ const MarkerFilter = () => {
             setSavedFormValues(filterModal.form.getFieldsValue());
 
             const respHeaders = await handleGetDatasetHeaders({
-                getDatasetInfoHeadersId: floorPlanPage.dataset.value?.dataSetId,
+                getDatasetInfoHeadersId: floorPlanPage.dataset.floorPlan.value?.dataSetId,
             });
 
             const options =
@@ -42,7 +42,7 @@ const MarkerFilter = () => {
         };
 
         fetch();
-    }, [filterModal.view.visible, floorPlanPage.dataset.value?.dataSetId]);
+    }, [filterModal.view.visible, floorPlanPage.dataset.floorPlan.value?.dataSetId]);
 
     useEffect(() => {
         /* Preloads attribute options for already-selected filters (e.g. restoring state) */
@@ -55,12 +55,14 @@ const MarkerFilter = () => {
             const updatedMap: Record<number, { value: string; label: string }[]> = {};
 
             for (const [index, filter] of filters.entries()) {
-                if (!(filter?.attribute && floorPlanPage.dataset.value?.dataSetId)) continue;
+                if (!(filter?.attribute && floorPlanPage.dataset.floorPlan.value?.dataSetId))
+                    continue;
 
                 try {
                     const respAttribute = await handleGetAttributeOptions({
                         attributeName: filter.attribute,
-                        getDatasetAttributeOptionsId: floorPlanPage.dataset.value?.dataSetId,
+                        getDatasetAttributeOptionsId:
+                            floorPlanPage.dataset.floorPlan.value?.dataSetId,
                     });
 
                     const attributeOptions = (
@@ -83,7 +85,7 @@ const MarkerFilter = () => {
         };
 
         fetchAttributeOptions();
-    }, [filterModal.view.visible, floorPlanPage.dataset.value?.dataSetId]);
+    }, [filterModal.view.visible, floorPlanPage.dataset.floorPlan.value?.dataSetId]);
 
     const onClose = () => {
         // Restore saved form values when closing without applying
@@ -99,7 +101,12 @@ const MarkerFilter = () => {
     };
 
     const onFinish = async (values: { filter: IMarkerFilter[] }) => {
-        if (!(floorPlanPage.dataset.value?.dataSetId && floorPlanPage.dataset.value?.areas)) {
+        if (
+            !(
+                floorPlanPage.dataset.floorPlan.value?.dataSetId &&
+                floorPlanPage.dataset.floorPlan.value?.areas
+            )
+        ) {
             return;
         }
 
@@ -134,13 +141,13 @@ const MarkerFilter = () => {
             .filter(Boolean);
 
         const dataSetInfo = await handleGetDatasetInfo({
-            getDatasetInfoId: floorPlanPage.dataset.value?.dataSetId,
+            getDatasetInfoId: floorPlanPage.dataset.floorPlan.value?.dataSetId,
             args: {
                 advanced: filter,
                 andConditions: [
                     {
                         field: "id_primary",
-                        values: floorPlanPage.dataset.value?.areas.map(
+                        values: floorPlanPage.dataset.floorPlan.value?.areas.map(
                             (area: IFloorPlanArea) => area.dataSetInfoId
                         ),
                     },
@@ -231,7 +238,8 @@ const MarkerFilter = () => {
                                                     onChange={async (value) => {
                                                         /* Fetches attribute options when user selects a new attribute */
                                                         if (
-                                                            !floorPlanPage.dataset.value?.dataSetId
+                                                            !floorPlanPage.dataset.floorPlan.value
+                                                                ?.dataSetId
                                                         ) {
                                                             return;
                                                         }
@@ -240,8 +248,8 @@ const MarkerFilter = () => {
                                                             await handleGetAttributeOptions({
                                                                 attributeName: value,
                                                                 getDatasetAttributeOptionsId:
-                                                                    floorPlanPage.dataset.value
-                                                                        ?.dataSetId,
+                                                                    floorPlanPage.dataset.floorPlan
+                                                                        .value?.dataSetId,
                                                             });
 
                                                         const attributeOptions = (

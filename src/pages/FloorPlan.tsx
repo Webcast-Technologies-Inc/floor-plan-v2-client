@@ -38,7 +38,7 @@ const FloorPlan = () => {
                 },
                 floorPlanPage: {
                     ...modal,
-                    dataset: { value: modalDataset, setValue: setModalDataset },
+                    dataset: { floorPlan: { value: modalDataset, setValue: setModalDataset } },
                     originalDataset: { value: originalDataset, setValue: setOriginalDataset },
                     stallInfoDataset: { value: stallInfoDataset, setValue: setStallInfoDataset },
                     selectedTool: { value: selectedTool, setValue: setSelectedTool },

@@ -28,8 +28,10 @@ interface IModalVisibility {
 interface DrawerContextType {
     floorPlanPage: IModalVisibility & {
         dataset: {
-            value: IFloor | undefined | null;
-            setValue: React.Dispatch<React.SetStateAction<IFloor | undefined | null>>;
+            floorPlan: {
+                value: IFloor | undefined | null;
+                setValue: React.Dispatch<React.SetStateAction<IFloor | undefined | null>>;
+            };
         };
         originalDataset: {
             value: IFloor | undefined | null;
@@ -98,8 +100,10 @@ const initialState: DrawerContextType = {
     floorPlanPage: {
         ...modalVisibility,
         dataset: {
-            value: undefined,
-            setValue: () => {},
+            floorPlan: {
+                value: undefined,
+                setValue: () => {},
+            },
         },
         originalDataset: {
             value: undefined,

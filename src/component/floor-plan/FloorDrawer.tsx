@@ -184,7 +184,9 @@ const FloorDrawer = () => {
                             type: "success",
                             content: "Floor updated successfully!",
                         });
-                        if (floorPlanPage.dataset.value?.dataSetId !== payload.dataSetId) {
+                        if (
+                            floorPlanPage.dataset.floorPlan.value?.dataSetId !== payload.dataSetId
+                        ) {
                             /* Clear filter if the dataset was changed */
                             filterModal.dataSet.setValue(null);
                             filterModal.form.resetFields();
