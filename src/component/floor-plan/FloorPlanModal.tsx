@@ -292,17 +292,10 @@ const FloorPlanModal = () => {
                         </div>
                     </Col>
                     <Col span={17}>
-                        <FloorPlandEditor
-                            loading={loading}
-                            highlightMarkers={highlightMarkers}
-                            setHighlightMarkers={setHighlightMarkers}
-                        />
+                        <FloorPlandEditor loading={loading} />
                     </Col>
                     <Col span={7}>
-                        <StallInformation
-                            loading={loading}
-                            setHighlightMarkers={setHighlightMarkers}
-                        />
+                        <StallInformation loading={loading} />
                     </Col>
                 </Row>
             </div>
