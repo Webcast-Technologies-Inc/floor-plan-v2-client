@@ -21,7 +21,6 @@ const FloorPlan = () => {
     const [originalDataset, setOriginalDataset] = useState<any>(null);
     const [modalDataset, setModalDataset] = useState<IFloor | undefined | null>(undefined);
     const [drawerDataset, setDrawerDataset] = useState<any>(undefined);
-    const [isShowAllMarksVisible, setIsShowAllMarksVisible] = useState(true);
     const [stallInfo, setStallInfo] = useState<any>();
     const [datasetFilter, setDatasetFilter] = useState<any[] | undefined | null>();
     const [newlyAddedMarker, setNewlyAddedMarker] = useState<IFloorPlanArea | undefined | null>(
