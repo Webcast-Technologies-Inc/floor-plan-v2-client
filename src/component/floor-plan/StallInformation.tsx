@@ -157,7 +157,9 @@ const StallInformation = ({
             ),
             onOk: async () => {
                 if (floorPlanPage.newlyAddedMarker.value) {
-                    floorPlanPage.dataset.floorPlan.setValue(floorPlanPage.originalDataset.value);
+                    floorPlanPage.dataset.floorPlan.setValue(
+                        floorPlanPage.dataset.floorPlanUnmodifiedCopy.value
+                    );
                 } else {
                     if (
                         floorPlanPage.dataset.floorPlan.value?.id &&
@@ -191,7 +193,9 @@ const StallInformation = ({
                 </>
             ),
             onOk: () => {
-                floorPlanPage.dataset.floorPlan.setValue(floorPlanPage.originalDataset.value);
+                floorPlanPage.dataset.floorPlan.setValue(
+                    floorPlanPage.dataset.floorPlanUnmodifiedCopy.value
+                );
                 floorPlanPage.edit.setVisible(false);
                 floorPlanPage.selectedMarker.setValue(null);
                 floorPlanPage.selectedTool.setValue(TOOL.SELECT);
@@ -232,7 +236,9 @@ const StallInformation = ({
             floorModal.refetch.setValue((prev) => !prev);
             floorPlanPage.form.datasetId.resetFields();
             floorPlanPage.selectedMarker.setValue(null);
-            floorPlanPage.originalDataset.setValue(floorPlanPage.dataset.floorPlan.value);
+            floorPlanPage.dataset.floorPlanUnmodifiedCopy.setValue(
+                floorPlanPage.dataset.floorPlan.value
+            );
             floorPlanPage.edit.setVisible(false);
             floorPlanPage.selectedTool.setValue(TOOL.SELECT);
             floorPlanPage.form.stallInfo.resetFields();

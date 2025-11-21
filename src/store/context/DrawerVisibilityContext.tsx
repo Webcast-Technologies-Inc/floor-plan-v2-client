@@ -32,10 +32,10 @@ interface DrawerContextType {
                 value: IFloor | undefined | null;
                 setValue: React.Dispatch<React.SetStateAction<IFloor | undefined | null>>;
             };
-        };
-        originalDataset: {
-            value: IFloor | undefined | null;
-            setValue: React.Dispatch<React.SetStateAction<IFloor | undefined | null>>;
+            floorPlanUnmodifiedCopy: {
+                value: IFloor | undefined | null;
+                setValue: React.Dispatch<React.SetStateAction<IFloor | undefined | null>>;
+            };
         };
         stallInfoDataset: {
             value: any | undefined | null;
@@ -104,10 +104,10 @@ const initialState: DrawerContextType = {
                 value: undefined,
                 setValue: () => {},
             },
-        },
-        originalDataset: {
-            value: undefined,
-            setValue: () => {},
+            floorPlanUnmodifiedCopy: {
+                value: undefined,
+                setValue: () => {},
+            },
         },
         selectedTool: {
             value: undefined,

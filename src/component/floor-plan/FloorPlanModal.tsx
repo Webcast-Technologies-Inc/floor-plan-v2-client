@@ -96,7 +96,7 @@ const FloorPlanModal = () => {
                             floorPlanPage.form.datasetId.resetFields();
                             floorPlanPage.selectedMarker.setValue(null);
                             floorPlanPage.dataset.floorPlan.setValue(null);
-                            floorPlanPage.originalDataset.setValue(null);
+                            floorPlanPage.dataset.floorPlanUnmodifiedCopy.setValue(null);
                             floorPlanPage.form.stallInfo.resetFields();
                             floorPlanPage.form.stallInfo.resetFields();
                             floorPlanPage.stallInfoDataset.setValue(null);
@@ -162,7 +162,9 @@ const FloorPlanModal = () => {
 
                     if (isMounted) {
                         floorPlanPage.dataset.floorPlan.setValue(resp.data.getFloorByLevelId);
-                        floorPlanPage.originalDataset.setValue(resp.data.getFloorByLevelId);
+                        floorPlanPage.dataset.floorPlanUnmodifiedCopy.setValue(
+                            resp.data.getFloorByLevelId
+                        );
                     }
                 } else {
                     if (isMounted) {
@@ -220,7 +222,9 @@ const FloorPlanModal = () => {
 
                 if (resp) {
                     floorPlanPage.dataset.floorPlan.setValue(resp.data.getFloorByLevelId);
-                    floorPlanPage.originalDataset.setValue(resp.data.getFloorByLevelId);
+                    floorPlanPage.dataset.floorPlanUnmodifiedCopy.setValue(
+                        resp.data.getFloorByLevelId
+                    );
                 }
             }
         },

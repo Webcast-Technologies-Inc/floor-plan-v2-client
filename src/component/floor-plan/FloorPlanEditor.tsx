@@ -53,7 +53,7 @@ const FloorPlandEditor = ({
             };
 
             floorPlanPage.dataset.floorPlan.setValue(reposition);
-            floorPlanPage.originalDataset.setValue(reposition);
+            floorPlanPage.dataset.floorPlanUnmodifiedCopy.setValue(reposition);
         };
 
         img.onerror = (err) => {
@@ -138,7 +138,7 @@ const FloorPlandEditor = ({
             floorPlanPage.form.stallInfo.resetFields();
             floorPlanPage.stallInfoDataset.setValue(null);
             // floorPlanPage.edit.setVisible(false);
-            // floorPlanPage.dataset.floorPlan.setValue(floorPlanPage.originalDataset.value);
+            // floorPlanPage.dataset.floorPlan.setValue(floorPlanPage.dataset.floorPlanUnmodifiedCopy.value);
 
             // Highlight all markers when clicking on open area
             // setHighlightMarkers(true);
@@ -210,7 +210,7 @@ const FloorPlandEditor = ({
 
                                 const resetModalState = (nextTool: ITool) => {
                                     floorPlanPage.dataset.floorPlan.setValue(
-                                        floorPlanPage.originalDataset.value
+                                        floorPlanPage.dataset.floorPlanUnmodifiedCopy.value
                                     );
                                     floorPlanPage.edit.setVisible(false);
                                     floorPlanPage.selectedMarker.setValue(null);
@@ -327,7 +327,7 @@ const FloorPlandEditor = ({
                                                     floorPlanPage.dataset.floorPlan.setValue(
                                                         reposition
                                                     );
-                                                    floorPlanPage.originalDataset.setValue(
+                                                    floorPlanPage.dataset.floorPlanUnmodifiedCopy.setValue(
                                                         reposition
                                                     );
                                                 }}
