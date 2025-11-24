@@ -4,7 +4,7 @@ import { useContext, useEffect, useRef, useState } from "react";
 import { Document, Page, pdfjs } from "react-pdf";
 import { MIME_TYPE, TEMP_ID_FORMAT, TOOL, type ITool } from "../../constant";
 import DrawerVisibilityContext from "../../store/context/DrawerVisibilityContext";
-import type { IFloorPlanArea } from "../../types/floorPlan";
+import type { IFloor, IFloorPlanArea } from "../../types/floorPlan";
 import { repositionOutOfBoundsMarkers } from "../../utils/repositionMarkers";
 import { MarkerPoint } from "./MarkerPoint";
 
@@ -32,18 +32,12 @@ const FloorPlandEditor = ({ loading }: { loading: boolean }) => {
             const newWidth = img.width;
             const newHeight = img.height;
 
-            const reposition = (prev: any) => {
-                if (!prev?.areas?.length) {
-                    return prev;
-                }
-
-                return {
-                    ...prev,
-                    areas: repositionOutOfBoundsMarkers(prev.areas, newWidth, newHeight),
-                };
-            };
-
-            floorPlanPage.dataset.floorPlan.setValue(reposition);
+            floorPlanPage.dataset.floorPlan.setValue((prev) =>
+                repositionMarkers(prev, newWidth, newHeight)
+            );
+            floorPlanPage.dataset.floorPlanUnmodifiedCopy.setValue((prev) =>
+                repositionMarkers(prev, newWidth, newHeight)
+            );
         };
 
         img.onerror = (err) => {
@@ -69,6 +63,21 @@ const FloorPlandEditor = ({ loading }: { loading: boolean }) => {
                 ],
             };
         });
+    };
+
+    const repositionMarkers = (
+        prev: IFloor | null | undefined,
+        newWidth: number,
+        newHeight: number
+    ): IFloor | null | undefined => {
+        if (!prev?.areas?.length) {
+            return prev;
+        }
+
+        return {
+            ...prev,
+            areas: repositionOutOfBoundsMarkers(prev.areas, newWidth, newHeight),
+        };
     };
 
     const handleUpdateMarker = (updatedMarker: IFloorPlanArea) => {
@@ -272,23 +281,21 @@ const FloorPlandEditor = ({ loading }: { loading: boolean }) => {
                                                     const newWidth = viewport.width;
                                                     const newHeight = viewport.height;
 
-                                                    const reposition = (prev: any) => {
-                                                        if (!prev?.areas?.length) {
-                                                            return prev;
-                                                        }
-
-                                                        return {
-                                                            ...prev,
-                                                            areas: repositionOutOfBoundsMarkers(
-                                                                prev.areas,
+                                                    floorPlanPage.dataset.floorPlan.setValue(
+                                                        (prev) =>
+                                                            repositionMarkers(
+                                                                prev,
                                                                 newWidth,
                                                                 newHeight
-                                                            ),
-                                                        };
-                                                    };
-
-                                                    floorPlanPage.dataset.floorPlan.setValue(
-                                                        reposition
+                                                            )
+                                                    );
+                                                    floorPlanPage.dataset.floorPlanUnmodifiedCopy.setValue(
+                                                        (prev) =>
+                                                            repositionMarkers(
+                                                                prev,
+                                                                newWidth,
+                                                                newHeight
+                                                            )
                                                     );
                                                 }}
                                             />
