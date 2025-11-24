@@ -38,7 +38,6 @@ const FloorPlanModal = () => {
     const { handleDeleteFloor } = useDeleteFloor();
     const { floorPlanPage, floorModal } = useContext(DrawerVisibilityContext);
     const [floorOptions, setFloorOptions] = useState<FloorOption[]>([]);
-    const [modalLoading, setModalLoading] = useState(false);
     const loading = loadingGetLandmarkById || loadingGetFloorByLevelId;
 
     const items: MenuProps["items"] = [
@@ -89,15 +88,15 @@ const FloorPlanModal = () => {
                                 icon: <CheckCircleFilled />,
                                 content: "Floor was deleted successfully!",
                             });
+
                             floorModal.refetch.setValue((prev) => !prev);
                             floorPlanPage.edit.setVisible(false);
                             floorPlanPage.selectedTool.setValue(TOOL.SELECT);
-                            floorPlanPage.form.datasetId.resetFields();
                             floorPlanPage.selectedMarker.setValue(null);
+                            floorPlanPage.form.datasetId.resetFields();
+                            floorPlanPage.form.stallInfo.resetFields();
                             floorPlanPage.dataset.floorPlan.setValue(null);
                             floorPlanPage.dataset.floorPlanUnmodifiedCopy.setValue(null);
-                            floorPlanPage.form.stallInfo.resetFields();
-                            floorPlanPage.form.stallInfo.resetFields();
                             floorPlanPage.dataset.stallInfo.setValue(null);
                             return;
                         } catch (error) {
@@ -116,13 +115,12 @@ const FloorPlanModal = () => {
     ];
 
     useEffect(() => {
-        let isMounted = true; // flag for mount state
+        let isMounted = true;
 
         const fetch = async () => {
             if (!id) {
                 return;
             }
-            setModalLoading(true);
 
             try {
                 const resp = await handleGetLandmarkById(id);
@@ -176,26 +174,16 @@ const FloorPlanModal = () => {
                     return;
                 }
 
-                // Ignore AbortErrors safely
-                if (err.name === "AbortError") {
-                    return;
-                }
-
                 messageApi.open({
                     type: "error",
                     content: err.message || "Failed to get Landmark!",
                 });
-            } finally {
-                if (isMounted) {
-                    setModalLoading(false);
-                }
             }
         };
 
         fetch();
 
         return () => {
-            // prevent state updates after unmount
             isMounted = false;
         };
     }, [id, floorModal.refetch.value]);
@@ -211,7 +199,6 @@ const FloorPlanModal = () => {
             floorPlanPage.form.datasetId.resetFields();
             floorPlanPage.form.stallInfo.resetFields();
             floorPlanPage.dataset.stallInfo.setValue(null);
-
             floorPlanPage.selectedFloorLevelId.setValue(val);
 
             if (id) {
