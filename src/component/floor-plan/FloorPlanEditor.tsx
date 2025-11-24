@@ -13,8 +13,8 @@ pdfjs.GlobalWorkerOptions.workerSrc = `//unpkg.com/pdfjs-dist@${pdfjs.version}/b
 const FloorPlandEditor = ({ loading }: { loading: boolean }) => {
     const [modalAntd, contextHolderModal] = Modal.useModal();
     const { floorPlanPage, filterModal } = useContext(DrawerVisibilityContext);
-    const containerRef = useRef<any>(null);
     const [isFileLoaded, setIsFileLoaded] = useState(false);
+    const containerRef = useRef<any>(null);
     const isPdf = floorPlanPage.dataset.floorPlan.value?.fileType === MIME_TYPE.PDF;
 
     useEffect(() => {
@@ -44,7 +44,6 @@ const FloorPlandEditor = ({ loading }: { loading: boolean }) => {
             };
 
             floorPlanPage.dataset.floorPlan.setValue(reposition);
-            // floorPlanPage.dataset.floorPlanUnmodifiedCopy.setValue(reposition);
         };
 
         img.onerror = (err) => {
@@ -116,9 +115,6 @@ const FloorPlandEditor = ({ loading }: { loading: boolean }) => {
 
             handleAddMarker(newMarker, floorPlanPage.newlyAddedMarker.value);
             floorPlanPage.newlyAddedMarker.setValue(newMarker);
-            // floorPlanPage.form.datasetId.resetFields();
-            // floorPlanPage.form.stallInfo.resetFields();
-            // floorPlanPage.dataset.stallInfo.setValue(null);
             floorPlanPage.selectedMarker.setValue(newMarker);
         } else {
             if (floorPlanPage.edit.visible) {
@@ -230,7 +226,7 @@ const FloorPlandEditor = ({ loading }: { loading: boolean }) => {
                 }
                 loading={loading}
             >
-                <div className="h-[calc(100vh-13.5625rem)] flex justify-center items-center !bg-gray-100 rounded-lg border-2 border-slate-800 shadow-lg overflow-auto">
+                <div className="h-[calc(100vh-13.5625rem)] flex justify-center items-center bg-gray-100! rounded-lg border-2 border-slate-800 shadow-lg overflow-auto">
                     <div
                         className="relative max-w-full max-h-full"
                         onClick={handleCanvasClick}
@@ -267,7 +263,7 @@ const FloorPlandEditor = ({ loading }: { loading: boolean }) => {
                                                 pageNumber={1}
                                                 renderTextLayer={false}
                                                 renderAnnotationLayer={false}
-                                                className="max-w-full !bg-gray-100"
+                                                className="max-w-full bg-gray-100!"
                                                 onLoadSuccess={(page) => {
                                                     // Reposition markers when PDF page loads with new dimensions
                                                     const viewport = page.getViewport({
@@ -294,9 +290,6 @@ const FloorPlandEditor = ({ loading }: { loading: boolean }) => {
                                                     floorPlanPage.dataset.floorPlan.setValue(
                                                         reposition
                                                     );
-                                                    // floorPlanPage.dataset.floorPlanUnmodifiedCopy.setValue(
-                                                    //     reposition
-                                                    // );
                                                 }}
                                             />
                                         </Document>
@@ -335,6 +328,7 @@ const FloorPlandEditor = ({ loading }: { loading: boolean }) => {
 
                                         return isVisible ? (
                                             <MarkerPoint
+                                                containerRef={containerRef}
                                                 key={area.id}
                                                 marker={area}
                                                 isSelected={
@@ -380,7 +374,6 @@ const FloorPlandEditor = ({ loading }: { loading: boolean }) => {
                                                             floorPlanPage.newlyAddedMarker.value
                                                                 ?.id)
                                                 }
-                                                containerRef={containerRef}
                                             />
                                         ) : null;
                                     })}
