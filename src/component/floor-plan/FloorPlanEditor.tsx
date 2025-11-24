@@ -1,4 +1,4 @@
-import { Button, Card, Empty, Modal, Skeleton, Spin } from "antd";
+import { Button, Card, Empty, message, Modal, Skeleton, Spin } from "antd";
 import { Funnel, Pin, PinOff } from "lucide-react";
 import { useContext, useEffect, useRef, useState } from "react";
 import { Document, Page, pdfjs } from "react-pdf";
@@ -12,6 +12,7 @@ pdfjs.GlobalWorkerOptions.workerSrc = `//unpkg.com/pdfjs-dist@${pdfjs.version}/b
 
 const FloorPlandEditor = ({ loading }: { loading: boolean }) => {
     const [modalAntd, contextHolderModal] = Modal.useModal();
+    const [messageApi, contextHolderMessage] = message.useMessage();
     const { floorPlanPage, filterModal } = useContext(DrawerVisibilityContext);
     const [isFileLoaded, setIsFileLoaded] = useState(false);
     const containerRef = useRef<any>(null);
@@ -40,8 +41,11 @@ const FloorPlandEditor = ({ loading }: { loading: boolean }) => {
             );
         };
 
-        img.onerror = (err) => {
-            console.error("Image failed to load:", err);
+        img.onerror = () => {
+            messageApi.open({
+                type: "error",
+                content: "Failed to load floor plan file!",
+            });
         };
 
         img.src = presignedUrl;
@@ -105,11 +109,11 @@ const FloorPlandEditor = ({ loading }: { loading: boolean }) => {
         if (!rect) return;
 
         if (floorPlanPage.selectedTool.value === TOOL.MARKER) {
-            // Get click position relative to container
+            /* Get click position relative to container */
             let x = e.clientX - rect.left;
             let y = e.clientY - rect.top;
 
-            // Clamp to container bounds
+            /* Clamp to container bounds */
             x = Math.max(MARKER_SIZE / 2, Math.min(x, rect.width - MARKER_SIZE / 2));
             y = Math.max(MARKER_SIZE, Math.min(y, rect.height));
 
@@ -139,13 +143,14 @@ const FloorPlandEditor = ({ loading }: { loading: boolean }) => {
         Array.isArray(filters) &&
         filters.some((f) => {
             if (!f) return false;
-            // exclude "operator" field from the check
+            /* exclude "operator" field for checking of form list */
             return Object.entries(f).some(([key, val]) => key !== "operator" && !!val);
         });
 
     return (
         <>
             {contextHolderModal}
+            {contextHolderMessage}
             <Card
                 title={
                     loading ? (
@@ -193,11 +198,6 @@ const FloorPlandEditor = ({ loading }: { loading: boolean }) => {
                                     floorPlanPage.newlyAddedMarker.setValue(null);
                                 };
 
-                                const resetFilterModal = () => {
-                                    filterModal.dataSet.setValue(null);
-                                    filterModal.form.resetFields();
-                                };
-
                                 if (isMarkerTool) {
                                     modalAntd.confirm({
                                         title: "Confirm Discard",
@@ -216,7 +216,8 @@ const FloorPlandEditor = ({ loading }: { loading: boolean }) => {
                                     resetModalState(TOOL.MARKER);
                                 }
 
-                                resetFilterModal();
+                                filterModal.dataSet.setValue(null);
+                                filterModal.form.resetFields();
                             }}
                             disabled={
                                 !floorPlanPage.selectedFloorLevelId.value ||
@@ -261,8 +262,11 @@ const FloorPlandEditor = ({ loading }: { loading: boolean }) => {
                                             onLoadSuccess={() => {
                                                 setIsFileLoaded(true);
                                             }}
-                                            onLoadError={(error) => {
-                                                console.error("PDF load error:", error);
+                                            onLoadError={() => {
+                                                messageApi.open({
+                                                    type: "error",
+                                                    content: "Failed to load floor plan file!",
+                                                });
                                             }}
                                             className="block"
                                         >
