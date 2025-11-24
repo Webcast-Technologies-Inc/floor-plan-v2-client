@@ -1,3 +1,4 @@
+import { MARKER_SIZE } from "../constant";
 import type { IFloorPlanArea } from "../types/floorPlan";
 
 /**
@@ -16,16 +17,14 @@ export const repositionOutOfBoundsMarkers = (
         return [];
     }
 
-    const markerSize = 24; // Size of the pin icon
-
     return markers.map((marker) => {
         let adjustedX = marker.x;
         let adjustedY = marker.y;
 
         // Check if marker is out of bounds and reposition if necessary
-        const minX = markerSize / 2;
-        const maxX = newWidth - markerSize / 2;
-        const minY = markerSize;
+        const minX = MARKER_SIZE / 2;
+        const maxX = newWidth - MARKER_SIZE / 2;
+        const minY = MARKER_SIZE;
         const maxY = newHeight;
 
         // Clamp X coordinate

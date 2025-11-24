@@ -2,7 +2,7 @@ import { Button, Card, Empty, Modal, Skeleton, Spin } from "antd";
 import { Funnel, Pin, PinOff } from "lucide-react";
 import { useContext, useEffect, useRef, useState } from "react";
 import { Document, Page, pdfjs } from "react-pdf";
-import { MIME_TYPE, TEMP_ID_FORMAT, TOOL, type ITool } from "../../constant";
+import { MARKER_SIZE, MIME_TYPE, TEMP_ID_FORMAT, TOOL, type ITool } from "../../constant";
 import DrawerVisibilityContext from "../../store/context/DrawerVisibilityContext";
 import type { IFloor, IFloorPlanArea } from "../../types/floorPlan";
 import { repositionOutOfBoundsMarkers } from "../../utils/repositionMarkers";
@@ -48,6 +48,21 @@ const FloorPlandEditor = ({ loading }: { loading: boolean }) => {
         setIsFileLoaded(false);
     }, [floorPlanPage.dataset.floorPlan.value?.presignedUrl]);
 
+    const repositionMarkers = (
+        prev: IFloor | null | undefined,
+        newWidth: number,
+        newHeight: number
+    ): IFloor | null | undefined => {
+        if (!prev?.areas?.length) {
+            return prev;
+        }
+
+        return {
+            ...prev,
+            areas: repositionOutOfBoundsMarkers(prev.areas, newWidth, newHeight),
+        };
+    };
+
     const handleAddMarker = (
         marker: IFloorPlanArea,
         recentlyCreatedMarker: IFloorPlanArea | undefined | null
@@ -63,21 +78,6 @@ const FloorPlandEditor = ({ loading }: { loading: boolean }) => {
                 ],
             };
         });
-    };
-
-    const repositionMarkers = (
-        prev: IFloor | null | undefined,
-        newWidth: number,
-        newHeight: number
-    ): IFloor | null | undefined => {
-        if (!prev?.areas?.length) {
-            return prev;
-        }
-
-        return {
-            ...prev,
-            areas: repositionOutOfBoundsMarkers(prev.areas, newWidth, newHeight),
-        };
     };
 
     const handleUpdateMarker = (updatedMarker: IFloorPlanArea) => {
@@ -105,15 +105,13 @@ const FloorPlandEditor = ({ loading }: { loading: boolean }) => {
         if (!rect) return;
 
         if (floorPlanPage.selectedTool.value === TOOL.MARKER) {
-            const markerSize = 24; // approximate size of your marker icon
-
             // Get click position relative to container
             let x = e.clientX - rect.left;
             let y = e.clientY - rect.top;
 
             // Clamp to container bounds
-            x = Math.max(markerSize / 2, Math.min(x, rect.width - markerSize / 2));
-            y = Math.max(markerSize, Math.min(y, rect.height));
+            x = Math.max(MARKER_SIZE / 2, Math.min(x, rect.width - MARKER_SIZE / 2));
+            y = Math.max(MARKER_SIZE, Math.min(y, rect.height));
 
             const newMarker = {
                 id: `${TEMP_ID_FORMAT}${Date.now().toString()}`,

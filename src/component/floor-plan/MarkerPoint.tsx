@@ -1,5 +1,6 @@
 import { Tooltip } from "antd";
 import { useEffect, useRef, useState } from "react";
+import { MARKER_SIZE } from "../../constant";
 import type { IFloorPlanArea } from "../../types/floorPlan";
 
 interface MarkerPointProps {
@@ -59,14 +60,13 @@ export const MarkerPoint = ({
             let newY = initialMarkerPos.current.y + deltaY;
 
             const container = containerRef.current;
-            const markerSize = 24; // Approximate size of the pin icon
 
             if (container) {
                 const bounds = container.getBoundingClientRect();
 
                 // Clamp within container bounds
-                newX = Math.max(markerSize / 2, Math.min(newX, bounds.width - markerSize / 2));
-                newY = Math.max(markerSize, Math.min(newY, bounds.height));
+                newX = Math.max(MARKER_SIZE / 2, Math.min(newX, bounds.width - MARKER_SIZE / 2));
+                newY = Math.max(MARKER_SIZE, Math.min(newY, bounds.height));
             }
 
             setPosition({ x: newX, y: newY });
@@ -109,10 +109,12 @@ export const MarkerPoint = ({
     return (
         <div
             ref={markerRef}
-            className={`absolute h-6 w-6 transition-transform duration-200 leading-none ${
+            className={`absolute transition-transform duration-200 leading-none ${
                 isDragging ? "scale-110 z-50" : isSelected ? "scale-105 z-40" : "z-30"
             } ${isDraggable ? "hover:scale-110" : ""}`}
             style={{
+                height: MARKER_SIZE,
+                width: MARKER_SIZE,
                 left: `${position.x}px`,
                 top: `${position.y}px`,
                 transform: "translate(-50%, -100%)",
