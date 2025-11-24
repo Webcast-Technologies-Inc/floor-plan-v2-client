@@ -18,11 +18,11 @@ const FloorPlan = () => {
     );
     const [selectedFloorLevelId, setSelectedFloorLevelId] = useState<string | undefined>(undefined);
     const [refetch, setRefetch] = useState(false);
-    const [originalDataset, setOriginalDataset] = useState<any>(null);
-    const [modalDataset, setModalDataset] = useState<IFloor | undefined | null>(undefined);
-    const [drawerDataset, setDrawerDataset] = useState<any>(undefined);
-    const [stallInfo, setStallInfo] = useState<any>();
-    const [datasetFilter, setDatasetFilter] = useState<any[] | undefined | null>();
+    const [floorPlanUnmodifiedCopyDataset, setFloorPlanUnmodifiedCopyDataset] = useState<any>(null);
+    const [floorPlanDataset, setFloorPlanDataset] = useState<IFloor | undefined | null>(undefined);
+    const [floorDataset, setFloorDataset] = useState<any>(undefined);
+    const [stallInfoDataset, setStallInfoDataset] = useState<any>();
+    const [filterDataset, setFilterDataset] = useState<any[] | undefined | null>();
     const [newlyAddedMarker, setNewlyAddedMarker] = useState<IFloorPlanArea | undefined | null>(
         undefined
     );
@@ -32,21 +32,21 @@ const FloorPlan = () => {
             value={{
                 filterModal: {
                     ...filterModal,
-                    dataSet: { value: datasetFilter, setValue: setDatasetFilter },
+                    dataSet: { value: filterDataset, setValue: setFilterDataset },
                     form: Form.useForm()[0],
                 },
                 floorPlanPage: {
                     ...modal,
                     dataset: {
                         floorPlan: {
-                            value: modalDataset,
-                            setValue: setModalDataset,
+                            value: floorPlanDataset,
+                            setValue: setFloorPlanDataset,
                         },
                         floorPlanUnmodifiedCopy: {
-                            value: originalDataset,
-                            setValue: setOriginalDataset,
+                            value: floorPlanUnmodifiedCopyDataset,
+                            setValue: setFloorPlanUnmodifiedCopyDataset,
                         },
-                        stallInfo: { value: stallInfo, setValue: setStallInfo },
+                        stallInfo: { value: stallInfoDataset, setValue: setStallInfoDataset },
                     },
                     selectedTool: { value: selectedTool, setValue: setSelectedTool },
                     selectedMarker: {
@@ -68,7 +68,7 @@ const FloorPlan = () => {
                 },
                 floorModal: {
                     ...floorModal,
-                    dataSet: { value: drawerDataset, setValue: setDrawerDataset },
+                    dataSet: { value: floorDataset, setValue: setFloorDataset },
                     refetch: { value: refetch, setValue: setRefetch },
                 },
             }}
