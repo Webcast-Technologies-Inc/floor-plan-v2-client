@@ -6,7 +6,7 @@ import { MARKER_SIZE, MIME_TYPE, TEMP_ID_FORMAT, TOOL, type ITool } from "../../
 import DrawerVisibilityContext from "../../store/context/DrawerVisibilityContext";
 import type { IFloor, IFloorPlanArea } from "../../types/floorPlan";
 import { repositionOutOfBoundsMarkers } from "../../utils/repositionMarkers";
-import Marker from "./MarkerPoint";
+import Marker from "./Marker";
 
 pdfjs.GlobalWorkerOptions.workerSrc = `//unpkg.com/pdfjs-dist@${pdfjs.version}/build/pdf.worker.min.mjs`;
 
