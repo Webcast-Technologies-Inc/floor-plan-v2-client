@@ -116,9 +116,9 @@ const Marker = ({
     return (
         <div
             ref={markerRef}
-            className={`absolute flex items-center justify-center transition-transform duration-200 leading-none ${
-                isDragging ? "scale-110 z-50" : isSelected ? "scale-105 z-40" : "z-30"
-            } ${draggable ? "hover:scale-110" : ""}`}
+            className={`absolute flex items-center justify-center transition-transform duration-200 leading-none
+                ${isSelected ? "scale-105 z-40" : "z-30"}
+            `}
             style={{
                 height: height,
                 width: width,
