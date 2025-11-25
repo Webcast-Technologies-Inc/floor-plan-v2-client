@@ -1,4 +1,4 @@
-import { Button, Card, Empty, message, Modal, Skeleton, Spin } from "antd";
+import { Button, Card, Empty, message, Modal, Skeleton, Spin, Tooltip } from "antd";
 import { Funnel, Pin, PinOff } from "lucide-react";
 import { useContext, useEffect, useRef, useState } from "react";
 import { Document, Page, pdfjs } from "react-pdf";
@@ -339,7 +339,9 @@ const FloorPlandEditor = ({ loading }: { loading: boolean }) => {
                                             <MarkerPoint
                                                 containerRef={containerRef}
                                                 key={area.id}
-                                                marker={area}
+                                                height={MARKER_SIZE}
+                                                width={MARKER_SIZE}
+                                                position={{ x: area.x, y: area.y }}
                                                 isSelected={
                                                     floorPlanPage.selectedMarker.value?.id ===
                                                     area.id
@@ -383,6 +385,24 @@ const FloorPlandEditor = ({ loading }: { loading: boolean }) => {
                                                             floorPlanPage.newlyAddedMarker.value
                                                                 ?.id)
                                                 }
+                                                render={({ isSelected, hasMoved }) => {
+                                                    const iconSrc = `/icons/marker-${
+                                                        isSelected ? "selected" : "unselected"
+                                                    }.svg`;
+                                                    const icon = <img src={iconSrc} alt="Marker" />;
+
+                                                    return hasMoved ? (
+                                                        icon
+                                                    ) : (
+                                                        <Tooltip
+                                                            placement="top"
+                                                            title={area.dataSetInfoId}
+                                                            align={{ offset: [0, 0] }}
+                                                        >
+                                                            {icon}
+                                                        </Tooltip>
+                                                    );
+                                                }}
                                             />
                                         ) : null;
                                     })}

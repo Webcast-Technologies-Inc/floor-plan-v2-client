@@ -1,35 +1,45 @@
-import { Tooltip } from "antd";
 import { useEffect, useRef, useState } from "react";
-import { MARKER_SIZE } from "../../constant";
-import type { IFloorPlanArea } from "../../types/floorPlan";
 
 interface IMarkerPoint {
-    marker: IFloorPlanArea;
+    containerRef: React.RefObject<HTMLDivElement | null>;
+    height?: number;
+    width?: number;
+    position: {
+        x: number;
+        y: number;
+    };
     isSelected: boolean;
     onClick: () => void;
     onDragEnd: (x: number, y: number) => void;
     draggable: boolean;
-    containerRef: React.RefObject<HTMLDivElement | null>;
+    render?: (state: {
+        isSelected: boolean;
+        isDragging: boolean;
+        hasMoved: boolean;
+    }) => React.ReactNode;
 }
 
 export const MarkerPoint = ({
-    marker,
+    containerRef,
+    height = 24,
+    width = 24,
+    position,
     isSelected,
     onClick,
     onDragEnd,
     draggable,
-    containerRef,
+    render,
 }: IMarkerPoint) => {
     const [isDragging, setIsDragging] = useState(false);
-    const [currentPosition, setCurrentPosition] = useState({ x: marker.x, y: marker.y });
+    const [currentPosition, setCurrentPosition] = useState({ x: position.x, y: position.y });
     const markerRef = useRef<HTMLDivElement>(null);
     const initialMousePos = useRef({ x: 0, y: 0 });
     const initialMarkerPos = useRef({ x: 0, y: 0 });
     const [hasMoved, setHasMoved] = useState(false);
 
     useEffect(() => {
-        setCurrentPosition({ x: marker.x, y: marker.y });
-    }, [marker.x, marker.y]);
+        setCurrentPosition({ x: position.x, y: position.y });
+    }, [position.x, position.y]);
 
     const handleMouseDown = (e: React.MouseEvent) => {
         // only start dragging with left mouse button
@@ -65,8 +75,8 @@ export const MarkerPoint = ({
                 const bounds = container.getBoundingClientRect();
 
                 // Clamp within container bounds
-                newX = Math.max(MARKER_SIZE / 2, Math.min(newX, bounds.width - MARKER_SIZE / 2));
-                newY = Math.max(MARKER_SIZE, Math.min(newY, bounds.height));
+                newX = Math.max(width / 2, Math.min(newX, bounds.width - width / 2));
+                newY = Math.max(height, Math.min(newY, bounds.height));
             }
 
             setCurrentPosition({ x: newX, y: newY });
@@ -76,7 +86,7 @@ export const MarkerPoint = ({
             setIsDragging(false);
             setHasMoved(false);
 
-            if (currentPosition.x !== marker.x || currentPosition.y !== marker.y) {
+            if (currentPosition.x !== position.x || currentPosition.y !== position.y) {
                 onClick();
                 onDragEnd(currentPosition.x, currentPosition.y);
             }
@@ -94,7 +104,7 @@ export const MarkerPoint = ({
             document.removeEventListener("mouseup", handleMouseUp);
             document.body.style.cursor = previousCursor;
         };
-    }, [isDragging, currentPosition.x, currentPosition.y, marker.x, marker.y, onDragEnd]);
+    }, [isDragging, currentPosition.x, currentPosition.y, position.x, position.y, onDragEnd]);
 
     const handleClick = (e: React.MouseEvent) => {
         e.stopPropagation();
@@ -103,18 +113,15 @@ export const MarkerPoint = ({
         }
     };
 
-    const iconSrc = `/icons/marker-${isSelected ? "selected" : "unselected"}.svg`;
-    const icon = <img src={iconSrc} alt="Marker" className="" />;
-
     return (
         <div
             ref={markerRef}
-            className={`absolute transition-transform duration-200 leading-none ${
+            className={`absolute flex items-center justify-center transition-transform duration-200 leading-none ${
                 isDragging ? "scale-110 z-50" : isSelected ? "scale-105 z-40" : "z-30"
             } ${draggable ? "hover:scale-110" : ""}`}
             style={{
-                height: MARKER_SIZE,
-                width: MARKER_SIZE,
+                height: height,
+                width: width,
                 left: `${currentPosition.x}px`,
                 top: `${currentPosition.y}px`,
                 transform: "translate(-50%, -100%)",
@@ -124,19 +131,7 @@ export const MarkerPoint = ({
             onMouseDown={handleMouseDown}
             onClick={handleClick}
         >
-            {hasMoved ? (
-                icon
-            ) : (
-                <Tooltip
-                    placement="top"
-                    title={marker.dataSetInfoId}
-                    align={{
-                        offset: [0, 0], // move tooltip closer to the element (negative = upward)
-                    }}
-                >
-                    {icon}
-                </Tooltip>
-            )}
+            {render?.({ isSelected, isDragging, hasMoved }) ?? <span>📌</span>}
         </div>
     );
 };
