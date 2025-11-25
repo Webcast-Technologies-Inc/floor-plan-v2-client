@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 
-interface IMarkerPoint {
+interface IMarker {
     containerRef: React.RefObject<HTMLDivElement | null>;
     height?: number;
     width?: number;
@@ -19,7 +19,7 @@ interface IMarkerPoint {
     }) => React.ReactNode;
 }
 
-export const MarkerPoint = ({
+const Marker = ({
     containerRef,
     height = 24,
     width = 24,
@@ -29,7 +29,7 @@ export const MarkerPoint = ({
     onDragEnd,
     draggable,
     render,
-}: IMarkerPoint) => {
+}: IMarker) => {
     const [isDragging, setIsDragging] = useState(false);
     const [currentPosition, setCurrentPosition] = useState({ x: position.x, y: position.y });
     const markerRef = useRef<HTMLDivElement>(null);
@@ -135,3 +135,5 @@ export const MarkerPoint = ({
         </div>
     );
 };
+
+export default Marker;
