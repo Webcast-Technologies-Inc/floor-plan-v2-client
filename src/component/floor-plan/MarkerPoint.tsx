@@ -8,7 +8,7 @@ interface MarkerPointProps {
     isSelected: boolean;
     onClick: () => void;
     onDragEnd: (x: number, y: number) => void;
-    isDraggable: boolean;
+    draggable: boolean;
     containerRef: React.RefObject<HTMLDivElement | null>;
 }
 
@@ -17,7 +17,7 @@ export const MarkerPoint = ({
     isSelected,
     onClick,
     onDragEnd,
-    isDraggable,
+    draggable,
     containerRef,
 }: MarkerPointProps) => {
     const [isDragging, setIsDragging] = useState(false);
@@ -33,7 +33,7 @@ export const MarkerPoint = ({
 
     const handleMouseDown = (e: React.MouseEvent) => {
         // only start dragging with left mouse button
-        if (!isDraggable || e.button !== 0) {
+        if (!draggable || e.button !== 0) {
             return;
         }
         e.stopPropagation();
@@ -111,7 +111,7 @@ export const MarkerPoint = ({
             ref={markerRef}
             className={`absolute transition-transform duration-200 leading-none ${
                 isDragging ? "scale-110 z-50" : isSelected ? "scale-105 z-40" : "z-30"
-            } ${isDraggable ? "hover:scale-110" : ""}`}
+            } ${draggable ? "hover:scale-110" : ""}`}
             style={{
                 height: MARKER_SIZE,
                 width: MARKER_SIZE,

@@ -372,7 +372,7 @@ const FloorPlandEditor = ({ loading }: { loading: boolean }) => {
                                                 onDragEnd={(x, y) =>
                                                     handleMarkerDragEnd(area?.id ?? "", x, y)
                                                 }
-                                                isDraggable={
+                                                draggable={
                                                     (floorPlanPage.edit.visible &&
                                                         area.id ===
                                                             floorPlanPage.selectedMarker.value
