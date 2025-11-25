@@ -3,7 +3,7 @@ import { useEffect, useRef, useState } from "react";
 import { MARKER_SIZE } from "../../constant";
 import type { IFloorPlanArea } from "../../types/floorPlan";
 
-interface MarkerPointProps {
+interface IMarkerPoint {
     marker: IFloorPlanArea;
     isSelected: boolean;
     onClick: () => void;
@@ -19,16 +19,16 @@ export const MarkerPoint = ({
     onDragEnd,
     draggable,
     containerRef,
-}: MarkerPointProps) => {
+}: IMarkerPoint) => {
     const [isDragging, setIsDragging] = useState(false);
-    const [position, setPosition] = useState({ x: marker.x, y: marker.y });
+    const [currentPosition, setCurrentPosition] = useState({ x: marker.x, y: marker.y });
     const markerRef = useRef<HTMLDivElement>(null);
     const initialMousePos = useRef({ x: 0, y: 0 });
     const initialMarkerPos = useRef({ x: 0, y: 0 });
     const [hasMoved, setHasMoved] = useState(false);
 
     useEffect(() => {
-        setPosition({ x: marker.x, y: marker.y });
+        setCurrentPosition({ x: marker.x, y: marker.y });
     }, [marker.x, marker.y]);
 
     const handleMouseDown = (e: React.MouseEvent) => {
@@ -41,7 +41,7 @@ export const MarkerPoint = ({
 
         setIsDragging(true);
         initialMousePos.current = { x: e.clientX, y: e.clientY };
-        initialMarkerPos.current = { x: position.x, y: position.y };
+        initialMarkerPos.current = { x: currentPosition.x, y: currentPosition.y };
     };
 
     useEffect(() => {
@@ -69,16 +69,16 @@ export const MarkerPoint = ({
                 newY = Math.max(MARKER_SIZE, Math.min(newY, bounds.height));
             }
 
-            setPosition({ x: newX, y: newY });
+            setCurrentPosition({ x: newX, y: newY });
         };
 
         const handleMouseUp = () => {
             setIsDragging(false);
             setHasMoved(false);
 
-            if (position.x !== marker.x || position.y !== marker.y) {
+            if (currentPosition.x !== marker.x || currentPosition.y !== marker.y) {
                 onClick();
-                onDragEnd(position.x, position.y);
+                onDragEnd(currentPosition.x, currentPosition.y);
             }
         };
 
@@ -94,7 +94,7 @@ export const MarkerPoint = ({
             document.removeEventListener("mouseup", handleMouseUp);
             document.body.style.cursor = previousCursor;
         };
-    }, [isDragging, position.x, position.y, marker.x, marker.y, onDragEnd]);
+    }, [isDragging, currentPosition.x, currentPosition.y, marker.x, marker.y, onDragEnd]);
 
     const handleClick = (e: React.MouseEvent) => {
         e.stopPropagation();
@@ -115,8 +115,8 @@ export const MarkerPoint = ({
             style={{
                 height: MARKER_SIZE,
                 width: MARKER_SIZE,
-                left: `${position.x}px`,
-                top: `${position.y}px`,
+                left: `${currentPosition.x}px`,
+                top: `${currentPosition.y}px`,
                 transform: "translate(-50%, -100%)",
                 userSelect: "none",
                 cursor: hasMoved ? "grabbing" : "pointer",
