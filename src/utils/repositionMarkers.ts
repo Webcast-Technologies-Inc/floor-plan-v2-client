@@ -22,9 +22,9 @@ export const repositionOutOfBoundsMarkers = (
         let adjustedY = marker.y;
 
         // Check if marker is out of bounds and reposition if necessary
-        const minX = MARKER_SIZE / 2;
-        const maxX = newWidth - MARKER_SIZE / 2;
-        const minY = MARKER_SIZE;
+        const minX = MARKER_SIZE.width / 2;
+        const maxX = newWidth - MARKER_SIZE.width / 2;
+        const minY = MARKER_SIZE.height;
         const maxY = newHeight;
 
         // Clamp X coordinate

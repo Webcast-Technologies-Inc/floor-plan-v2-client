@@ -114,8 +114,8 @@ const FloorPlandEditor = ({ loading }: { loading: boolean }) => {
             let y = e.clientY - rect.top;
 
             /* Clamp to container bounds */
-            x = Math.max(MARKER_SIZE / 2, Math.min(x, rect.width - MARKER_SIZE / 2));
-            y = Math.max(MARKER_SIZE, Math.min(y, rect.height));
+            x = Math.max(MARKER_SIZE.width / 2, Math.min(x, rect.width - MARKER_SIZE.width / 2));
+            y = Math.max(MARKER_SIZE.height, Math.min(y, rect.height));
 
             const newMarker = {
                 id: `${TEMP_ID_FORMAT}${Date.now().toString()}`,
@@ -339,8 +339,8 @@ const FloorPlandEditor = ({ loading }: { loading: boolean }) => {
                                             <Marker
                                                 containerRef={containerRef}
                                                 key={area.id}
-                                                height={MARKER_SIZE}
-                                                width={MARKER_SIZE}
+                                                height={MARKER_SIZE.height}
+                                                width={MARKER_SIZE.width}
                                                 position={{ x: area.x, y: area.y }}
                                                 isSelected={
                                                     floorPlanPage.selectedMarker.value?.id ===
