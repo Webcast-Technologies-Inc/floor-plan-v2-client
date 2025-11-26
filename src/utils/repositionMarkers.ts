@@ -1,17 +1,20 @@
-import { MARKER_SIZE } from "../constant";
 import type { IFloorPlanArea } from "../types/floorPlan";
 
 /**
  * Repositions markers that are out of bounds to fit within the new image dimensions
  * @param markers - Array of floor plan area markers
- * @param newWidth - Width of the new image/container
- * @param newHeight - Height of the new image/container
+ * @param fileWidth - Width of the new image/container
+ * @param fileHeight - Height of the new image/container
+ * @param markerWidth - Width of the marker
+ * @param markerHeight - Height of the marker
  * @returns Array of markers with adjusted positions
  */
 export const repositionOutOfBoundsMarkers = (
     markers: IFloorPlanArea[] | undefined,
-    newWidth: number,
-    newHeight: number
+    fileWidth: number,
+    fileHeight: number,
+    markerWidth: number,
+    markerHeight: number
 ): IFloorPlanArea[] => {
     if (!markers || markers.length === 0) {
         return [];
@@ -22,10 +25,10 @@ export const repositionOutOfBoundsMarkers = (
         let adjustedY = marker.y;
 
         // Check if marker is out of bounds and reposition if necessary
-        const minX = MARKER_SIZE.width / 2;
-        const maxX = newWidth - MARKER_SIZE.width / 2;
-        const minY = MARKER_SIZE.height;
-        const maxY = newHeight;
+        const minX = markerWidth / 2;
+        const maxX = fileWidth - markerWidth / 2;
+        const minY = markerHeight;
+        const maxY = fileHeight;
 
         // Clamp X coordinate
         if (adjustedX < minX) {

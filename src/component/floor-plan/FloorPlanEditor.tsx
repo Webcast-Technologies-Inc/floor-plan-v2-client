@@ -30,14 +30,14 @@ const FloorPlandEditor = ({ loading }: { loading: boolean }) => {
         setIsFileLoaded(true);
         const img = new Image();
         img.onload = () => {
-            const newWidth = img.width;
-            const newHeight = img.height;
+            const fileWidth = img.width;
+            const fileHeight = img.height;
 
             floorPlanPage.dataset.floorPlan.setValue((prev) =>
-                repositionMarkers(prev, newWidth, newHeight)
+                repositionMarkers(prev, fileWidth, fileHeight)
             );
             floorPlanPage.dataset.floorPlanUnmodifiedCopy.setValue((prev) =>
-                repositionMarkers(prev, newWidth, newHeight)
+                repositionMarkers(prev, fileWidth, fileHeight)
             );
         };
 
@@ -54,8 +54,8 @@ const FloorPlandEditor = ({ loading }: { loading: boolean }) => {
 
     const repositionMarkers = (
         prev: IFloor | null | undefined,
-        newWidth: number,
-        newHeight: number
+        fileWidth: number,
+        fileHeight: number
     ): IFloor | null | undefined => {
         if (!prev?.areas?.length) {
             return prev;
@@ -63,7 +63,13 @@ const FloorPlandEditor = ({ loading }: { loading: boolean }) => {
 
         return {
             ...prev,
-            areas: repositionOutOfBoundsMarkers(prev.areas, newWidth, newHeight),
+            areas: repositionOutOfBoundsMarkers(
+                prev.areas,
+                fileWidth,
+                fileHeight,
+                MARKER_SIZE.width,
+                MARKER_SIZE.height
+            ),
         };
     };
 
@@ -280,23 +286,23 @@ const FloorPlandEditor = ({ loading }: { loading: boolean }) => {
                                                     const viewport = page.getViewport({
                                                         scale: 1,
                                                     });
-                                                    const newWidth = viewport.width;
-                                                    const newHeight = viewport.height;
+                                                    const fileWidth = viewport.width;
+                                                    const fileHeight = viewport.height;
 
                                                     floorPlanPage.dataset.floorPlan.setValue(
                                                         (prev) =>
                                                             repositionMarkers(
                                                                 prev,
-                                                                newWidth,
-                                                                newHeight
+                                                                fileWidth,
+                                                                fileHeight
                                                             )
                                                     );
                                                     floorPlanPage.dataset.floorPlanUnmodifiedCopy.setValue(
                                                         (prev) =>
                                                             repositionMarkers(
                                                                 prev,
-                                                                newWidth,
-                                                                newHeight
+                                                                fileWidth,
+                                                                fileHeight
                                                             )
                                                     );
                                                 }}
